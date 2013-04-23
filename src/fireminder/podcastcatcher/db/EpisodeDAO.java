@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 public class EpisodeDAO {
 	private EpisodeSqlHelper dbHelper;
@@ -53,8 +54,10 @@ public class EpisodeDAO {
 	}
 	
 	public void deleteEpisode(long id){
-		db.delete(EpisodeSqlHelper.TABLE_NAME, EpisodeSqlHelper.COLUMN_ID + " = ? " , new String[] {""+id});
-	}
+		Log.d("query:", ""+db.query(EpisodeSqlHelper.TABLE_NAME, EpisodeSqlHelper.allColumns, EpisodeSqlHelper.COLUMN_ID+ "="+ id, null, null, null, null).getCount());
+		Log.d("deleted:", "" + db.delete(EpisodeSqlHelper.TABLE_NAME, EpisodeSqlHelper.COLUMN_ID + " = " + id , null));
+		//db.delete(EpisodeSqlHelper.TABLE_NAME, EpisodeSqlHelper.COLUMN_ID + " = ? " , new String[] {""+id});
+		}
 	public void addMp3(Episode episode){
 		
 	}

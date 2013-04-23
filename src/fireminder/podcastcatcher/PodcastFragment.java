@@ -61,6 +61,7 @@ public class PodcastFragment extends ListFragment {
 				intent.setClass(getActivity(), ChannelActivity.class);
 				intent.putExtra("channel_id", itemId);
 				startActivity(intent);
+				
 			}
 		});
 		// LongItemPress - deletes podcast from db

@@ -9,19 +9,22 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.support.v4.widget.SimpleCursorAdapter;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
-import android.widget.AdapterView.OnItemLongClickListener;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
+import fireminder.podcastcatcher.db.Episode;
 import fireminder.podcastcatcher.db.EpisodeDAO;
+import fireminder.podcastcatcher.db.EpisodeSqlHelper;
 import fireminder.podcastcatcher.db.Podcast;
 import fireminder.podcastcatcher.db.PodcastDAO;
-import fireminder.podcastcatcher.ui.LazyAdapter;
 
 /*
  * ChannelActivity displays a podcast's episodes. It gets the
@@ -56,9 +59,12 @@ public class ChannelActivity extends ListActivity{
 	public boolean onContextItemSelected(android.view.MenuItem item){
 		Log.d("item", ""+item.getItemId());
 		AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
-		Log.d("item", ""+info.id);
+		Log.d("item", "" + item.getItemId());
+		Log.d("item", "" + R.id.delete);
 		switch (item.getItemId()){
 		case R.id.delete:
+			Log.d("menu delete", "Delete clicked: " + info.id);
+			edao.open();
 			edao.deleteEpisode(info.id);
 			updateListAdapter(getApplicationContext(), podcast_id);
 			return true;
@@ -105,7 +111,16 @@ public class ChannelActivity extends ListActivity{
 			image_iv.setImageResource(R.drawable.ic_launcher);
 			e.printStackTrace();
 		}
+		
+		getListView().setOnItemClickListener(new OnItemClickListener(){
 
+			@Override
+			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
+					long arg3) {
+				
+			}
+			
+		});
 		/*getListView().setOnItemLongClickListener(new OnItemLongClickListener() {
 			@Override
 			public boolean onItemLongClick(AdapterView<?> arg0, View arg1,
@@ -127,9 +142,9 @@ public class ChannelActivity extends ListActivity{
 	 */
 	private void updateListAdapter(Context context, long id) {
 		Cursor episodeCursor = edao.getAllEpisodesAsCursor(id);
-		LazyAdapter cursorAdapter = new LazyAdapter(context, episodeCursor);
-		//SimpleCursorAdapter cursorAdapter = new SimpleCursorAdapter(context, android.R.layout.simple_list_item_1,
-		//		episodeCursor, new String[] { EpisodeSqlHelper.COLUMN_TITLE }, new int[] { android.R.id.text1 }, 2);
+		//LazyAdapter cursorAdapter = new LazyAdapter(context, episodeCursor);
+		SimpleCursorAdapter cursorAdapter = new SimpleCursorAdapter(context, android.R.layout.simple_list_item_1,
+				episodeCursor, new String[] { EpisodeSqlHelper.COLUMN_TITLE }, new int[] { android.R.id.text1 }, 2);
 		setListAdapter(cursorAdapter);
 		}
 

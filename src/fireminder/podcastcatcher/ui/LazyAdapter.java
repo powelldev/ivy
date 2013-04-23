@@ -35,15 +35,16 @@ public class LazyAdapter extends BaseAdapter{
 	}
 
 	@Override
-	public Object getItem(int arg0) {
+	public Cursor getItem(int arg0) {
 		// TODO Auto-generated method stub
-		return arg0;
+		data.move(arg0);
+		return data;
 	}
 
 	@Override
 	public long getItemId(int arg0) {
-		// TODO Auto-generated method stub
-		return arg0;
+		data.move(arg0-1);
+		return data.getLong(data.getColumnIndex(EpisodeSqlHelper.COLUMN_ID));
 	}
 
 	@Override

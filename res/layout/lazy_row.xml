@@ -12,6 +12,7 @@
         android:typeface="sans"
         android:textSize="15dip"
         android:textStyle="bold" />
+    
    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -35,5 +36,8 @@
         android:typeface="sans"
         android:textSize="15dip"
          />
+        
    </RelativeLayout>
+
+
 </LinearLayout>
