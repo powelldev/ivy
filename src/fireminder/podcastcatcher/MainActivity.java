@@ -109,9 +109,9 @@ public class MainActivity extends FragmentActivity {
 			case 0:
 				return getString(R.string.title_podcast).toUpperCase(l);
 			case 1:
-				return getString(R.string.title_downloads).toUpperCase(l);
+				return "PLAYER";
 			case 2:
-				return getString(R.string.title_player).toUpperCase(l);
+				return "PLAYLIST";
 			}
 			return null;
 		}

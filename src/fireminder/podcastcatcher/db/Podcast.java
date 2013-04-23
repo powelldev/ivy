@@ -1,9 +1,5 @@
 package fireminder.podcastcatcher.db;
 
-import org.apache.http.util.ByteArrayBuffer;
-
-import android.database.Cursor;
-
 public class Podcast {
 
 	public Podcast(){};
