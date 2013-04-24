@@ -161,7 +161,7 @@ public class PodcastFragment extends ListFragment {
 				HttpURLConnection con = (HttpURLConnection) url.openConnection();
 				InputStream is = con.getInputStream();
 				reader = new BufferedReader( new InputStreamReader(is));
-				imagelink = RSSReader.parsePodcastImageFromXml(reader);
+				imagelink = RssParser.parsePodcastImageFromXml(reader);
 				
 				//Download image
 				URL imageurl = new URL(imagelink);
@@ -230,7 +230,7 @@ public class PodcastFragment extends ListFragment {
 				InputStream is = con.getInputStream();
 				reader = new BufferedReader( new InputStreamReader(is));
 				Log.d("EpisodeParsing", "here: " + urls[0] + " " + urls[1]);
-				episodes = RSSReader.parseEpisodesFromXml(reader, idForQuery);
+				episodes = RssParser.parseEpisodesFromXml(reader, idForQuery);
 				edao = new EpisodeDAO(getActivity());
 				edao.open();
 				for(ContentValues e : episodes){
@@ -272,7 +272,7 @@ public class PodcastFragment extends ListFragment {
 				InputStream is = con.getInputStream();
 				reader = new BufferedReader(new InputStreamReader(is));
 				//Pass reader to parser
-				podcastData = RSSReader.parsePodcastFromXml(reader);
+				podcastData = RssParser.parsePodcastFromXml(reader);
 				// Add podcast url to content value
 				podcastData.put(PodcastSqlHelper.COLUMN_LINK, urls[0]);
 			} 
