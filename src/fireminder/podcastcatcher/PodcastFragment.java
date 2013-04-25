@@ -123,6 +123,8 @@ public class PodcastFragment extends ListFragment {
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
 					String userString = userInput.getText().toString();
+					BackgroundThread bt = new BackgroundThread(getActivity());
+					// TODO: make httpdownloadtask part of backgroudn thread
 					new HttpDownloadTask().execute(userString);
 				}
 			});
@@ -146,111 +148,6 @@ public class PodcastFragment extends ListFragment {
 	}
 	
 
-	private class ParseXmlForImage extends AsyncTask<String, Void, ByteArrayBuffer>{
-		String idForQuery;
-		
-		@Override
-		protected ByteArrayBuffer doInBackground(String... urls) {
-			URL url;
-			idForQuery = urls[1];
-			BufferedReader reader = null;
-			ByteArrayBuffer baf = null;
-			String imagelink = null;
-			try {
-				url = new URL(urls[0]);
-				HttpURLConnection con = (HttpURLConnection) url.openConnection();
-				InputStream is = con.getInputStream();
-				reader = new BufferedReader( new InputStreamReader(is));
-				imagelink = RssParser.parsePodcastImageFromXml(reader);
-				
-				//Download image
-				URL imageurl = new URL(imagelink);
-				HttpURLConnection conn = (HttpURLConnection) imageurl.openConnection();
-				InputStream istream = conn.getInputStream();
-				BufferedInputStream bis = new BufferedInputStream(istream, 128);
-				baf = new ByteArrayBuffer(128);
-				int current = 0;
-				while ((current = bis.read()) != -1){
-					baf.append((byte) current);
-				}
-				} catch (MalformedURLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			catch(Exception e){
-				e.printStackTrace();
-			}
-			
-			return baf;
-		}
-		
-		@Override
-		protected void onPostExecute(ByteArrayBuffer result){
-			if(result != null){
-				Log.d("Add this to db: ", result + " AT " + idForQuery);
-				Podcast podcast = podcastDao.getPodcast(Long.parseLong(idForQuery));
-				podcast.setImagelink(result.toByteArray());
-				podcastDao.updatePodcastImagelink(podcast);
-				new ParseXmlForEpisodes().execute(new String[] {podcast.getLink(), String.valueOf(podcast.get_id())});
-			} else {
-				Podcast podcast = podcastDao.getPodcast(Long.parseLong(idForQuery));
-				Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.drawable.ic_launcher);
-				ByteArrayOutputStream stream = new ByteArrayOutputStream();
-				bmp.compress(Bitmap.CompressFormat.PNG, 100, stream);
-				byte[] byteArray = stream.toByteArray();
-				podcast.setImagelink(byteArray);
-				podcastDao.updatePodcastImagelink(podcast);
-			}
-
-			
-		}
-		
-	}
-	
-	private class ParseXmlForEpisodes extends AsyncTask<String, Void, ContentValues>{
-		long idForQuery;
-		EpisodeDAO edao;
-		
-		@Override
-		protected void onPreExecute(){
-		}
-		@Override
-		protected ContentValues doInBackground(String... urls) {
-			URL url;
-			idForQuery = Long.parseLong(urls[1]);
-			BufferedReader reader = null;
-			List<ContentValues> episodes = null;
-			try {
-
-				url = new URL(urls[0]);
-				HttpURLConnection con = (HttpURLConnection) url.openConnection();
-				InputStream is = con.getInputStream();
-				reader = new BufferedReader( new InputStreamReader(is));
-				Log.d("EpisodeParsing", "here: " + urls[0] + " " + urls[1]);
-				episodes = RssParser.parseEpisodesFromXml(reader, idForQuery);
-				edao = new EpisodeDAO(getActivity());
-				edao.open();
-				for(ContentValues e : episodes){
-					Log.d("Inserting: ", e.getAsString(EpisodeSqlHelper.COLUMN_TITLE));
-					edao.insertEpisode(e);
-				}
-				edao.close();
-				
-				return null;
-			} catch(Exception e) {
-				e.printStackTrace();
-				return null;
-			}
-		
-	}
-		@Override
-		protected void onPostExecute(ContentValues result) {
-			
-		}
-	}
 	private class HttpDownloadTask extends AsyncTask<String, Void, ContentValues>{
 		long id;
 		@Override
@@ -290,7 +187,10 @@ public class PodcastFragment extends ListFragment {
 			podcastDao.deletePodcast(id);			
 			if(result != null){
 				Podcast podcast = podcastDao.insertPodcast(result);
-				new ParseXmlForImage().execute(new String[] {podcast.getLink(), String.valueOf(podcast.get_id())});
+				//new ParseXmlForImage().execute(new String[] {podcast.getLink(), String.valueOf(podcast.get_id())});
+				BackgroundThread bt = new BackgroundThread(getActivity());
+				bt.getEpisodesFromBackgroundThread(podcast.getLink(), podcast.get_id());
+				bt.getPodcastImageFromBackgroundThread(podcast.getLink(), podcast.get_id());
 				Log.d("starting", "parsing for episodes");
 				//new ParseXmlForEpisodes().execute(new String[] {podcast.getLink(), String.valueOf(podcast.get_id())});
 			}
