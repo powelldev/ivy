@@ -19,10 +19,12 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.widget.Toast;
 import fireminder.podcastcatcher.db.EpisodeDAO;
 import fireminder.podcastcatcher.db.EpisodeSqlHelper;
 import fireminder.podcastcatcher.db.Podcast;
 import fireminder.podcastcatcher.db.PodcastDAO;
+import fireminder.podcastcatcher.db.PodcastSqlHelper;
 
 public class BackgroundThread {
 	
@@ -32,12 +34,70 @@ public class BackgroundThread {
 		this.context = context;
 	}
 	
+
+
 	public void getEpisodesFromBackgroundThread(String url, long id){
 		new ParseXmlForEpisodes().execute(new String[] {url, ""+id});
 	}
 	
 	public void getPodcastImageFromBackgroundThread(String url, long id){
 		new ParseXmlForImage().execute(new String[] { url, ""+id});
+	}
+	
+	private class HttpDownloadTask extends AsyncTask<String, Void, ContentValues>{
+		PodcastDAO podcastDao;
+		long id;
+		@Override
+		protected void onPreExecute() {
+			super.onPreExecute();
+			podcastDao = new PodcastDAO(context);
+			podcastDao.open();
+			id = podcastDao.createAndInsertPodcast("Loading ...").get_id();
+			//updateListAdapter(context);
+		}
+
+		@Override
+		protected ContentValues doInBackground(String... urls) {
+			
+			BufferedReader reader = null;
+			ContentValues podcastData = null;
+			try{
+				URL url = new URL(urls[0]);
+				HttpURLConnection con = (HttpURLConnection) url.openConnection();
+				InputStream is = con.getInputStream();
+				reader = new BufferedReader(new InputStreamReader(is));
+				//Pass reader to parser
+				podcastData = RssParser.parsePodcastFromXml(reader);
+				// Add podcast url to content value
+				podcastData.put(PodcastSqlHelper.COLUMN_LINK, urls[0]);
+			} 
+			catch(Exception e) {
+					e.printStackTrace();
+				return null;
+			}
+			return podcastData;
+		}
+		
+		@Override
+		protected void onPostExecute(ContentValues result){
+			podcastDao.open();
+			// Delete "Loading ..." item
+			podcastDao.deletePodcast(id);			
+			if(result != null){
+				Podcast podcast = podcastDao.insertPodcast(result);
+				//new ParseXmlForImage().execute(new String[] {podcast.getLink(), String.valueOf(podcast.get_id())});
+				BackgroundThread bt = new BackgroundThread(context);
+				bt.getEpisodesFromBackgroundThread(podcast.getLink(), podcast.get_id());
+				bt.getPodcastImageFromBackgroundThread(podcast.getLink(), podcast.get_id());
+				Log.d("starting", "parsing for episodes");
+				//new ParseXmlForEpisodes().execute(new String[] {podcast.getLink(), String.valueOf(podcast.get_id())});
+			}
+			else{
+				Toast.makeText(context, "Podcast subscription failed =(, please check url", Toast.LENGTH_LONG).show();
+			}//updateListAdapter(context);
+			
+		}
+
 	}
 	private class ParseXmlForImage extends AsyncTask<String, Void, ByteArrayBuffer>{
 		String idForQuery;
@@ -46,7 +106,6 @@ public class BackgroundThread {
 		protected ByteArrayBuffer doInBackground(String... urls) {
 			URL url;
 			idForQuery = urls[1];
-			podcastDao = new PodcastDAO(context);
 			BufferedReader reader = null;
 			ByteArrayBuffer baf = null;
 			String imagelink = null;
@@ -68,10 +127,8 @@ public class BackgroundThread {
 					baf.append((byte) current);
 				}
 				} catch (MalformedURLException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			catch(Exception e){
@@ -83,6 +140,8 @@ public class BackgroundThread {
 		
 		@Override
 		protected void onPostExecute(ByteArrayBuffer result){
+
+			podcastDao = new PodcastDAO(context);
 			podcastDao.open();	
 			if(result != null){
 				Log.d("Add this to db: ", result + " AT " + idForQuery);

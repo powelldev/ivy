@@ -47,11 +47,10 @@ import fireminder.podcastcatcher.db.PodcastSqlHelper;
 public class PodcastFragment extends ListFragment {
 
 	public PodcastDAO podcastDao = null;
-	
+	public BackgroundThread bt = new BackgroundThread(getActivity());
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-		
 		// Item Click - launch channel view via activity
 		getListView().setOnItemClickListener(new OnItemClickListener(){
 			@Override
@@ -123,7 +122,7 @@ public class PodcastFragment extends ListFragment {
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
 					String userString = userInput.getText().toString();
-					BackgroundThread bt = new BackgroundThread(getActivity());
+					//BackgroundThread bt = new BackgroundThread(getActivity());
 					// TODO: make httpdownloadtask part of backgroudn thread
 					new HttpDownloadTask().execute(userString);
 				}
