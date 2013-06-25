@@ -1,17 +1,10 @@
 package fireminder.podcastcatcher;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.List;
-
-import org.apache.http.util.ByteArrayBuffer;
 
 import android.app.AlertDialog;
 import android.content.ContentValues;
@@ -19,8 +12,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
@@ -36,9 +27,9 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ListView;
 import android.widget.Toast;
 import fireminder.podcastcatcher.db.EpisodeDAO;
-import fireminder.podcastcatcher.db.EpisodeSqlHelper;
 import fireminder.podcastcatcher.db.Podcast;
 import fireminder.podcastcatcher.db.PodcastDAO;
 import fireminder.podcastcatcher.db.PodcastSqlHelper;
@@ -46,61 +37,48 @@ import fireminder.podcastcatcher.db.PodcastSqlHelper;
 @SuppressWarnings("deprecation")
 public class PodcastFragment extends ListFragment {
 
-	public PodcastDAO podcastDao = null;
+	final static String TAG = PodcastFragment.class.getSimpleName();
+	
+	public PodcastDAO podcastDao;
 	public BackgroundThread bt = new BackgroundThread(getActivity());
+	
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-		// Item Click - launch channel view via activity
-		getListView().setOnItemClickListener(new OnItemClickListener(){
-			@Override
-			public void onItemClick(AdapterView<?> arg0, View arg1, int itemPosition,
-					long itemId) {
-				Intent intent = new Intent();
-				intent.setClass(getActivity(), ChannelActivity.class);
-				intent.putExtra("channel_id", itemId);
-				startActivity(intent);
-				
-			}
-		});
-		// LongItemPress - deletes podcast from db
-		getListView().setOnItemLongClickListener(new OnItemLongClickListener(){
-			@Override
-			public boolean onItemLongClick(AdapterView<?> arg0, View arg1,
-					int itemPosition, long itemId) {
-				podcastDao.deletePodcast(itemId);
-				EpisodeDAO edao = new EpisodeDAO(getActivity());
-				edao.open();
-				edao.deleteAllEpisodes(itemId);
-				edao.close();
-				updateListAdapter(getActivity());
-				return false;
-			}
-		});
+		initialize();
+
 	}
 	
+
+
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+		
 		View rootView = inflater.inflate(R.layout.listfragment1, container, false);
+		
 		podcastDao = new PodcastDAO(getActivity());
 		podcastDao.open();
+		
 		updateListAdapter(getActivity());
 		
 		ImageButton addPodcastBtn = (ImageButton) rootView.findViewById(R.id.subscribe_btn);
 		addPodcastBtn.setOnClickListener(subscribeClickListener);
 		
-		
 		return rootView;
 	}
+	
+	
 	// Subscription dialog presenter. Will prompt user for a URL and call the validator.
 	private OnClickListener subscribeClickListener = new OnClickListener(){
 		@Override
 		public void onClick(View button) {
 			//Create inflater for view for the Alert Dialog
 			LayoutInflater inflater = getActivity().getLayoutInflater();
+			
 			View promptsView = inflater.inflate(R.layout.subscribe_dialog, null);
 			final EditText userInput = (EditText) promptsView.findViewById(R.id.rss_feed);
 			final ImageButton paste_btn = (ImageButton) promptsView.findViewById(R.id.paste_btn);
+			
 			AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 			builder.setView(promptsView);		
 			//Set listener for the paste button
@@ -186,11 +164,10 @@ public class PodcastFragment extends ListFragment {
 			podcastDao.deletePodcast(id);			
 			if(result != null){
 				Podcast podcast = podcastDao.insertPodcast(result);
-				//new ParseXmlForImage().execute(new String[] {podcast.getLink(), String.valueOf(podcast.get_id())});
 				BackgroundThread bt = new BackgroundThread(getActivity());
 				bt.getEpisodesFromBackgroundThread(podcast.getLink(), podcast.get_id());
 				bt.getPodcastImageFromBackgroundThread(podcast.getLink(), podcast.get_id());
-				Log.d("starting", "parsing for episodes");
+				Log.d(TAG, "parsing for episodes");
 				//new ParseXmlForEpisodes().execute(new String[] {podcast.getLink(), String.valueOf(podcast.get_id())});
 			}
 			else{
@@ -201,64 +178,37 @@ public class PodcastFragment extends ListFragment {
 		}
 
 	}
-
-/*
- * 	public List<String> parsePodcastInfoFromXml(BufferedReader reader) throws IOException, XmlPullParserException {
-		List<String> podcastData = new ArrayList<String>();
-		final int NUM_PODCAST_ITEMS = 4;
-		for(int i = 0; i < 4; i++){
-			podcastData.add(i, "");
-		}
-		
-		 // continueParsingFlag - stops parsing if enough data items have been found to identify podcast
-		 
-		boolean continueParsingFlag = true;
-		int 	dataItemsCounter = 0;
-		XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
-		factory.setNamespaceAware(true);
-		XmlPullParser xpp = factory.newPullParser();
-		xpp.setInput(reader);
-		int eventType = xpp.getEventType();
-		while(eventType != XmlPullParser.END_DOCUMENT && (continueParsingFlag == true)){
-			switch(eventType){
-			case(XmlPullParser.START_DOCUMENT):
-				break;
-			case(XmlPullParser.START_TAG):
-				//DEPTH 3 for <channel>
-				if(xpp.getDepth() == 3){
-					if(xpp.getName().matches("title")){
-						String item = xpp.nextText();
-						Log.d("TITLE: ", item);
-						podcastData.add(0, item);
-						dataItemsCounter++;
-					}
-					else if(xpp.getName().matches("link")){
-						String item = xpp.nextText();
-						Log.d("LINK: ", item);
-						podcastData.add(2, item);
-						dataItemsCounter++;
-					}
-					else if(xpp.getName().matches("description")){
-						String item = xpp.nextText();
-						Log.d("Description: ", item);
-						podcastData.add(1, item);
-						dataItemsCounter++;
-					}
-				}
-				if(dataItemsCounter >= 4) { continueParsingFlag = false; }
+	
+	OnItemClickListener channelListViewOnClickListener = new OnItemClickListener() {
+		public void onItemClick(AdapterView<?> arg0, View arg1, int itemPosition,
+				long itemId) {
+			Intent intent = new Intent();
+			intent.setClass(getActivity(), ChannelActivity.class);
+			intent.putExtra("channel_id", itemId);
+			startActivity(intent);
 			
-				break;
-			case(XmlPullParser.END_TAG):
-				break;
-			default:
-				break;
-			}
-			eventType = xpp.next();
 		}
-		for(String s : podcastData){
-			Log.d("parse result:", s);			
+	};
+	OnItemLongClickListener channelListViewOnItemLongClickListener = 
+			new OnItemLongClickListener(){
+		@Override
+		public boolean onItemLongClick(AdapterView<?> arg0, View arg1,
+				int itemPosition, long itemId) {
+			podcastDao.deletePodcast(itemId);
+			EpisodeDAO edao = new EpisodeDAO(getActivity());
+			edao.open();
+			edao.deleteAllEpisodes(itemId);
+			edao.close();
+			updateListAdapter(getActivity());
+			return false;
 		}
-		return podcastData;
+	};
+	
+	private void initialize() {
+		ListView listView = getListView();
+		listView.setOnItemClickListener(channelListViewOnClickListener);
+		listView.setOnItemLongClickListener(channelListViewOnItemLongClickListener);
+		
+	
 	}
- */
 }
