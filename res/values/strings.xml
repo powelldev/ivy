@@ -7,6 +7,6 @@
     <string name="title_downloads">Downloads</string>
     <string name="title_player">Player</string>
     <string name="paste">Paste</string>
-    <string name="Subscribe">Enter a URL of the podcast you wish to subscribe to.</string>
-
+    <string name="Subscribe">Enter the URL of the podcast you wish to subscribe to.</string>
+	<color name="white">#FFFFFF</color>
 </resources>

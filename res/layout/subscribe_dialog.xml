@@ -15,6 +15,7 @@
         android:textSize="14sp"
         android:paddingLeft="4dp"
         android:layout_weight="2"
+        android:textColor="@color/base"
         />
     <ImageButton
         android:src="@drawable/ic_action_paste"
@@ -26,6 +27,7 @@
     </LinearLayout>
     <EditText
         android:id="@+id/rss_feed"
+        android:text="http://"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:inputType="textUri"

@@ -1,7 +1,6 @@
-package fireminder.podcastcatcher;
+package fireminder.podcastcatcher.activities;
 
 
-import java.util.List;
 import java.util.Locale;
 
 import android.content.Intent;
@@ -20,8 +19,15 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
+import fireminder.podcastcatcher.BackgroundThread;
+import fireminder.podcastcatcher.PlaySongCallback;
+import fireminder.podcastcatcher.PlaybackService;
+import fireminder.podcastcatcher.PlayerFragment;
+import fireminder.podcastcatcher.PlaylistFragment;
+import fireminder.podcastcatcher.PodcastFragment;
+import fireminder.podcastcatcher.R;
 
-public class MainActivity extends FragmentActivity{
+public class MainActivity extends FragmentActivity implements PlaySongCallback{
 Uri data = null;
 
 	
@@ -77,8 +83,13 @@ Uri data = null;
 			podcastFragment.subscribe("http://");
 			return true;
 		case R.id.test:
-			Intent i = new Intent(this, SearchActivity.class);
-			startActivityForResult(i, 42);
+			//Intent i = new Intent(this, SearchActivity.class);
+			//startActivityForResult(i, 42);
+			Intent playIntent = new Intent("fireminder.podcastcatcher.PlaybackService");
+			playIntent.setAction(PlaybackService.ACTION_PLAY);
+			playIntent.putExtra("songPath", "/mnt/sdcard/Podcasts/freakonomics_podcast052313.mp3");
+			startService(playIntent);
+			Log.d("intent" , playIntent.toString());
 			return true;
 		case R.id.get_new:
 			BackgroundThread bt = new BackgroundThread(this);
@@ -90,7 +101,7 @@ Uri data = null;
 	}
 	
 	protected void onActivityResult(int requestCode, int resultCode, Intent data){
-		if(requestCode == 42){
+		if(requestCode == 42 && resultCode == RESULT_OK){
 			//podcastFragment.subscribe(data.getStringExtra("result"));
 			Toast.makeText(this, data.getStringExtra("result"), Toast.LENGTH_LONG).show();
 			podcastFragment.subscribe(data.getStringExtra("result"));
@@ -178,6 +189,12 @@ Uri data = null;
 					ARG_SECTION_NUMBER))); */
 			return rootView;
 		}
+	}
+
+	@Override
+	public void playSongString(String songPath) {
+		playerFragment.playSong(songPath);
+		
 	}
 
 

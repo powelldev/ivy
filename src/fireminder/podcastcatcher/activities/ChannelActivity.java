@@ -1,4 +1,4 @@
-package fireminder.podcastcatcher;
+package fireminder.podcastcatcher.activities;
 
 import java.io.ByteArrayInputStream;
 
@@ -17,9 +17,13 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+import fireminder.podcastcatcher.BackgroundThread;
+import fireminder.podcastcatcher.PlaybackService;
+import fireminder.podcastcatcher.R;
 import fireminder.podcastcatcher.db.Episode;
 import fireminder.podcastcatcher.db.EpisodeDAO;
 import fireminder.podcastcatcher.db.PlaylistDAO;
@@ -41,6 +45,7 @@ public class ChannelActivity extends ListActivity{
 	ImageView 	image_iv;
 	EpisodeDAO 	edao;
 	Integer 	podcast_id;
+	ImageButton play_btn;
 	
 	@Override
 	protected void onCreate(Bundle bundle){
@@ -132,12 +137,17 @@ public class ChannelActivity extends ListActivity{
 					playlistDAO.open();
 					playlistDAO.addEpisode(_episode.get_id());
 					playlistDAO.close();
+					Intent intent = new Intent("fireminder.podcastcatcher.PlaybackService");
+					intent.setAction("fireminder.podcastcatcher.PlaybackService.PLAY");
+					intent.putExtra("songPath", _episode.getMp3());
+					getApplicationContext().startService(intent);
 					Toast.makeText(getApplicationContext(), "Playing...", Toast.LENGTH_LONG).show();
 				}
 				
 			}
 			
 		});
+		
 		
 		registerForContextMenu(getListView());
 		updateListAdapter(this, podcast.get_id());
@@ -172,5 +182,6 @@ public class ChannelActivity extends ListActivity{
 		title_tv = (TextView) findViewById(R.id.title_tv);
 		//descrip_tv = (TextView) findViewById(R.id.podcast_descrip);
 		image_iv = (ImageView) findViewById(R.id.podcast_image);
+		play_btn = (ImageButton) findViewById(R.id.play_icon_iv);
 	}
 }

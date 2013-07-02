@@ -4,8 +4,8 @@ public class Episode {
 
 
 
-	public Episode(Integer _id, Integer podcast_id, String title,
-			String description, String url, long pubDate, byte[] mp3) {
+	public Episode(Long _id, Long podcast_id, String title,
+			String description, String url, long pubDate, String mp3) {
 		super();
 		this._id = _id;
 		this.podcast_id = podcast_id;
@@ -16,31 +16,45 @@ public class Episode {
 		this.mp3 = mp3;
 	}
 	
-	public Episode(Integer _id, Integer podcast_id, String title) {
+	public Episode(Long _id, Long podcast_id, String title) {
 		super();
 		this._id = _id;
 		this.podcast_id = podcast_id;
 		this.title = title;
 	}
 
-	private Integer _id;
-	private Integer podcast_id;
+	private Long _id;
+	private Long podcast_id;
 	private String title;
 	private String description;
 	private String url;
 	private long pubDate;
-	private byte[] mp3;
+	private String mp3;
 	
+	@Override
+	public String toString(){
+		String info = "";
+		info += "_id: " + _id + "\n"; 
+		info += "podcast_id: " + podcast_id + "\n"; 
+		info += "title: " + title + "\n"; 
+		info += "description: " + description + "\n"; 
+		info += "url: " + url + "\n"; 
+		info += "pubDate: " + pubDate + "\n"; 
+		
+		try { info += "mp3: " + mp3 + "\n"; } catch (Exception e) {} 
+
+		return info;
+	}
 	public Episode(){
 		this.title = "";
 		this.description = "";
 		this.url = "";
 		this.pubDate = 0;
-		this.mp3 = null;
+		this.mp3 = "";
 	}
 	
 	
-	public Integer get_id() {
+	public Long get_id() {
 		return _id;
 	}
 
@@ -60,11 +74,11 @@ public class Episode {
 		return pubDate;
 	}
 
-	public byte[] getMp3() {
+	public String getMp3() {
 		return mp3;
 	}
 
-	public void set_id(Integer _id) {
+	public void set_id(Long _id) {
 		this._id = _id;
 	}
 
@@ -84,15 +98,15 @@ public class Episode {
 		this.pubDate = pubDate;
 	}
 
-	public void setMp3(byte[] mp3) {
+	public void setMp3(String mp3) {
 		this.mp3 = mp3;
 	}
 
-	public Integer getPodcast_id() {
+	public Long getPodcast_id() {
 		return podcast_id;
 	}
 
-	public void setPodcast_id(Integer podcast_id) {
+	public void setPodcast_id(Long podcast_id) {
 		this.podcast_id = podcast_id;
 	}
 }

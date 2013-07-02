@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="96dp"
+    >
+    
+    <ImageView 
+        android:id="@+id/podcast_iv"
+        android:layout_width="match_parent"
+    	android:layout_height="match_parent"
+        android:src="@drawable/ic_launcher"
+        android:layout_centerInParent="true"
+        android:scaleType="centerCrop"
+        />
+    
+	<ImageView
+	     android:background="@drawable/gradient_shape"
+	     android:layout_width="match_parent"
+	     android:layout_height="match_parent"
+	     android:scaleType="centerCrop"
+	     />
+    
+    <TextView 
+        android:id="@+id/podcast_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Jane Doe"
+        android:textStyle="bold"
+        android:textColor="@color/white"
+        android:textSize="24sp"
+        android:layout_alignParentBottom="true"
+        />
+
+</RelativeLayout>

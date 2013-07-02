@@ -7,17 +7,24 @@
     android:paddingRight="8dp"
     >
     
-    <ImageButton
-        android:src="@drawable/content_new"
-        android:id="@+id/subscribe_btn"
-        android:layout_width="48dp"
-        android:layout_height="48dp"
-        />
+   <!--  <ImageButton  -->
+       <!-- android:src="@drawable/content_new"  -->
+        <!--android:id="@+id/subscribe_btn"  -->
+        <!--android:layout_width="48dp"  -->
+        <!--android:layout_height="48dp"  -->
+        <!--/>  -->
     <ListView android:id="@id/android:list"
         android:layout_width="match_parent"
         android:layout_height="0dip"
         android:layout_weight="1"
         android:drawSelectorOnTop="false"
+        
+        android:fadingEdgeLength="0dp"
+        android:scrollbars="none"
+        android:divider="@null"
+        android:dividerHeight="4dp"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
         />
     <TextView
         android:layout_width="match_parent"
@@ -25,4 +32,5 @@
 		android:id="@android:id/empty"
 		android:text="No data"
 		/>
+   
 </LinearLayout>
