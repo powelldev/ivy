@@ -1,0 +1,3 @@
+ant clean debug
+$HOME/Desktop/sdk/platform-tools/adb install bin/PodcastCatcher.apk
+$HOME/Desktop/sdk/platform-tools/adb logcat -C
