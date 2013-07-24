@@ -77,8 +77,8 @@ Uri data = null;
 			podcastFragment.subscribe("http://");
 			return true;
 		case R.id.test:
-			Intent i = new Intent(this, SearchActivity.class);
-			startActivityForResult(i, 42);
+			//Intent i = new Intent(this, SearchActivity.class);
+			//startActivityForResult(i, 42);
 			return true;
 		case R.id.get_new:
 			BackgroundThread bt = new BackgroundThread(this);

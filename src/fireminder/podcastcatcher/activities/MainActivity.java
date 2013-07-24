@@ -83,13 +83,13 @@ Uri data = null;
 			podcastFragment.subscribe("http://");
 			return true;
 		case R.id.test:
-			//Intent i = new Intent(this, SearchActivity.class);
-			//startActivityForResult(i, 42);
-			Intent playIntent = new Intent("fireminder.podcastcatcher.PlaybackService");
-			playIntent.setAction(PlaybackService.ACTION_PLAY);
-			playIntent.putExtra("songPath", "/mnt/sdcard/Podcasts/freakonomics_podcast052313.mp3");
-			startService(playIntent);
-			Log.d("intent" , playIntent.toString());
+//			Intent i = new Intent(this, SearchActivity.class);
+//			startActivityForResult(i, 42);
+//			Intent playIntent = new Intent("fireminder.podcastcatcher.PlaybackService");
+//			playIntent.setAction(PlaybackService.ACTION_PLAY);
+//			playIntent.putExtra("songPath", "/mnt/sdcard/Podcasts/freakonomics_podcast052313.mp3");
+//			startService(playIntent);
+//			Log.d("intent" , playIntent.toString());
 			return true;
 		case R.id.get_new:
 			BackgroundThread bt = new BackgroundThread(this);

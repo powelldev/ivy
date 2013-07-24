@@ -1,24 +1,7 @@
-Podcast Catcher
+Issues:
 
-MainActivity.java
-	presents PodcastFragment
-	will present the Playlist and Player Fragments when implemented
+No initial podcasts
+Seek bar not synchronoized with playback:wq
 
-PodcastFragment.java
-	coordinates subscription to a podcast
-	lists subscribed podcasts
-
-Podcast
-	class file for a podcast
-
-PodcastSqlHelper
-	contains constants for db references
-	values for strings, creation, etc
-
-PodcastDAO
-	coordinates access to the database
-
-Episode/EpisodeDAO/EpisodeSqlHelper
-	same as Podcast classes
-	coordinate episode database access
+Make episode delete delete teh mp3 on the sdcard
 
