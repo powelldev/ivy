@@ -14,9 +14,11 @@ public class PodcastDAO {
 	
 	private PodcastSqlHelper dbHelper;
 	private SQLiteDatabase db;
+	private Context context;
 	
 	public PodcastDAO(Context context){
 		dbHelper = new PodcastSqlHelper(context);
+		this.context = context;
 	}
 	
 	public void open(){
@@ -133,6 +135,8 @@ public class PodcastDAO {
 	}
 	
 	public void deletePodcast(long id){
+		EpisodeDAO edao = new EpisodeDAO(context);
+		edao.deleteAllEpisodes(id);
 		db.delete(PodcastSqlHelper.TABLE_NAME, PodcastSqlHelper.COLUMN_ID + " = ? " , new String[] {""+id});
 	}
 	

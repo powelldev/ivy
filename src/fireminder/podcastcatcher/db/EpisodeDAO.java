@@ -86,7 +86,11 @@ public class EpisodeDAO {
 		return db.query(EpisodeSqlHelper.TABLE_NAME, EpisodeSqlHelper.allColumns, EpisodeSqlHelper.COLUMN_PODCAST_ID + "=" + id, null, null, null, null);
 	}
 	public void deleteAllEpisodes(long id){
+		if(db == null){
+			db = dbHelper.getWritableDatabase();
+		}
 		db.delete(EpisodeSqlHelper.TABLE_NAME, EpisodeSqlHelper.COLUMN_PODCAST_ID + " = ?", new String[] {""+id});
+		db.close();
 	}
 	
 	public void deleteEpisode(long id){

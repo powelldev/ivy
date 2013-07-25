@@ -84,6 +84,7 @@ public class BackgroundThread {
 		new HttpDownloadTask().execute(new String[] {url});
 	}
 	public void downloadEpisodeMp3(Episode e){
+		// TODO check if episode .mp3 exists already, if so, no need to download
 		String fileName = e.getUrl();
 		fileName = fileName.substring(fileName.lastIndexOf("/"));
 		Log.d(TAG, fileName);
@@ -401,6 +402,7 @@ public class BackgroundThread {
 			InputStream is = null;
 			try {
 				URL url = new URL(params[0]);
+				Log.e(TAG, params[0]);
 				HttpURLConnection urlConn = (HttpURLConnection) url
 						.openConnection();
 				is = urlConn.getInputStream();

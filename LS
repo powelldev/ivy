@@ -1,0 +1,59 @@
+[33mcommit e72395cb6d3e46017eeff892e072dfd32fd553c1[m
+Author: Michael Powell <powell.r.mike@gmail.com>
+Date:   Tue Jul 2 10:26:46 2013 -0700
+
+    Bug fixes
+
+[33mcommit 829f892c59f812b5084bd1cf77b963f381b494b2[m
+Author: Michael Powell <powell.r.mike@gmail.com>
+Date:   Tue Jul 2 10:17:59 2013 -0700
+
+    Removed unneeded files
+
+[33mcommit 1e83a03ca8771b7de61a5ddac97898425ef7966e[m
+Author: Michael Powell <powell.r.mike@gmail.com>
+Date:   Tue Jun 25 16:24:24 2013 -0700
+
+    Update
+
+[33mcommit 6b0e716f34916a2a566a45f2a0988e3ac47fd69c[m
+Author: powelldev <powell.r.mike@gmail.com>
+Date:   Sat Apr 27 11:47:50 2013 -0700
+
+    updates
+
+[33mcommit c5a1f8f2dee5ca2db68143d6e48b1b0d283e2050[m
+Author: powelldev <powell.r.mike@gmail.com>
+Date:   Wed Apr 24 22:11:16 2013 -0700
+
+    more updates
+
+[33mcommit b46229e5b93b040b4b7d46af910ae4176c451237[m
+Author: powelldev <powell.r.mike@gmail.com>
+Date:   Tue Apr 23 17:05:40 2013 -0700
+
+    update
+
+[33mcommit fcc48d0f341883df9c01b7a0f737da9f24b4a8a7[m
+Author: powelldev <powell.r.mike@gmail.com>
+Date:   Tue Apr 23 16:56:08 2013 -0700
+
+    update
+
+[33mcommit 19a39d458ec7f3461a94ec536a6fadc58e0fa3f3[m
+Author: powelldev <powell.r.mike@gmail.com>
+Date:   Tue Apr 23 09:43:29 2013 -0700
+
+    readme update
+
+[33mcommit 077e53efe3d6a836019e578c03267942700399cf[m
+Author: powelldev <powell.r.mike@gmail.com>
+Date:   Tue Apr 23 09:37:12 2013 -0700
+
+    Adding comments
+
+[33mcommit 8fb20d14d92608e30a8196f53fb3603ea4e1baf8[m
+Author: powelldev <powell.r.mike@gmail.com>
+Date:   Sun Apr 21 19:33:12 2013 -0700
+
+    first commit

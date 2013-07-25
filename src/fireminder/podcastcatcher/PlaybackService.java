@@ -12,6 +12,7 @@ import android.util.Log;
 public class PlaybackService extends Service implements
 		MediaPlayer.OnPreparedListener {
 	public static final String ACTION_PLAY = "fireminder.podcastcatcher.PlaybackService.PLAY";
+	public static final String ACTION_PAUSE = "fireminder.podcastcatcher.PlaybackService.PAUSE";
 	public static final String ACTION_STOP = "fireminder.podcastcatcher.PlaybackService.STOP";
 	MediaPlayer player = null;
 
@@ -20,9 +21,12 @@ public class PlaybackService extends Service implements
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		String action = intent.getAction();
-		Log.d("PlaybackService", action);
+		Log.e("PlaybackService", action);
 		if (action.equals(ACTION_PLAY)) {
 			String songPath = intent.getStringExtra("songPath");
+			if(songPath == null){
+				return 0;
+			}/*
 			player.setOnPreparedListener(this);
 			Uri uri = Uri.parse(songPath);
 			player.setAudioStreamType(AudioManager.STREAM_MUSIC);
@@ -32,16 +36,19 @@ public class PlaybackService extends Service implements
 				e.printStackTrace();
 			}
 			player.prepareAsync();
+			*/
 		} else if (action.equals(ACTION_STOP)) {
-			player.stop();
+			//player.stop();
+		} else if (action.equals(ACTION_PAUSE)){
+//			player.pause();
 		}
 		return 0;
 	}
-
+	
 	@Override
 	public void onCreate() {
 		player = new MediaPlayer();
-		Log.d("PlaybackService", "Created");
+		Log.e("PlaybackService", "Created");
 	}
 
 	@Override
@@ -66,6 +73,15 @@ public class PlaybackService extends Service implements
 		return player.getCurrentPosition();
 	}
 
+	public void stop(){
+		player.stop();
+	}
+	public void pause(){
+		player.pause();
+	}
+	public void resume(){
+		player.start();
+	}
 	public class MyBinder extends Binder {
 		PlaybackService getService() {
 			return PlaybackService.this;

@@ -410,7 +410,7 @@ public class RssParser {
                         content = xpp.nextText();
                         test += content + "\n";
                         Date pubDate = pubDateFormatter.parse(content);
-                        if(oldPubDate >= pubDate.getTime()){
+                        if(oldPubDate > pubDate.getTime()){
                             oldEpisodeFound = true;
                             break;
                         }
