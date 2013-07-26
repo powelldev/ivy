@@ -35,6 +35,16 @@ public class Playlist {
 		edao.close();
 		return  episodes;
 	}
+	
+	public List<String> getEpisodePaths(Context context){
+		EpisodeDAO edao = new EpisodeDAO(context);
+		edao.open();
+		List<String> episodes = new ArrayList<String>();
+		for(Integer id : episode_ids){
+			episodes.add(edao.getEpisode(id).getMp3());
+		}
+		return episodes;
+	}
 	public List<Episode> getEpisodes(Context context){
 		EpisodeDAO edao = new EpisodeDAO(context);
 		List<Episode> episodes = new ArrayList<Episode>();

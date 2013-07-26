@@ -4,87 +4,113 @@ import android.app.Service;
 import android.content.Intent;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
-import android.net.Uri;
+import android.media.MediaPlayer.OnPreparedListener;
 import android.os.Binder;
 import android.os.IBinder;
-import android.util.Log;
+import android.widget.Toast;
+import fireminder.podcastcatcher.db.Episode;
 
-public class PlaybackService extends Service implements
-		MediaPlayer.OnPreparedListener {
-	public static final String ACTION_PLAY = "fireminder.podcastcatcher.PlaybackService.PLAY";
-	public static final String ACTION_PAUSE = "fireminder.podcastcatcher.PlaybackService.PAUSE";
-	public static final String ACTION_STOP = "fireminder.podcastcatcher.PlaybackService.STOP";
-	MediaPlayer player = null;
+public class PlaybackService extends Service implements OnPreparedListener{
 
-	private final IBinder mBinder = new MyBinder();
+	MediaPlayer mPlayer = null;
+	PlaylistSingle playlist = PlaylistSingle.instance;
+	// Updated with state of MediaPlayer
+	enum PlayerState {
+		PLAYING,
+		PAUSED,
+		STOPPED,
+		PREPARING
+	}
+	
+	PlayerState mState = PlayerState.STOPPED;
 
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
-		String action = intent.getAction();
-		Log.e("PlaybackService", action);
-		if (action.equals(ACTION_PLAY)) {
-			String songPath = intent.getStringExtra("songPath");
-			if(songPath == null){
-				return 0;
-			}/*
-			player.setOnPreparedListener(this);
-			Uri uri = Uri.parse(songPath);
-			player.setAudioStreamType(AudioManager.STREAM_MUSIC);
-			try {
-				player.setDataSource(this, uri);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			player.prepareAsync();
-			*/
-		} else if (action.equals(ACTION_STOP)) {
-			//player.stop();
-		} else if (action.equals(ACTION_PAUSE)){
-//			player.pause();
-		}
-		return 0;
-	}
-	
-	@Override
-	public void onCreate() {
-		player = new MediaPlayer();
-		Log.e("PlaybackService", "Created");
+		return START_NOT_STICKY;
 	}
 
 	@Override
-	public IBinder onBind(Intent arg0) {
+	public void onCreate() {
+	}
+
+	void createMediaPlayerIfNeeded() {
+		if (mPlayer == null) {
+			mPlayer = new MediaPlayer();
+			try {
+				mPlayer.prepare();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	void playCurrentSong(){
+		mState = PlayerState.STOPPED;
+		Episode e = playlist.getCurrent();
+		if(e == null){
+			return;
+		}
+		
+		try {
+			mPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+			mPlayer.setDataSource(e.getMp3());
+			mState = PlayerState.PREPARING;
+			mPlayer.prepareAsync();
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+	}
+	
+	void playNextSong(){
+		
+	}
+	void playPauseSong() {
+		// Stopped: Start playing next song.
+		// Playing: Pause song.
+		// Paused:  Start playing current song
+		// Preparing: Dunno
+		switch(mState){
+		
+		case STOPPED:
+			break;
+		
+		case PLAYING:
+			mPlayer.pause();
+			mState = PlayerState.PAUSED;
+			break;
+
+		case PAUSED:
+			if(!mPlayer.isPlaying()) mPlayer.start();
+			mState = PlayerState.PLAYING;
+			break;
+
+		case PREPARING:
+			break;
+		}
+	}
+
+	void say(String message) {
+		Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+	}
+
+	public class LocalBinder extends Binder {
+		PlaybackService getService() {
+			return PlaybackService.this;
+		}
+	}
+
+	private final IBinder mBinder = new LocalBinder();
+
+	@Override
+	public IBinder onBind(Intent intent) {
 		return mBinder;
 	}
 
 	@Override
 	public void onPrepared(MediaPlayer mp) {
-		mp.start();
-	}
-
-	public MediaPlayer getPlayer() {
-		return player;
-	}
-
-	public int getMediaPlayerDuration() {
-		return player.getDuration();
-	}
-
-	public int getMediaPlayerCurrentPos() {
-		return player.getCurrentPosition();
-	}
-
-	public void stop(){
-		player.stop();
-	}
-	public void pause(){
-		player.pause();
-	}
-	public void resume(){
-		player.start();
-	}
-	public class MyBinder extends Binder {
-		PlaybackService getService() {
-			return PlaybackService.this;
+		mState = PlayerState.PLAYING;
+		if(!mPlayer.isPlaying()){
+			mPlayer.start();
 		}
 	}
 }

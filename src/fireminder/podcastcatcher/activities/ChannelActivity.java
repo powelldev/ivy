@@ -23,6 +23,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import fireminder.podcastcatcher.BackgroundThread;
 import fireminder.podcastcatcher.PlaybackService;
+import fireminder.podcastcatcher.PlaylistSingle;
 import fireminder.podcastcatcher.R;
 import fireminder.podcastcatcher.db.Episode;
 import fireminder.podcastcatcher.db.EpisodeDAO;
@@ -140,11 +141,6 @@ public class ChannelActivity extends ListActivity {
 					playlistDAO.addEpisode(_episode.get_id());
 					playlistDAO.close();
 
-					Intent intent = new Intent(
-							"fireminder.podcastcatcher.PlaybackService");
-					intent.setAction("fireminder.podcastcatcher.PlaybackService.PLAY");
-					intent.putExtra("songPath", _episode.getMp3());
-					getApplicationContext().startService(intent);
 
 					Toast.makeText(getApplicationContext(), "Playing...",
 							Toast.LENGTH_LONG).show();
