@@ -1,7 +1,3 @@
-/***
- * BackgroundThread
- *  wrapper for common async tasks
- */
 package fireminder.podcastcatcher;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
@@ -32,21 +28,23 @@ import android.widget.Toast;
 import fireminder.podcastcatcher.db.Episode;
 import fireminder.podcastcatcher.db.EpisodeDAO;
 import fireminder.podcastcatcher.db.EpisodeSqlHelper;
-import fireminder.podcastcatcher.db.PlaylistDAO;
 import fireminder.podcastcatcher.db.Podcast;
 import fireminder.podcastcatcher.db.PodcastDAO;
 import fireminder.podcastcatcher.db.PodcastSqlHelper;
 
+/***
+ * Encapsulation of the AsyncTasks this application utilizes.
+ */
 public class BackgroundThread {
 	
 	final static String TAG = BackgroundThread.class.getSimpleName();
-
 	private Context context;
-	
 	public BackgroundThread(Context context){
 		this.context = context;
 	}
-
+    /***
+     * Checks if internet connection is available by querying google.com
+     */
     public static boolean isHTTPAvailable()
     {
         try {
@@ -80,15 +78,22 @@ public class BackgroundThread {
 		new ParseXmlForImage().execute(new String[] { url, ""+id});
 	}
 	
+    /***
+     * Launches AsyncTask for loading podcast details
+     */
 	public void getPodcastInfoFromBackgroundThread(String url){
 		new HttpDownloadTask().execute(new String[] {url});
 	}
+
+    /***
+     * Downloads the given episodes enclosure file to Environment.DIRECTORY_PODCASTS.
+     */
 	public void downloadEpisodeMp3(Episode e){
 		// TODO check if episode .mp3 exists already, if so, no need to download
 		String fileName = e.getUrl();
 		fileName = fileName.substring(fileName.lastIndexOf("/"));
 		Log.d(TAG, fileName);
-		
+		// TODO Make download notification point back at app - or allow cessation of download
 		DownloadManager dm = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
 		Request request = new Request(Uri.parse(e.getUrl()));
 		request.setTitle(e.getTitle())
@@ -99,9 +104,11 @@ public class BackgroundThread {
 		edao.open();
 		edao.updateEpisodeMp3(e.get_id(), Environment.getExternalStorageDirectory().getPath() + "/"+ Environment.DIRECTORY_PODCASTS + fileName);
 		edao.close();
-		
-	//	new Mp3DownloadTask().execute(new Episode[] {e});
 	}
+
+    /***
+     * AsyncTask responsible for downlaoding an MP3.
+     */
 	private class Mp3DownloadTask extends AsyncTask<Episode, Void, ByteArrayBuffer>{
 		EpisodeDAO edao;
 		protected void onPreExecute(){
@@ -132,6 +139,9 @@ public class BackgroundThread {
 			
 		}
 	}
+    /***
+     * AsyncTask responsible for downloading a webpage
+     */
 	private class HttpDownloadTask extends AsyncTask<String, Void, ContentValues>{
 		PodcastDAO podcastDao;
 		long id;
@@ -189,6 +199,9 @@ public class BackgroundThread {
 		}
 
 	}
+    /***
+     * AsyncTask responsible for parsing xml page for image
+     */
 	private class ParseXmlForImage extends AsyncTask<String, Void, ByteArrayBuffer>{
 		String idForQuery;
 		PodcastDAO podcastDao;
@@ -255,6 +268,11 @@ public class BackgroundThread {
 		}
 		
 	}
+
+    /***
+     * AsyncTask responsible for grabbing individual episodes from a 
+     * podcast's RSS.
+     */
 	private class ParseXmlForEpisodes extends AsyncTask<String, Void, Void>{
 		long idForQuery;
 		EpisodeDAO edao;
@@ -291,10 +309,14 @@ public class BackgroundThread {
 		
 	}
 
+    /*** Wrapper for getting new episodes */
 	public void getNewEpisodesForPodcast( int podcast_id ) {
 		new CheckXmlForNewEpisodesForPodcast().execute(new Integer[] { podcast_id });
 	}
-	
+	/*** 
+     * AsyncTask that checks for newest episodes by comparing the latest episode's pubdate to
+     * those in the RSS stream. It ceases looking when it finds a episode with a date older than that one.
+     */
 	private class CheckXmlForNewEpisodesForPodcast extends AsyncTask<Integer, Void, Void> {
 		
 		@Override
@@ -372,11 +394,10 @@ public class BackgroundThread {
 				} catch (Exception ex) { ex.printStackTrace(); }
 				
 				if(episodes != null) {
-					PlaylistDAO playDao = new PlaylistDAO(context);
-					playDao.open();
 					for( ContentValues cv : episodes ) {
+						//Download automatically?
+						//Add to playlist?
 						Episode le = edao.insertEpisode(cv);
-						playDao.addEpisode(le.get_id());
 						Log.d(TAG, le.getTitle() + " " + le.getPubDate());
 					}
 				}
@@ -390,6 +411,9 @@ public class BackgroundThread {
 	}
 
 	
+    /***
+     * AsyncTask responsible for searching iTunes podcast directory for a podcast
+     */
 	public class Search extends AsyncTask<String, Void, List<String>> {
 		OnTaskCompleted listener;
 		public Search(OnTaskCompleted listener){
@@ -430,6 +454,7 @@ public class BackgroundThread {
 		
 	}
 
+    /*** Wrapper for iTunes Search AsyncTask */
 	public void searchItunesForPodcasts(String searchURL) {
 		new Search((OnTaskCompleted) context).execute(new String [] { searchURL } );
 		

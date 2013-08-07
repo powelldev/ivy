@@ -13,7 +13,7 @@ import fireminder.podcastcatcher.db.Episode;
 public class PlaybackService extends Service implements OnPreparedListener{
 
 	MediaPlayer mPlayer = null;
-	PlaylistSingle playlist = PlaylistSingle.instance;
+	Playlist playlist = Playlist.instance;
 	// Updated with state of MediaPlayer
 	enum PlayerState {
 		PLAYING,

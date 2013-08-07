@@ -9,7 +9,6 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.os.Environment;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -22,12 +21,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import fireminder.podcastcatcher.BackgroundThread;
-import fireminder.podcastcatcher.PlaybackService;
-import fireminder.podcastcatcher.PlaylistSingle;
+import fireminder.podcastcatcher.Playlist;
 import fireminder.podcastcatcher.R;
 import fireminder.podcastcatcher.db.Episode;
 import fireminder.podcastcatcher.db.EpisodeDAO;
-import fireminder.podcastcatcher.db.PlaylistDAO;
 import fireminder.podcastcatcher.db.Podcast;
 import fireminder.podcastcatcher.db.PodcastDAO;
 import fireminder.podcastcatcher.ui.EpisodeAdapter;
@@ -135,13 +132,13 @@ public class ChannelActivity extends ListActivity {
 					bt = new BackgroundThread(getApplicationContext());
 					bt.downloadEpisodeMp3(_episode);
 				} else {
-					PlaylistDAO playlistDAO = new PlaylistDAO(
-							getApplicationContext());
-					playlistDAO.open();
-					playlistDAO.addEpisode(_episode.get_id());
-					playlistDAO.close();
 
+					//Add episode to playlist
 
+					Playlist.instance.songList.add(_episode);
+					for(Episode e : Playlist.instance.songList){
+						Log.e(TAG, e.getTitle());
+					}
 					Toast.makeText(getApplicationContext(), "Playing...",
 							Toast.LENGTH_LONG).show();
 				}

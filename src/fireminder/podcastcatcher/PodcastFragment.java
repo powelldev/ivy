@@ -28,14 +28,12 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Toast;
 import fireminder.podcastcatcher.activities.ChannelActivity;
 import fireminder.podcastcatcher.db.EpisodeDAO;
-import fireminder.podcastcatcher.db.PlaylistDAO;
 import fireminder.podcastcatcher.db.Podcast;
 import fireminder.podcastcatcher.db.PodcastDAO;
 import fireminder.podcastcatcher.db.PodcastSqlHelper;
@@ -289,10 +287,7 @@ public class PodcastFragment extends ListFragment{
 		public boolean onItemLongClick(AdapterView<?> arg0, View arg1,
 				int itemPosition, long itemId) {
 			podcastDao.deletePodcast(itemId);
-			PlaylistDAO playDao = new PlaylistDAO(getActivity());
-			playDao.open();
-			playDao.deleteAll();
-			playDao.close();
+			// TODO delete items from playlist
 			EpisodeDAO edao = new EpisodeDAO(getActivity());
 			edao.open();
 			edao.deleteAllEpisodes(itemId);

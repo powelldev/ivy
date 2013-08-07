@@ -1,8 +1,9 @@
 package fireminder.podcastcatcher.db;
 
+/***
+ * A representation of an episode of a podcast.
+ */
 public class Episode {
-
-
 
 	public Episode(Long _id, Long podcast_id, String title,
 			String description, String url, long pubDate, String mp3) {
@@ -23,12 +24,15 @@ public class Episode {
 		this.title = title;
 	}
 
+    // id assigned by sqlite
 	private Long _id;
+    // sqlite id of the podcast this episode belongs to
 	private Long podcast_id;
 	private String title;
 	private String description;
 	private String url;
 	private long pubDate;
+    //mp3 location on disk of downloaded episode
 	private String mp3;
 	
 	@Override
@@ -40,11 +44,11 @@ public class Episode {
 		info += "description: " + description + "\n"; 
 		info += "url: " + url + "\n"; 
 		info += "pubDate: " + pubDate + "\n"; 
-		
+        //No need to catch exception - this just checks if it has been downlaoded.
 		try { info += "mp3: " + mp3 + "\n"; } catch (Exception e) {} 
-
 		return info;
 	}
+
 	public Episode(){
 		this.title = "";
 		this.description = "";

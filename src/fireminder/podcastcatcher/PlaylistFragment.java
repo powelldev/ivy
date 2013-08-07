@@ -10,10 +10,8 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
-import android.widget.Toast;
-import fireminder.podcastcatcher.db.Playlist;
-import fireminder.podcastcatcher.db.PlaylistDAO;
-import fireminder.podcastcatcher.ui.PlaylistAdapter;
+import fireminder.podcastcatcher.db.EpisodeDAO;
+import fireminder.podcastcatcher.ui.EpisodeAdapter;
 
 public class PlaylistFragment extends ListFragment{
 
@@ -45,29 +43,18 @@ public class PlaylistFragment extends ListFragment{
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
 					long episode_id) {
-				PlaylistDAO pdao = new PlaylistDAO(getActivity());
-				pdao.open();
-				Playlist playlist = new Playlist(pdao.getPlaylist());
-				Toast.makeText(getActivity(),
-						"" + playlist.episode_ids.get(arg2), Toast.LENGTH_LONG)
-						.show();
-				pdao.close();
-
 			}
-
 		});
-
 		return rootView;
 	}
 
 	public void updateListActivity(Context context) {
+		Playlist playlist = Playlist.instance;
+		EpisodeDAO episodeDao = new EpisodeDAO(context);
+		episodeDao.open();
+		//EpisodeAdapter cursorAdapter = new EpisodeAdapter(getActivity(), playlistCursor, 0);
+		//setListAdapter(cursorAdapter);
 		this.getListAdapter();
-		PlaylistDAO playlistDao;
-		playlistDao = new PlaylistDAO(context);
-		playlistDao.open();
-		Cursor c = playlistDao.getPlaylist();
-		PlaylistAdapter listAdapter = new PlaylistAdapter(context, c, 0);
-		setListAdapter(listAdapter);
 	}
 
 }

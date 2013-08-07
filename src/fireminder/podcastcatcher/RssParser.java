@@ -21,8 +21,9 @@ import fireminder.podcastcatcher.db.Episode;
 import fireminder.podcastcatcher.db.EpisodeSqlHelper;
 import fireminder.podcastcatcher.db.PodcastSqlHelper;
 import fireminder.podcastcatcher.ui.LazyAdapter;
-/*
- * Contain helper functions for parsing data from RSS feeds.
+
+/***
+ * Contains methods for parsing data from RSS feeds.
  */
 public class RssParser {
 
@@ -38,14 +39,13 @@ public class RssParser {
 	
 	/***
 	 * Pulls podcast title and description from RSS feed
-	 * Channel Depth is depth of the title and description fields in the xml "tree"
-	 * Podcast Items allow parser to exit early if both items have been found
 	 */
 	public static ContentValues parsePodcastFromXml(BufferedReader reader) throws XmlPullParserException, IOException{
-		ContentValues contentValues = new ContentValues();
-		final int NUM_PODCAST_ITEMS = 2; /* allows exiting of parsing once files found */
-		final int XML_CHANNEL_DEPTH = 3;
-		int 	itemsCounter = 0;
+		ContentValues contentValues = new ContentValues(); /** Contains the values we will add to the podcast */
+		final int NUM_PODCAST_ITEMS = 2; /** allows exiting of parsing once files found */
+		final int XML_CHANNEL_DEPTH = 3; /** depth of title and description fields in the xml tree */
+		int 	itemsCounter = 0;       /** a counter for the items we want to add into a podcast */
+
 		String podcastItem = "";
 		XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
 		factory.setNamespaceAware(true);
@@ -410,7 +410,8 @@ public class RssParser {
                         content = xpp.nextText();
                         test += content + "\n";
                         Date pubDate = pubDateFormatter.parse(content);
-                        if(oldPubDate > pubDate.getTime()){
+                        if(oldPubDate == pubDate.getTime()){
+                        	Log.d(TAG, "Old episode found" );
                             oldEpisodeFound = true;
                             break;
                         }

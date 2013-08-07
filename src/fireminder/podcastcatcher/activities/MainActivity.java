@@ -11,7 +11,6 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -22,13 +21,9 @@ import android.widget.Toast;
 import fireminder.podcastcatcher.BackgroundThread;
 import fireminder.podcastcatcher.PlaySongCallback;
 import fireminder.podcastcatcher.PlayerFragment;
-import fireminder.podcastcatcher.PlaylistFragment;
-import fireminder.podcastcatcher.PlaylistSingle;
 import fireminder.podcastcatcher.PodcastFragment;
 import fireminder.podcastcatcher.R;
 import fireminder.podcastcatcher.db.Episode;
-import fireminder.podcastcatcher.db.Playlist;
-import fireminder.podcastcatcher.db.PlaylistDAO;
 
 public class MainActivity extends FragmentActivity implements PlaySongCallback {
 	Uri data = null;
@@ -55,7 +50,7 @@ public class MainActivity extends FragmentActivity implements PlaySongCallback {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
-		updateSongList();
+		//updateSongList();
 
 		Intent intent = getIntent();
 		data = intent.getData();
@@ -150,7 +145,7 @@ public class MainActivity extends FragmentActivity implements PlaySongCallback {
 			case 1:
 				return playerFragment = new PlayerFragment();
 			case 2:
-				return new PlaylistFragment();
+				return new DummySectionFragment();
 			}
 			return null;
 		}
@@ -217,16 +212,6 @@ public class MainActivity extends FragmentActivity implements PlaySongCallback {
 
 	}
 
-	public void updateSongList() {
-		PlaylistDAO playlistDAO = new PlaylistDAO(getApplicationContext());
-		playlistDAO.open();
-		Playlist playlist = new Playlist(playlistDAO.getPlaylist());
-		playlistDAO.close();
-
-		for(String s : playlist.getEpisodePaths(this)){
-			Log.e("MainActivity", s);
-		}
-
-	}
+	
 
 }

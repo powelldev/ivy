@@ -7,7 +7,7 @@ import android.app.Service;
 import fireminder.podcastcatcher.activities.MainActivity;
 import fireminder.podcastcatcher.db.Episode;
 
-public enum PlaylistSingle {
+public enum Playlist {
 	instance;
 	
 	public List<Episode> songList = new ArrayList<Episode>();
@@ -17,9 +17,6 @@ public enum PlaylistSingle {
 	public MainActivity frontEnd = null;
 	
 	public synchronized Episode getCurrent(){
-		if(current == null){
-			current = songList.get(0);
-		}
 		return current;
 	}
 	

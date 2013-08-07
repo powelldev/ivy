@@ -4,6 +4,10 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+/***
+ * Class containing commonly referenced strings and variables for 
+ * interacting with the database.
+ */
 public class EpisodeSqlHelper extends SQLiteOpenHelper{
 
 	public static final String TABLE_NAME = "episodes";
@@ -18,6 +22,7 @@ public class EpisodeSqlHelper extends SQLiteOpenHelper{
 	public static final String DATABASE_NAME = "episode.db";
 	public static final int DATABASE_VER = 1;
 	
+    /*** A list of all the columns in the episode db, useful for queries */
 	public static final String[] allColumns = 
 		{ COLUMN_ID, COLUMN_PODCAST_ID, COLUMN_TITLE, COLUMN_DESCRIP, COLUMN_URL, COLUMN_PUBDATE, COLUMN_MP3 };
 	

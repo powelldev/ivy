@@ -1,5 +1,7 @@
 package fireminder.podcastcatcher.db;
 
+import java.util.List;
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -120,5 +122,6 @@ public class EpisodeDAO {
 	public Cursor getAllEpisodesAsCursorByDate(long id) {
 		return db.query(EpisodeSqlHelper.TABLE_NAME, EpisodeSqlHelper.allColumns, EpisodeSqlHelper.COLUMN_PODCAST_ID + " = " + id, null, null, null, EpisodeSqlHelper.COLUMN_PUBDATE + " DESC " , null);
 	}
+
 
 }
