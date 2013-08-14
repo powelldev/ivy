@@ -1,7 +1,6 @@
 package fireminder.podcastcatcher;
 
 import android.content.Context;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.view.LayoutInflater;
@@ -10,8 +9,8 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
-import fireminder.podcastcatcher.db.EpisodeDAO;
-import fireminder.podcastcatcher.ui.EpisodeAdapter;
+import fireminder.podcastcatcher.db.Playlist;
+import fireminder.podcastcatcher.ui.PlaylistAdapter;
 
 public class PlaylistFragment extends ListFragment{
 
@@ -45,16 +44,14 @@ public class PlaylistFragment extends ListFragment{
 					long episode_id) {
 			}
 		});
+		updateListActivity(getActivity());
 		return rootView;
 	}
 
 	public void updateListActivity(Context context) {
 		Playlist playlist = Playlist.instance;
-		EpisodeDAO episodeDao = new EpisodeDAO(context);
-		episodeDao.open();
-		//EpisodeAdapter cursorAdapter = new EpisodeAdapter(getActivity(), playlistCursor, 0);
-		//setListAdapter(cursorAdapter);
-		this.getListAdapter();
+		PlaylistAdapter playlistAdapter = new PlaylistAdapter(context, 0, playlist.episodes);
+		setListAdapter(playlistAdapter);
 	}
 
 }

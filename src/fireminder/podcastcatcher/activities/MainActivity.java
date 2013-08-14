@@ -20,10 +20,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 import fireminder.podcastcatcher.BackgroundThread;
 import fireminder.podcastcatcher.PlaySongCallback;
+import fireminder.podcastcatcher.PlaybackService;
 import fireminder.podcastcatcher.PlayerFragment;
 import fireminder.podcastcatcher.PodcastFragment;
 import fireminder.podcastcatcher.R;
 import fireminder.podcastcatcher.db.Episode;
+import fireminder.podcastcatcher.db.Playlist;
+import fireminder.podcastcatcher.db.PlaylistDao;
 
 public class MainActivity extends FragmentActivity implements PlaySongCallback {
 	Uri data = null;
@@ -42,15 +45,20 @@ public class MainActivity extends FragmentActivity implements PlaySongCallback {
 	 * The {@link ViewPager} that will host the section contents.
 	 */
 	ViewPager mViewPager;
-	PodcastFragment podcastFragment;
-	PlayerFragment playerFragment;
+	static PodcastFragment podcastFragment;
+	static PlayerFragment playerFragment;
+
+	Playlist playlist;
+	PlaylistDao dao;
+
+	Intent playerService;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 
-		//updateSongList();
+		// updateSongList();
 
 		Intent intent = getIntent();
 		data = intent.getData();
@@ -66,6 +74,22 @@ public class MainActivity extends FragmentActivity implements PlaySongCallback {
 
 		ActionBar actionBar = getActionBar();
 
+		playerService = new Intent(this, PlaybackService.class);
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		playlist = Playlist.instance;
+		dao = new PlaylistDao(this);
+		dao.open();
+	}
+
+	@Override
+	protected void onPause() {
+		dao.insertPlaylist(playlist);
+		dao.close();
+		super.onPause();
 	}
 
 	@Override
@@ -143,6 +167,7 @@ public class MainActivity extends FragmentActivity implements PlaySongCallback {
 					return podcastFragment = new PodcastFragment();
 				}
 			case 1:
+				startService(playerService);
 				return playerFragment = new PlayerFragment();
 			case 2:
 				return new DummySectionFragment();
@@ -211,7 +236,5 @@ public class MainActivity extends FragmentActivity implements PlaySongCallback {
 		// Update Now playing: current
 
 	}
-
-	
 
 }

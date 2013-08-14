@@ -15,11 +15,10 @@ import android.util.Log;
 public class Helper {
 
 	public static void searchForPodcasts(Context context, String term){
-		String searchURL = String.format("https://itunes.apple.com/search?media=podcast&limit=1&term=%s&attribute=titleTerm", term);
+		String searchURL = String.format("https://itunes.apple.com/search?media=podcast&limit=5&term=%s&attribute=titleTerm", term);
 		Log.d("SearchURL: ", searchURL);
 		BackgroundThread bt = new BackgroundThread(context);
 		bt.searchItunesForPodcasts(searchURL);
-		
 	}
 
 	public static JSONObject getJsonObject(BufferedReader reader){
@@ -45,6 +44,7 @@ public class Helper {
 
 		List<String> messages = new ArrayList<String>();
 		JSONObject jObj = getJsonObject(reader);
+		// TODO: Encapsulate NAME, ARTIST and URL into an object
 
 		final String NAME = "collectionName";
 		final String ARTIST = "artistName";

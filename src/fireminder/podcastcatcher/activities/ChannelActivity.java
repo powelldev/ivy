@@ -21,10 +21,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import fireminder.podcastcatcher.BackgroundThread;
-import fireminder.podcastcatcher.Playlist;
+import fireminder.podcastcatcher.PlaybackService;
 import fireminder.podcastcatcher.R;
 import fireminder.podcastcatcher.db.Episode;
 import fireminder.podcastcatcher.db.EpisodeDAO;
+import fireminder.podcastcatcher.db.Playlist;
 import fireminder.podcastcatcher.db.Podcast;
 import fireminder.podcastcatcher.db.PodcastDAO;
 import fireminder.podcastcatcher.ui.EpisodeAdapter;
@@ -134,10 +135,13 @@ public class ChannelActivity extends ListActivity {
 				} else {
 
 					//Add episode to playlist
-
-					Playlist.instance.songList.add(_episode);
-					for(Episode e : Playlist.instance.songList){
-						Log.e(TAG, e.getTitle());
+					Intent playbackService = new Intent(getApplicationContext(), PlaybackService.class);
+					playbackService.putExtra("EpisodeUri", _episode.getMp3());
+					startService(playbackService);
+					Playlist p = Playlist.instance;
+					p.addEpisode(_episode);
+					for(Episode e : p.episodes){
+						Log.d("Playlist", e.getTitle());
 					}
 					Toast.makeText(getApplicationContext(), "Playing...",
 							Toast.LENGTH_LONG).show();

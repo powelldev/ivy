@@ -1,116 +1,145 @@
 package fireminder.podcastcatcher;
 
+import java.io.IOException;
+import java.lang.ref.WeakReference;
+
 import android.app.Service;
 import android.content.Intent;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
-import android.media.MediaPlayer.OnPreparedListener;
-import android.os.Binder;
+import android.media.MediaPlayer.OnCompletionListener;
+import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.PowerManager;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
+import android.widget.SeekBar;
+import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.Toast;
-import fireminder.podcastcatcher.db.Episode;
+import fireminder.podcastcatcher.db.Playlist;
 
-public class PlaybackService extends Service implements OnPreparedListener{
+public class PlaybackService extends Service implements OnCompletionListener,
+		OnClickListener, OnSeekBarChangeListener {
 
-	MediaPlayer mPlayer = null;
-	Playlist playlist = Playlist.instance;
-	// Updated with state of MediaPlayer
-	enum PlayerState {
-		PLAYING,
-		PAUSED,
-		STOPPED,
-		PREPARING
-	}
-	
-	PlayerState mState = PlayerState.STOPPED;
+	static MediaPlayer mPlayer;
+	Playlist playlist;
 
-	@Override
-	public int onStartCommand(Intent intent, int flags, int startId) {
-		return START_NOT_STICKY;
-	}
+	WeakReference<Button> btnPlay;
+	WeakReference<SeekBar> mSeekBar;
 
-	@Override
-	public void onCreate() {
-	}
+	enum State {
+		PLAYING, PAUSED, PREPARED, STOPPED;
+	};
 
-	void createMediaPlayerIfNeeded() {
-		if (mPlayer == null) {
-			mPlayer = new MediaPlayer();
-			try {
-				mPlayer.prepare();
-			} catch (Exception e) {
-				e.printStackTrace();
+	State state;
+	private Handler mHandler = new Handler();
+	private Runnable mRunnable = new Runnable() {
+		@Override
+		public void run() {
+			if (mPlayer != null) {
+				int progress = mPlayer.getCurrentPosition() / 1000;
+				mSeekBar.get().setProgress(progress);
 			}
+			mHandler.postDelayed(mRunnable, 1000);
+		}
+	};
+
+	protected void onCreate(Bundle savedInstanceState) {
+		this.state = State.STOPPED;
+		playlist = Playlist.instance;
+
+		super.onCreate();
+	}
+
+	public int onStartCommand(Intent intent, int flags, int startId) {
+
+		initUI();
+
+		mPlayer = new MediaPlayer();
+		mPlayer.setOnCompletionListener(this);
+		mPlayer.reset();
+		mPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+		mPlayer.setWakeMode(getApplicationContext(),
+				PowerManager.PARTIAL_WAKE_LOCK);
+
+		String uri = intent.getStringExtra("EpisodeUri");
+		if (uri != null) {
+			playSong(uri);
+		}
+
+		return START_STICKY;
+	}
+
+	public void initUI() {
+		btnPlay = new WeakReference<Button>(PlayerFragment.play_btn);
+		mSeekBar = new WeakReference<SeekBar>(PlayerFragment.seekBar);
+
+		btnPlay.get().setOnClickListener(this);
+		mSeekBar.get().setOnSeekBarChangeListener(this);
+	}
+
+	public void onClick(View v) {
+		switch (v.getId()) {
+		case R.id.play_btn:
+			if (mPlayer.isPlaying())
+				mPlayer.pause();
+			else {
+				mPlayer.start();
+			}
+			Toast.makeText(getApplicationContext(), "Play button",
+					Toast.LENGTH_LONG).show();
 		}
 	}
 
-	void playCurrentSong(){
-		mState = PlayerState.STOPPED;
-		Episode e = playlist.getCurrent();
-		if(e == null){
-			return;
-		}
-		
+	public void playSong(String uri) {
 		try {
-			mPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-			mPlayer.setDataSource(e.getMp3());
-			mState = PlayerState.PREPARING;
-			mPlayer.prepareAsync();
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
-	}
-	
-	void playNextSong(){
-		
-	}
-	void playPauseSong() {
-		// Stopped: Start playing next song.
-		// Playing: Pause song.
-		// Paused:  Start playing current song
-		// Preparing: Dunno
-		switch(mState){
-		
-		case STOPPED:
-			break;
-		
-		case PLAYING:
-			mPlayer.pause();
-			mState = PlayerState.PAUSED;
-			break;
-
-		case PAUSED:
-			if(!mPlayer.isPlaying()) mPlayer.start();
-			mState = PlayerState.PLAYING;
-			break;
-
-		case PREPARING:
-			break;
+			mPlayer.reset();
+			mPlayer.setDataSource(uri);
+			mPlayer.prepare();
+			mPlayer.start();
+			updateSeekBar();
+		} catch (IllegalStateException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 	}
 
-	void say(String message) {
-		Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+	public void updateSeekBar() {
+		mSeekBar.get().setProgress(0);
+		mSeekBar.get().setMax(mPlayer.getDuration());
+		mHandler.postDelayed(mRunnable, 1000);
 	}
 
-	public class LocalBinder extends Binder {
-		PlaybackService getService() {
-			return PlaybackService.this;
-		}
-	}
+	@Override
+	public void onCompletion(MediaPlayer mp) {
+		// TODO Auto-generated method stub
 
-	private final IBinder mBinder = new LocalBinder();
+	}
 
 	@Override
 	public IBinder onBind(Intent intent) {
-		return mBinder;
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override
-	public void onPrepared(MediaPlayer mp) {
-		mState = PlayerState.PLAYING;
-		if(!mPlayer.isPlaying()){
-			mPlayer.start();
-		}
+	public void onProgressChanged(SeekBar arg0, int arg1, boolean arg2) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void onStartTrackingTouch(SeekBar arg0) {
+		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void onStopTrackingTouch(SeekBar arg0) {
+		// TODO Auto-generated method stub
+
 	}
 }
