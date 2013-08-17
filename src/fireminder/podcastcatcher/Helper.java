@@ -40,9 +40,19 @@ public class Helper {
 		return jsonObj;
 	}
 	
+	private class PodcastResult {
+		static final String NAME = "collectionName";
+		static final String ARTIST = "artistName";
+		static final String FEED_URL = "feedUrl";
+		static final String IMAGE_URL_30 = "artworkUrl30";
+		static final String IMAGE_URL_60 = "artworkUrl60";
+		static final String IMAGE_URL_100 = "artworkUrl100";
+	}
 	public static List<String> parseJSONforPodcasts(BufferedReader reader) {
 
 		List<String> messages = new ArrayList<String>();
+		
+		
 		JSONObject jObj = getJsonObject(reader);
 		// TODO: Encapsulate NAME, ARTIST and URL into an object
 
@@ -56,9 +66,9 @@ public class Helper {
 			podcast = jObj.getJSONArray("results");
 			for (int i = 0; i < podcast.length(); i++) {
 				JSONObject obj = podcast.getJSONObject(i);
-				Log.d("JSON: ", obj.getString(NAME));
-				Log.d("JSON: ", obj.getString(ARTIST));
-				Log.d("JSON: ", obj.getString(FEED_URL));
+				Log.d("JSON: ", obj.getString(PodcastResult.NAME));
+				Log.d("JSON: ", obj.getString(PodcastResult.ARTIST));
+				Log.d("JSON: ", obj.getString(PodcastResult.FEED_URL));
 				messages.add(obj.getString(NAME));
 				messages.add(obj.getString(ARTIST));
 				messages.add(obj.getString(FEED_URL));

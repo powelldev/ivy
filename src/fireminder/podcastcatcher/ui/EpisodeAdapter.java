@@ -47,6 +47,9 @@ public class EpisodeAdapter extends CursorAdapter{
 		if(cursor.getString(cursor.getColumnIndex(EpisodeSqlHelper.COLUMN_MP3)) != null){
 			playIcon.setVisibility(View.VISIBLE);
 			playIcon.setFocusable(false);
+		} else {
+			playIcon.setVisibility(View.GONE);
+			playIcon.setFocusable(false);
 		}
 	}
 

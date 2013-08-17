@@ -1,6 +1,7 @@
 package fireminder.podcastcatcher.activities;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 
 import android.app.ListActivity;
 import android.content.Context;
@@ -8,6 +9,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextMenu;
@@ -21,11 +23,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import fireminder.podcastcatcher.BackgroundThread;
-import fireminder.podcastcatcher.PlaybackService;
 import fireminder.podcastcatcher.R;
 import fireminder.podcastcatcher.db.Episode;
 import fireminder.podcastcatcher.db.EpisodeDAO;
-import fireminder.podcastcatcher.db.Playlist;
 import fireminder.podcastcatcher.db.Podcast;
 import fireminder.podcastcatcher.db.PodcastDAO;
 import fireminder.podcastcatcher.ui.EpisodeAdapter;
@@ -133,16 +133,11 @@ public class ChannelActivity extends ListActivity {
 					bt = new BackgroundThread(getApplicationContext());
 					bt.downloadEpisodeMp3(_episode);
 				} else {
-
-					//Add episode to playlist
-					Intent playbackService = new Intent(getApplicationContext(), PlaybackService.class);
-					playbackService.putExtra("EpisodeUri", _episode.getMp3());
-					startService(playbackService);
-					Playlist p = Playlist.instance;
-					p.addEpisode(_episode);
-					for(Episode e : p.episodes){
-						Log.d("Playlist", e.getTitle());
-					}
+					Intent intent = new Intent();  
+					intent.setAction(android.content.Intent.ACTION_VIEW);  
+					File file = new File(_episode.getMp3());  
+					intent.setDataAndType(Uri.fromFile(file), "audio/*");  
+					startActivity(intent);
 					Toast.makeText(getApplicationContext(), "Playing...",
 							Toast.LENGTH_LONG).show();
 				}

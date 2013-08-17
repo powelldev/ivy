@@ -7,87 +7,124 @@
     <uses-sdk
         android:minSdkVersion="11"
         android:targetSdkVersion="17" />
-	<uses-permission android:name="android.permission.INTERNET" />
-	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-	<uses-permission android:name="android.permission.WAKE_LOCK" />
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+
     <application
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/Theme.Sherlock.Light.DarkActionBar"
-        
-        >
+        android:theme="@style/AppTheme" >
         <activity
             android:name="fireminder.podcastcatcher.activities.MainActivity"
             android:label="@string/app_name"
             android:noHistory="false" >
-            <intent-filter >
-                <action android:name="android.intent.action.MAIN"/>
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-           <intent-filter>
+            <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.BROWSABLE" />
                 <category android:name="android.intent.category.DEFAULT" />
+
                 <data android:scheme="itpc" />
                 <data android:scheme="pcast" />
                 <data android:scheme="feed" />
                 <data android:scheme="rss" />
             </intent-filter>
-
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="http" android:host="*"
-                    android:pathPattern=".*xml" />
-                <data android:scheme="http" android:host="*"
-                    android:pathPattern=".*rss" />
-                <data android:scheme="http" android:host="*"
-                    android:pathPattern=".*feed.*" />
-                <data android:scheme="http" android:host="*"
-                    android:pathPattern=".*podcast.*" />
-                <data android:scheme="http" android:host="*"
-                    android:pathPattern=".*Podcast.*" />
-                <data android:scheme="http" android:host="*"
-                    android:pathPattern=".*rss.*" />
-                <data android:scheme="http" android:host="*"
-                    android:pathPattern=".*RSS.*" />
+
+                <data
+                    android:host="*"
+                    android:pathPattern=".*xml"
+                    android:scheme="http" />
+                <data
+                    android:host="*"
+                    android:pathPattern=".*rss"
+                    android:scheme="http" />
+                <data
+                    android:host="*"
+                    android:pathPattern=".*feed.*"
+                    android:scheme="http" />
+                <data
+                    android:host="*"
+                    android:pathPattern=".*podcast.*"
+                    android:scheme="http" />
+                <data
+                    android:host="*"
+                    android:pathPattern=".*Podcast.*"
+                    android:scheme="http" />
+                <data
+                    android:host="*"
+                    android:pathPattern=".*rss.*"
+                    android:scheme="http" />
+                <data
+                    android:host="*"
+                    android:pathPattern=".*RSS.*"
+                    android:scheme="http" />
             </intent-filter>
-
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:mimeType="text/xml" android:scheme="http" />
-                <data android:mimeType="application/rss+xml" android:scheme="http" />
-                <data android:mimeType="application/atom+xml" android:scheme="http" />
+
+                <data
+                    android:mimeType="text/xml"
+                    android:scheme="http" />
+                <data
+                    android:mimeType="application/rss+xml"
+                    android:scheme="http" />
+                <data
+                    android:mimeType="application/atom+xml"
+                    android:scheme="http" />
             </intent-filter>
         </activity>
-        <activity android:name="fireminder.podcastcatcher.activities.SearchActivity"
-            android:label="Search">
+        <activity
+            android:name="fireminder.podcastcatcher.activities.SearchActivity"
+            android:label="Search" >
             <intent-filter>
-                <action  android:name="fireminder.podcastcatcher.SearchActivity"/>
-                <category android:name="android.intent.category.DEFAULT"/>
+                <action android:name="fireminder.podcastcatcher.SearchActivity" />
+
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
         <activity
             android:name="fireminder.podcastcatcher.activities.ChannelActivity"
-            android:label="@string/app_name">
+            android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="fireminder.podcastcatcher.ChannelActivity" />
+
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <service 
-            android:name="fireminder.podcastcatcher.PlaybackService"
-            >
+
+        <service android:name="fireminder.podcastcatcher.BootService" >
             <intent-filter>
-                <action android:name="fireminder.podcastcatcher.PlaybackService.PLAY"/>
-                <action android:name="fireminder.podcastcatcher.PlaybackService.STOP"/>
-                <action android:name="fireminder.podcastcatcher.PlaybackService.PAUSE"/>
+                <action android:name="fireminder.podcastcatcher.BootService" />
             </intent-filter>
-         </service>
+        </service>
+        <service android:name="fireminder.podcastcatcher.DownloadService" >
+            <intent-filter>
+                <action android:name="fireminder.podcastcatcher.DownloadService" />
+            </intent-filter>
+        </service>
+
+        <receiver android:name="fireminder.podcastcatcher.BootBroadcastReciever" >
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETETD" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

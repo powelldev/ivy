@@ -36,7 +36,8 @@ public class PodcastAdapter extends CursorAdapter{
 			ByteArrayInputStream is = new ByteArrayInputStream(cursor.getBlob(cursor.getColumnIndex(PodcastSqlHelper.COLUMN_IMAGELINK)));
 			
 			BitmapFactory.Options options = new BitmapFactory.Options();
-			options.inSampleSize = 4;
+			options.inSampleSize = 1;
+			options.inPurgeable = true;
 			Bitmap image = BitmapFactory.decodeStream(is, null, options);
 			iv.setImageBitmap(image);
 		} catch (Exception e){

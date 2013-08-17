@@ -429,7 +429,10 @@ public class BackgroundThread {
 				Log.e(TAG, params[0]);
 				HttpURLConnection urlConn = (HttpURLConnection) url
 						.openConnection();
+				urlConn.setConnectTimeout(10000);
 				is = urlConn.getInputStream();
+			} catch (java.net.SocketTimeoutException se){
+				return null;
 			} catch (Exception e) {
 				e.printStackTrace();
 			}

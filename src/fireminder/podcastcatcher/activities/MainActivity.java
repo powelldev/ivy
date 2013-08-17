@@ -20,13 +20,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 import fireminder.podcastcatcher.BackgroundThread;
 import fireminder.podcastcatcher.PlaySongCallback;
-import fireminder.podcastcatcher.PlaybackService;
-import fireminder.podcastcatcher.PlayerFragment;
 import fireminder.podcastcatcher.PodcastFragment;
 import fireminder.podcastcatcher.R;
 import fireminder.podcastcatcher.db.Episode;
-import fireminder.podcastcatcher.db.Playlist;
-import fireminder.podcastcatcher.db.PlaylistDao;
 
 public class MainActivity extends FragmentActivity implements PlaySongCallback {
 	Uri data = null;
@@ -46,12 +42,7 @@ public class MainActivity extends FragmentActivity implements PlaySongCallback {
 	 */
 	ViewPager mViewPager;
 	static PodcastFragment podcastFragment;
-	static PlayerFragment playerFragment;
 
-	Playlist playlist;
-	PlaylistDao dao;
-
-	Intent playerService;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -74,21 +65,15 @@ public class MainActivity extends FragmentActivity implements PlaySongCallback {
 
 		ActionBar actionBar = getActionBar();
 
-		playerService = new Intent(this, PlaybackService.class);
 	}
 
 	@Override
 	protected void onResume() {
 		super.onResume();
-		playlist = Playlist.instance;
-		dao = new PlaylistDao(this);
-		dao.open();
 	}
 
 	@Override
 	protected void onPause() {
-		dao.insertPlaylist(playlist);
-		dao.close();
 		super.onPause();
 	}
 
@@ -107,15 +92,8 @@ public class MainActivity extends FragmentActivity implements PlaySongCallback {
 			podcastFragment.subscribe("http://");
 			return true;
 		case R.id.test:
-			// Intent i = new Intent(this, SearchActivity.class);
-			// startActivityForResult(i, 42);
-			// Intent playIntent = new
-			// Intent("fireminder.podcastcatcher.PlaybackService");
-			// playIntent.setAction(PlaybackService.ACTION_PLAY);
-			// playIntent.putExtra("songPath",
-			// "/mnt/sdcard/Podcasts/freakonomics_podcast052313.mp3");
-			// startService(playIntent);
-			// Log.d("intent" , playIntent.toString());
+			Intent intent = new Intent(this, DownloadService.class);
+			this.startService(intent);
 			return true;
 		case R.id.get_new:
 			BackgroundThread bt = new BackgroundThread(this);
@@ -167,8 +145,6 @@ public class MainActivity extends FragmentActivity implements PlaySongCallback {
 					return podcastFragment = new PodcastFragment();
 				}
 			case 1:
-				startService(playerService);
-				return playerFragment = new PlayerFragment();
 			case 2:
 				return new DummySectionFragment();
 			}
