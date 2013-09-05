@@ -255,7 +255,7 @@ public class PodcastFragment extends ListFragment{
 				Podcast podcast = podcastDao.insertPodcast(result);
 				BackgroundThread bt = new BackgroundThread(getActivity());
 				bt.getEpisodesFromBackgroundThread(podcast.getLink(), podcast.get_id());
-				bt.getPodcastImageFromBackgroundThread(podcast.getLink(), podcast.get_id());
+//				bt.getPodcastImageFromBackgroundThread(podcast.getLink(), podcast.get_id());
 				Log.d(TAG, "parsing for episodes");
 				//new ParseXmlForEpisodes().execute(new String[] {podcast.getLink(), String.valueOf(podcast.get_id())});
 			}
@@ -271,12 +271,12 @@ public class PodcastFragment extends ListFragment{
 	OnItemClickListener channelListViewOnClickListener = new OnItemClickListener() {
 		public void onItemClick(AdapterView<?> arg0, View arg1, int itemPosition,
 				long itemId) {
-			
-			BackgroundThread bt = new BackgroundThread( getActivity() );
-			bt.getNewEpisodesForPodcast( Integer.parseInt( "" + itemId ) );
+//			Helper.getNewEpisodesFromPodcast(getActivity() , itemId);
+
 			Intent intent = new Intent();
 			intent.setClass(getActivity(), ChannelActivity.class);
 			intent.putExtra("channel_id", itemId);
+			
 			startActivity(intent);
 			
 		}
@@ -301,7 +301,6 @@ public class PodcastFragment extends ListFragment{
 		ListView listView = getListView();
 		listView.setOnItemClickListener(channelListViewOnClickListener);
 		listView.setOnItemLongClickListener(channelListViewOnItemLongClickListener);
-		
 	}
 
 

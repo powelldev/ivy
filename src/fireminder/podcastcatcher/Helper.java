@@ -10,6 +10,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import android.content.Context;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 
 public class Helper {
@@ -113,5 +114,11 @@ public class Helper {
 			e.printStackTrace();
 		}*/
 		return messages;
+	}
+
+	public static void getNewEpisodesFromPodcast(FragmentActivity fragmentActivity, long itemId) {
+
+		BackgroundThread bt = new BackgroundThread(fragmentActivity);
+		bt.getNewEpisodesForPodcast((int) itemId);
 	}
 }

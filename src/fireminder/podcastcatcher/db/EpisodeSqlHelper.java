@@ -20,7 +20,7 @@ public class EpisodeSqlHelper extends SQLiteOpenHelper{
 	public static final String COLUMN_MP3 = "mp3";
 
 	public static final String DATABASE_NAME = "episode.db";
-	public static final int DATABASE_VER = 1;
+	public static final int DATABASE_VER = 2;
 	
     /*** A list of all the columns in the episode db, useful for queries */
 	public static final String[] allColumns = 
@@ -47,7 +47,7 @@ public class EpisodeSqlHelper extends SQLiteOpenHelper{
 
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-		db.execSQL("DROP TABLE IF EXISTS podcasts");
+		db.execSQL("DROP TABLE IF EXISTS episodes");
 		onCreate(db);
 	}
 

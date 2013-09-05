@@ -34,7 +34,7 @@ public class PodcastDAO {
 		String title = "";
 		String link = "";
 		String descrip = "";
-		byte[] imagelink = null;
+		String imagePath = null;
 		int id;
 	
 		id = (int) cursor.getLong(cursor.getColumnIndex(PodcastSqlHelper.COLUMN_ID));
@@ -42,9 +42,9 @@ public class PodcastDAO {
 		descrip = cursor.getString(cursor.getColumnIndex(PodcastSqlHelper.COLUMN_DESCRIP));
 		link = cursor.getString(cursor.getColumnIndex(PodcastSqlHelper.COLUMN_LINK));
 		try{
-		imagelink = cursor.getBlob(cursor.getColumnIndex(PodcastSqlHelper.COLUMN_IMAGELINK));
+		imagePath = cursor.getString(cursor.getColumnIndex(PodcastSqlHelper.COLUMN_IMAGELINK));
 		} catch(Exception e){ e.printStackTrace();}
-		podcast.setDescription(descrip); podcast.setTitle(title); podcast.setId(id); podcast.setLink(link); podcast.setImagelink(imagelink);
+		podcast.setDescription(descrip); podcast.setTitle(title); podcast.setId(id); podcast.setLink(link); podcast.setImagePath(imagePath);
 		
 		return podcast;
 	}
@@ -59,7 +59,7 @@ public class PodcastDAO {
 		return podcast;
 	}
 	public Cursor getAllPodcastsAsCursor(){	
-		return db.query(PodcastSqlHelper.TABLE_NAME, PodcastSqlHelper.allColumns, null, null, null, null, null);
+		return db.query(PodcastSqlHelper.TABLE_NAME, PodcastSqlHelper.allColumns, null, null, null, null, PodcastSqlHelper.COLUMN_TITLE);
 	}
 	public List<Podcast> getAllPodcasts(){
 		ArrayList<Podcast> podcasts = new ArrayList<Podcast>();
@@ -136,13 +136,16 @@ public class PodcastDAO {
 	
 	public void deletePodcast(long id){
 		EpisodeDAO edao = new EpisodeDAO(context);
+		edao.open();
 		edao.deleteAllEpisodes(id);
-		db.delete(PodcastSqlHelper.TABLE_NAME, PodcastSqlHelper.COLUMN_ID + " = ? " , new String[] {""+id});
+		db.delete(PodcastSqlHelper.TABLE_NAME, 
+				PodcastSqlHelper.COLUMN_ID + " = ? " , 
+				new String[] {""+id});
 	}
 	
 	public void updatePodcastImagelink(Podcast podcast) {
 		ContentValues args = new ContentValues();
-		args.put(PodcastSqlHelper.COLUMN_IMAGELINK, podcast.getImagelink());
+		args.put(PodcastSqlHelper.COLUMN_IMAGELINK, podcast.getImagePath());
 		long debug = db.update(PodcastSqlHelper.TABLE_NAME, args, PodcastSqlHelper.COLUMN_ID + " = " + podcast.get_id() , null);
 		Log.d("rows updated: ", "" + debug);
 		

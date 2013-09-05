@@ -1,14 +1,18 @@
 package fireminder.podcastcatcher.activities;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 
+import android.annotation.SuppressLint;
 import android.app.ListActivity;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -21,11 +25,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import fireminder.podcastcatcher.BackgroundThread;
-import fireminder.podcastcatcher.PlaybackService;
 import fireminder.podcastcatcher.R;
 import fireminder.podcastcatcher.db.Episode;
 import fireminder.podcastcatcher.db.EpisodeDAO;
-import fireminder.podcastcatcher.db.Playlist;
 import fireminder.podcastcatcher.db.Podcast;
 import fireminder.podcastcatcher.db.PodcastDAO;
 import fireminder.podcastcatcher.ui.EpisodeAdapter;
@@ -58,6 +60,7 @@ public class ChannelActivity extends ListActivity {
 	public void onCreateContextMenu(ContextMenu menu, View v,
 			ContextMenuInfo menuInfo) {
 		super.onCreateContextMenu(menu, v, menuInfo);
+		// TODO add a Download all 
 		android.view.MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.episode_menu, (android.view.Menu) menu);
 	}
@@ -84,7 +87,7 @@ public class ChannelActivity extends ListActivity {
 		edao.close();
 	}
 
-	/*
+	/**
 	 * Find corresponding view ids for the layout Query podcast db via podcast
 	 * data-access object Query episode db set Listeners
 	 */
@@ -107,10 +110,10 @@ public class ChannelActivity extends ListActivity {
 		title_tv.setText(podcast.getTitle());
 
 		try {
-			ByteArrayInputStream is = new ByteArrayInputStream(
-					podcast.getImagelink());
-			Bitmap image = BitmapFactory.decodeStream(is);
-			image_iv.setImageBitmap(image);
+//			ByteArrayInputStream is = new ByteArrayInputStream(
+//					podcast.getImagePath());
+//			Bitmap image = BitmapFactory.decodeStream(is);
+//			image_iv.setImageBitmap(image);
 		} catch (Exception e) {
 			image_iv.setImageResource(R.drawable.ic_launcher);
 			e.printStackTrace();
@@ -118,6 +121,7 @@ public class ChannelActivity extends ListActivity {
 
 		getListView().setOnItemClickListener(new OnItemClickListener() {
 
+			@SuppressLint("NewApi")
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
 					long episode_id) {
@@ -133,18 +137,16 @@ public class ChannelActivity extends ListActivity {
 					bt = new BackgroundThread(getApplicationContext());
 					bt.downloadEpisodeMp3(_episode);
 				} else {
-
-					//Add episode to playlist
-					Intent playbackService = new Intent(getApplicationContext(), PlaybackService.class);
-					playbackService.putExtra("EpisodeUri", _episode.getMp3());
-					startService(playbackService);
-					Playlist p = Playlist.instance;
-					p.addEpisode(_episode);
-					for(Episode e : p.episodes){
-						Log.d("Playlist", e.getTitle());
-					}
-					Toast.makeText(getApplicationContext(), "Playing...",
+					// TODO Launch playback intent
+					Toast.makeText(getApplicationContext(), "Playing..." + _episode.getMp3(),
 							Toast.LENGTH_LONG).show();
+					
+					File file = new File(_episode.getMp3());
+					Uri uri = Uri.fromFile(file);
+					Intent playbackIntent = new Intent(Intent.CATEGORY_APP_MUSIC);
+					playbackIntent.setAction(Intent.ACTION_VIEW);
+					playbackIntent.setDataAndType(uri, "audio/*");
+					startActivity(playbackIntent);
 				}
 
 			}

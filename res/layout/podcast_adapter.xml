@@ -21,7 +21,8 @@
 	     />
     
     <TextView 
-        android:id="@+id/podcast_tv"
+        android:typeface="monospace"
+                android:id="@+id/podcast_tv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Jane Doe"

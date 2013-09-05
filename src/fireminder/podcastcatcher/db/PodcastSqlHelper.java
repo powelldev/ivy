@@ -14,7 +14,7 @@ public class PodcastSqlHelper extends SQLiteOpenHelper{
 	public static final String COLUMN_IMAGELINK = "imagelink";
 	
 	public static final String DATABASE_NAME = "podcast.db";
-	public static final int DATABASE_VER = 2;
+	public static final int DATABASE_VER = 3;
 	
 	public static final String[] allColumns = 
 		{ COLUMN_ID, COLUMN_TITLE, COLUMN_DESCRIP, COLUMN_LINK, COLUMN_IMAGELINK };

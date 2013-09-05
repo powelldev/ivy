@@ -2,7 +2,6 @@ package fireminder.podcastcatcher.activities;
 
 import java.util.Locale;
 
-import android.app.ActionBar;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -19,16 +18,11 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 import fireminder.podcastcatcher.BackgroundThread;
-import fireminder.podcastcatcher.PlaySongCallback;
-import fireminder.podcastcatcher.PlaybackService;
-import fireminder.podcastcatcher.PlayerFragment;
+import fireminder.podcastcatcher.Helper;
 import fireminder.podcastcatcher.PodcastFragment;
 import fireminder.podcastcatcher.R;
-import fireminder.podcastcatcher.db.Episode;
-import fireminder.podcastcatcher.db.Playlist;
-import fireminder.podcastcatcher.db.PlaylistDao;
 
-public class MainActivity extends FragmentActivity implements PlaySongCallback {
+public class MainActivity extends FragmentActivity {
 	Uri data = null;
 
 	/**
@@ -46,10 +40,6 @@ public class MainActivity extends FragmentActivity implements PlaySongCallback {
 	 */
 	ViewPager mViewPager;
 	static PodcastFragment podcastFragment;
-	static PlayerFragment playerFragment;
-
-	Playlist playlist;
-	PlaylistDao dao;
 
 	Intent playerService;
 
@@ -72,23 +62,15 @@ public class MainActivity extends FragmentActivity implements PlaySongCallback {
 		mViewPager = (ViewPager) findViewById(R.id.pager);
 		mViewPager.setAdapter(mSectionsPagerAdapter);
 
-		ActionBar actionBar = getActionBar();
-
-		playerService = new Intent(this, PlaybackService.class);
 	}
 
 	@Override
 	protected void onResume() {
 		super.onResume();
-		playlist = Playlist.instance;
-		dao = new PlaylistDao(this);
-		dao.open();
 	}
 
 	@Override
 	protected void onPause() {
-		dao.insertPlaylist(playlist);
-		dao.close();
 		super.onPause();
 	}
 
@@ -105,17 +87,6 @@ public class MainActivity extends FragmentActivity implements PlaySongCallback {
 
 		case R.id.subscribe_setting:
 			podcastFragment.subscribe("http://");
-			return true;
-		case R.id.test:
-			// Intent i = new Intent(this, SearchActivity.class);
-			// startActivityForResult(i, 42);
-			// Intent playIntent = new
-			// Intent("fireminder.podcastcatcher.PlaybackService");
-			// playIntent.setAction(PlaybackService.ACTION_PLAY);
-			// playIntent.putExtra("songPath",
-			// "/mnt/sdcard/Podcasts/freakonomics_podcast052313.mp3");
-			// startService(playIntent);
-			// Log.d("intent" , playIntent.toString());
 			return true;
 		case R.id.get_new:
 			BackgroundThread bt = new BackgroundThread(this);
@@ -166,19 +137,14 @@ public class MainActivity extends FragmentActivity implements PlaySongCallback {
 				} else {
 					return podcastFragment = new PodcastFragment();
 				}
-			case 1:
-				startService(playerService);
-				return playerFragment = new PlayerFragment();
-			case 2:
-				return new DummySectionFragment();
 			}
 			return null;
 		}
 
 		@Override
 		public int getCount() {
-			// Show 3 total pages.
-			return 3;
+			// Show 0 total pages.
+			return 1;
 		}
 
 		@Override
@@ -187,10 +153,6 @@ public class MainActivity extends FragmentActivity implements PlaySongCallback {
 			switch (position) {
 			case 0:
 				return getString(R.string.title_podcast).toUpperCase(l);
-			case 1:
-				return "PLAYER";
-			case 2:
-				return "PLAYLIST";
 			}
 			return null;
 		}
@@ -215,8 +177,6 @@ public class MainActivity extends FragmentActivity implements PlaySongCallback {
 				Bundle savedInstanceState) {
 			View rootView = inflater.inflate(R.layout.fragment_main_dummy,
 					container, false);
-			TextView dummyTextView = (TextView) rootView
-					.findViewById(R.id.section_label);
 			/*
 			 * dummyTextView.setText(Integer.toString(getArguments().getInt(
 			 * ARG_SECTION_NUMBER)));
@@ -224,17 +184,4 @@ public class MainActivity extends FragmentActivity implements PlaySongCallback {
 			return rootView;
 		}
 	}
-
-	@Override
-	public void playSongString(String songPath) {
-		// TODO Auto-generated method stub
-
-	}
-
-	public void changeSong(Episode current) {
-		// TODO Auto-generated method stub
-		// Update Now playing: current
-
-	}
-
 }

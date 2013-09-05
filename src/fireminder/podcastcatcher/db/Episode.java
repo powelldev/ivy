@@ -4,7 +4,6 @@ package fireminder.podcastcatcher.db;
  * A representation of an episode of a podcast.
  */
 public class Episode {
-
 	public Episode(Long _id, Long podcast_id, String title,
 			String description, String url, long pubDate, String mp3) {
 		super();

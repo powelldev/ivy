@@ -26,9 +26,9 @@
 	     android:scaleType="centerCrop"
 	     />
 	<TextView 
+	    android:typeface="monospace"
 	    android:id="@+id/title_tv"
 	    android:textColor="#FFFFFF"
-	    android:typeface="sans"
 	    android:textSize="24sp"
 	    android:textStyle="bold"
 	    android:layout_alignParentBottom="true"
