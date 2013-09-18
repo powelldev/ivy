@@ -19,7 +19,8 @@ public class DownloadService extends IntentService{
 		AlarmManager alarmManager = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
 		Intent i = new Intent(this, NotificationActivity.class);
 		PendingIntent pi = PendingIntent.getActivity(this, 0, i, 0);
-		alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, Calendar.getInstance().getTimeInMillis(), 5000, pi);
+		alarmManager.cancel(pi);
+//		alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, Calendar.getInstance().getTimeInMillis(), 5000, pi);
 	}
 
 }

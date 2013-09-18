@@ -9,15 +9,16 @@ import java.util.List;
 import android.app.DownloadManager;
 import android.app.DownloadManager.Request;
 import android.app.IntentService;
+import android.content.BroadcastReceiver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Environment;
 import android.os.PowerManager;
 import android.util.Log;
-import android.widget.Toast;
 import fireminder.podcastcatcher.db.Episode;
 import fireminder.podcastcatcher.db.EpisodeDAO;
 import fireminder.podcastcatcher.db.PodcastDAO;
@@ -31,6 +32,17 @@ public class ADownloadService extends IntentService {
 
 	@Override
 	protected void onHandleIntent(Intent intent) {
+		
+		BroadcastReceiver receiver = new BroadcastReceiver() {
+			@Override
+			public void onReceive(Context context, Intent intent) {
+				Intent i = new Intent();
+				i.setAction(DownloadManager.ACTION_VIEW_DOWNLOADS);
+				startActivity(i);
+			}
+		};
+		
+		registerReceiver(receiver, new IntentFilter(DownloadManager.ACTION_NOTIFICATION_CLICKED));
 		Log.e("DOWNLOADSERVICE", "From dls");
 		PowerManager pm = (PowerManager) this.getSystemService(Context.POWER_SERVICE);
 		PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "");
@@ -88,7 +100,6 @@ public class ADownloadService extends IntentService {
 					// Add to playlist?
 					Episode le = edao.insertEpisode(cv);
 					episodes.add(le);
-					new BackgroundThread(this).downloadEpisodeMp3(le);
 					Log.d("IntentService", le.getTitle() + " " + le.getPubDate());
 				}
 			}
@@ -106,21 +117,24 @@ public class ADownloadService extends IntentService {
 			downloadEpisodeMp3(e);
 		}
 	}
+	
 	public void downloadEpisodeMp3(Episode e) {
 		String fileName = e.getUrl();
 		fileName = fileName.substring(fileName.lastIndexOf("/"));
 		Log.d("Downloading...", fileName);
 		// TODO Make download notification point back at app - or allow
 		// cessation of download
-		DownloadManager dm = (DownloadManager) this
+		final DownloadManager dm = (DownloadManager) this
 				.getSystemService(Context.DOWNLOAD_SERVICE);
+		
 		Request request = new Request(Uri.parse(e.getUrl()));
 		request.setTitle(e.getTitle())
 				.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
-				.setDescription(e.getDescription())
+				.setDescription("Touch to cancel")
 				.setDestinationInExternalPublicDir(
 						Environment.DIRECTORY_PODCASTS, fileName);
 		long enqueue = dm.enqueue(request);
+		PodcastCatcher.getInstance().addId(enqueue);
 		EpisodeDAO edao = new EpisodeDAO(this);
 		edao.open();
 		edao.updateEpisodeMp3(e.get_id(), Environment

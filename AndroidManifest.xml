@@ -12,6 +12,7 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.SEND_DOWNLOAD_COMPLETED_INTENTS" />
 
     <application
         android:allowBackup="true"
@@ -110,16 +111,11 @@
             </intent-filter>
         </activity>
 
-        <service android:name="fireminder.podcastcatcher.BootService" >
+        <receiver android:name="fireminder.podcastcatcher.DmNotificationReceiver" >
             <intent-filter>
-                <action android:name="fireminder.podcastcatcher.BootService" />
+                <action android:name="android.intent.action.DOWNLOAD_NOTIFICATION_CLICKED" />
             </intent-filter>
-        </service>
-        <service android:name="fireminder.podcastcatcher.ADownloadService" >
-            <intent-filter>
-                <action android:name="fireminder.podcastcatcher.ADownloadService" />
-            </intent-filter>
-        </service>
+        </receiver>
 
         <receiver android:name="fireminder.podcastcatcher.BootBroadcastReciever" >
             <intent-filter>

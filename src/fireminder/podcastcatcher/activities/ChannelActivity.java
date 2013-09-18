@@ -60,7 +60,7 @@ public class ChannelActivity extends ListActivity {
 	public void onCreateContextMenu(ContextMenu menu, View v,
 			ContextMenuInfo menuInfo) {
 		super.onCreateContextMenu(menu, v, menuInfo);
-		// TODO add a Download all 
+		// TODO add a Download all
 		android.view.MenuInflater inflater = getMenuInflater();
 		inflater.inflate(R.menu.episode_menu, (android.view.Menu) menu);
 	}
@@ -110,10 +110,10 @@ public class ChannelActivity extends ListActivity {
 		title_tv.setText(podcast.getTitle());
 
 		try {
-//			ByteArrayInputStream is = new ByteArrayInputStream(
-//					podcast.getImagePath());
-//			Bitmap image = BitmapFactory.decodeStream(is);
-//			image_iv.setImageBitmap(image);
+			// ByteArrayInputStream is = new ByteArrayInputStream(
+			// podcast.getImagePath());
+			// Bitmap image = BitmapFactory.decodeStream(is);
+			// image_iv.setImageBitmap(image);
 		} catch (Exception e) {
 			image_iv.setImageResource(R.drawable.ic_launcher);
 			e.printStackTrace();
@@ -137,20 +137,29 @@ public class ChannelActivity extends ListActivity {
 					bt = new BackgroundThread(getApplicationContext());
 					bt.downloadEpisodeMp3(_episode);
 				} else {
-					Intent intent = new Intent();  
-					intent.setAction(android.content.Intent.ACTION_VIEW);  
-					File file = new File(_episode.getMp3());  
-					intent.setDataAndType(Uri.fromFile(file), "audio/*");  
-					startActivity(intent);
-					Toast.makeText(getApplicationContext(), "Playing...",
-							Toast.LENGTH_LONG).show();
-					
-					File mfile = new File(_episode.getMp3());
-					Uri uri = Uri.fromFile(mfile);
-					Intent playbackIntent = new Intent(Intent.CATEGORY_APP_MUSIC);
-					playbackIntent.setAction(Intent.ACTION_VIEW);
-					playbackIntent.setDataAndType(uri, "audio/*");
-					startActivity(playbackIntent);
+					Intent intent = new Intent();
+					intent.setAction(android.content.Intent.ACTION_VIEW);
+					File file = new File(_episode.getMp3());
+					if (!file.exists()) {
+						Toast.makeText(getApplicationContext(),
+								"Downloading ...", Toast.LENGTH_SHORT).show();
+						bt = new BackgroundThread(getApplicationContext());
+						bt.downloadEpisodeMp3(_episode);
+					} else {
+						intent.setDataAndType(Uri.fromFile(file), "audio/*");
+						startActivity(intent);
+						Toast.makeText(getApplicationContext(), "Playing...",
+								Toast.LENGTH_LONG).show();
+
+						/*
+						 * File mfile = new File(_episode.getMp3()); Uri uri =
+						 * Uri.fromFile(mfile); Intent playbackIntent = new
+						 * Intent( Intent.CATEGORY_APP_MUSIC);
+						 * playbackIntent.setAction(Intent.ACTION_VIEW);
+						 * playbackIntent.setDataAndType(uri, "audio/*");
+						 * startActivity(playbackIntent);
+						 */
+					}
 				}
 
 			}

@@ -115,6 +115,9 @@ public class EpisodeDAO {
 		Cursor c = db.query(EpisodeSqlHelper.TABLE_NAME, EpisodeSqlHelper.allColumns, 
 				EpisodeSqlHelper.COLUMN_PODCAST_ID + " = ?", new String[] {"" + id}, 
 				null, null, EpisodeSqlHelper.COLUMN_PUBDATE + " DESC", ""+1);
+		if(c.getCount() == 0) {
+			return null;
+		}
 		e = cursorToEpisode(c);
 		return e;
 	}

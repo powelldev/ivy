@@ -16,5 +16,11 @@
         android:orderInCategory="100"
         android:showAsAction="never"
         android:title="Play"/>
+     <item 
+        android:id="@+id/downloadAll"
+        android:orderInCategory="400"
+        android:showAsAction="never"
+        android:title="Download All"/>
+         />
 
 </menu>

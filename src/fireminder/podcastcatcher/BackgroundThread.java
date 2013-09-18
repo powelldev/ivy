@@ -103,21 +103,30 @@ public class BackgroundThread {
 	 */
 	public void downloadEpisodeMp3(Episode e) {
 		// TODO check if episode .mp3 exists already, if so, no need to download
+		boolean exists = false;
 		String fileName = e.getUrl();
 		fileName = fileName.substring(fileName.lastIndexOf("/"));
+		try {
+			File testFile = new File(fileName);
+			if (testFile.exists())
+				exists = true;
+		} catch (NullPointerException npe) {
+			// Only thrown if file hasn't been created yet
+		}
 		Log.d(TAG, fileName);
-		// TODO Make download notification point back at app - or allow
-		// cessation of download
-		DownloadManager dm = (DownloadManager) context
-				.getSystemService(Context.DOWNLOAD_SERVICE);
-		Request request = new Request(Uri.parse(e.getUrl()));
-		request.setTitle(e.getTitle())
-				.setDescription(e.getDescription())
-				.setNotificationVisibility(
-						Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
-				.setDestinationInExternalPublicDir(
-						Environment.DIRECTORY_PODCASTS, fileName);
-		long enqueue = dm.enqueue(request);
+
+		if (!exists) {
+			DownloadManager dm = (DownloadManager) context
+					.getSystemService(Context.DOWNLOAD_SERVICE);
+			Request request = new Request(Uri.parse(e.getUrl()));
+			request.setTitle(e.getTitle())
+					.setDescription("Touch to Cancel")
+					.setNotificationVisibility(
+							Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+					.setDestinationInExternalPublicDir(
+							Environment.DIRECTORY_PODCASTS, fileName);
+			long enqueue = dm.enqueue(request);
+		}
 		EpisodeDAO edao = new EpisodeDAO(context);
 		edao.open();
 		edao.updateEpisodeMp3(e.get_id(), Environment
@@ -151,11 +160,12 @@ public class BackgroundThread {
 						.getSystemService(Context.DOWNLOAD_SERVICE);
 				Request request = new Request(Uri.parse(episode.getUrl()));
 				request.setTitle(episode.getTitle())
-						.setDescription(episode.getDescription())
+						.setDescription("Touch to Cancel")
 						.setDestinationInExternalPublicDir(
 								Environment.DIRECTORY_PODCASTS,
 								episode.getTitle() + ".mp3");
 				long enqueue = dm.enqueue(request);
+				PodcastCatcher.getInstance().addId(enqueue);
 			} else {
 				Log.d("Mp3 already exists", Environment.DIRECTORY_PODCASTS
 						+ episode.getTitle() + ".mp3");
@@ -331,7 +341,7 @@ public class BackgroundThread {
 				connection.setDoInput(true);
 				connection.connect();
 				InputStream input = connection.getInputStream();
-//				myBitmap = BitmapFactory.decodeStream(input);
+				// myBitmap = BitmapFactory.decodeStream(input);
 
 				bytes = new ByteArrayOutputStream();
 				/*--- you can select your preferred CompressFormat and quality. 
@@ -541,7 +551,7 @@ public class BackgroundThread {
 					}
 				}
 
-			} while(cursor.moveToNext());
+			} while (cursor.moveToNext());
 
 			// Open Podcast's URL
 			// Parse Podcast's url for episodes until an episodes pubDate is <=
@@ -582,7 +592,7 @@ public class BackgroundThread {
 						.openConnection();
 				urlConn.setConnectTimeout(10000);
 				is = urlConn.getInputStream();
-			} catch (java.net.SocketTimeoutException se){
+			} catch (java.net.SocketTimeoutException se) {
 				return null;
 			} catch (Exception e) {
 				e.printStackTrace();
