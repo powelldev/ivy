@@ -10,8 +10,8 @@ import android.content.Intent;
 
 public class DownloadService extends IntentService{
 
-	public DownloadService(String name) {
-		super(name);
+	public DownloadService() {
+		super("DownloadService");
 	}
 
 	@Override

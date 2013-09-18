@@ -40,7 +40,7 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Toast;
 import fireminder.podcastcatcher.BackgroundThread;
-import fireminder.podcastcatcher.DownloadService;
+import fireminder.podcastcatcher.ADownloadService;
 import fireminder.podcastcatcher.PodcastFragment;
 import fireminder.podcastcatcher.R;
 import fireminder.podcastcatcher.RssParser;
@@ -76,7 +76,7 @@ public class PodcastActivity extends ListActivity {
 		}
 
 		// Set up download checking
-		intent = new Intent(this, DownloadService.class);
+		intent = new Intent(this, ADownloadService.class);
 		PendingIntent pendingIntent = PendingIntent.getBroadcast(this, 0,
 				intent, 0);
 		AlarmManager alarmManager = (AlarmManager) this

@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
+import fireminder.podcastcatcher.ADownloadService;
 import fireminder.podcastcatcher.BackgroundThread;
 import fireminder.podcastcatcher.PlaySongCallback;
 import fireminder.podcastcatcher.PodcastFragment;
@@ -88,7 +89,7 @@ public class MainActivity extends FragmentActivity {
 			podcastFragment.subscribe("http://");
 			return true;
 		case R.id.test:
-			Intent intent = new Intent(this, DownloadService.class);
+			Intent intent = new Intent(this, ADownloadService.class);
 			this.startService(intent);
 			return true;
 		case R.id.get_new:

@@ -505,7 +505,7 @@ public class BackgroundThread {
 			cursor.moveToFirst();
 
 			List<ContentValues> episodes = null;
-			while (cursor.moveToNext()) {
+			do {
 				Episode e = null;
 				e = edao.getLatestEpisode(cursor.getLong(cursor
 						.getColumnIndex(PodcastSqlHelper.COLUMN_ID)));
@@ -541,7 +541,7 @@ public class BackgroundThread {
 					}
 				}
 
-			}
+			} while(cursor.moveToNext());
 
 			// Open Podcast's URL
 			// Parse Podcast's url for episodes until an episodes pubDate is <=

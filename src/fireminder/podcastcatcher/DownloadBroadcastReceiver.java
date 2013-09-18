@@ -7,8 +7,8 @@ import android.content.Intent;
 public class DownloadBroadcastReceiver extends BroadcastReceiver{
 
 	@Override
-	public void onReceive(Context arg0, Intent arg1) {
-		arg0.startService(arg1);
+	public void onReceive(Context context, Intent intent) {
+		context.startService(intent);
 	}
 
 }

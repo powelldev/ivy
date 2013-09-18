@@ -115,9 +115,9 @@
                 <action android:name="fireminder.podcastcatcher.BootService" />
             </intent-filter>
         </service>
-        <service android:name="fireminder.podcastcatcher.DownloadService" >
+        <service android:name="fireminder.podcastcatcher.ADownloadService" >
             <intent-filter>
-                <action android:name="fireminder.podcastcatcher.DownloadService" />
+                <action android:name="fireminder.podcastcatcher.ADownloadService" />
             </intent-filter>
         </service>
 

@@ -66,10 +66,10 @@ public class PodcastDAO {
 		
 		Cursor cursor = db.query(PodcastSqlHelper.TABLE_NAME, PodcastSqlHelper.allColumns, null, null, null, null, null);
 		cursor.moveToFirst();
-		while(cursor.moveToNext()){
+		do {
 			Podcast p = cursorToPodcast(cursor);
 			podcasts.add(p);
-		}
+		} while(cursor.moveToNext());
 		
 		return podcasts;
 	}
