@@ -1,5 +1,6 @@
 package fireminder.podcastcatcher.ui;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 
 import android.content.Context;
@@ -37,27 +38,23 @@ public class PodcastAdapter extends CursorAdapter {
 
 	@Override
 	public void bindView(View arg0, Context arg1, Cursor arg2) {
-		/*
-		 * WeakReference<ImageView> wIv = new
-		 * WeakReference<ImageView>((ImageView)
-		 * arg0.findViewById(R.id.podcast_iv)); // iv = (ImageView)
-		 * arg0.findViewById(R.id.podcast_iv);
-		 * 
-		 * try { ByteArrayInputStream is = new
-		 * ByteArrayInputStream(cursor.getBlob
-		 * (cursor.getColumnIndex(PodcastSqlHelper.COLUMN_IMAGELINK)));
-		 * BitmapFactory.Options options = new BitmapFactory.Options();
-		 * options.inSampleSize = 4; Bitmap image =
-		 * BitmapFactory.decodeStream(is, null, options); final ImageView iv =
-		 * wIv.get(); iv.setImageBitmap(image); } catch (Exception e){ final
-		 * ImageView iv = wIv.get();
-		 * iv.setImageResource(R.drawable.ic_launcher); e.printStackTrace(); }
-		 * 
-		 * TextView tv = (TextView) arg0.findViewById(R.id.podcast_tv);
-		 * tv.setText
-		 * (cursor.getString(cursor.getColumnIndex(PodcastSqlHelper.COLUMN_TITLE
-		 * )));
-		 */
+		ImageView iv = (ImageView) arg0.findViewById(R.id.podcast_iv);
+		
+		try {
+			ByteArrayInputStream is = new ByteArrayInputStream(cursor.getBlob(cursor.getColumnIndex(PodcastSqlHelper.COLUMN_IMAGELINK)));
+			
+			BitmapFactory.Options options = new BitmapFactory.Options();
+			options.inSampleSize = 1;
+			options.inPurgeable = true;
+			Bitmap image = BitmapFactory.decodeStream(is, null, options);
+			iv.setImageBitmap(image);
+		} catch (Exception e){
+			iv.setImageResource(R.drawable.ic_launcher);
+			e.printStackTrace();
+		}
+		
+		TextView tv = (TextView) arg0.findViewById(R.id.podcast_tv);
+		tv.setText(cursor.getString(cursor.getColumnIndex(PodcastSqlHelper.COLUMN_TITLE)));
 	}
 
 	@Override

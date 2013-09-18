@@ -15,6 +15,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.Loader;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -39,12 +40,11 @@ import fireminder.podcastcatcher.db.PodcastDAO;
 import fireminder.podcastcatcher.db.PodcastSqlHelper;
 import fireminder.podcastcatcher.ui.PodcastAdapter;
 
-@SuppressWarnings("deprecation")
-public class PodcastFragment extends ListFragment{
+public class PodcastFragment extends ListFragment {
 
 	final static String TAG = PodcastFragment.class.getSimpleName();
-	
-	/* Podcast Database Object */
+
+	PodcastAdapter cursorAdapter;
 	public PodcastDAO podcastDao;
 	public BackgroundThread bt = new BackgroundThread(getActivity());
 	
@@ -64,38 +64,19 @@ public class PodcastFragment extends ListFragment{
 		
 		updateListAdapter(getActivity());
 		
-		//ImageButton addPodcastBtn = (ImageButton) rootView.findViewById(R.id.subscribe_btn);
-		//addPodcastBtn.setOnClickListener(subscribeClickListener);
-        
-		/*Button refreshBtn = (Button) rootView.findViewById(R.id.refresh_btn);
-		refreshBtn.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View arg0) {
-					BackgroundThread bt = new BackgroundThread(getActivity());
-						bt.getNewEpisodes();
-			}
-			
-		});*/
-		
-		
         subscribeIfIntent();
 
 		return rootView;
 	}
 
     private void subscribeIfIntent(){
-        try {
+    	try {
             Bundle b = this.getArguments();
-            subscribe( b.getString("uri") );
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
+            subscribe(b.getString("uri"));
+    	} catch (Exception e) {}
     }
 	
 	public void subscribe(String data){
-		//Create inflater for view for the Alert Dialog
 		LayoutInflater inflater = getActivity().getLayoutInflater();
 		
 		View promptsView = inflater.inflate(R.layout.subscribe_dialog, null);
@@ -120,13 +101,10 @@ public class PodcastFragment extends ListFragment{
 				}
 			}
 		});
-		//Get user URL, parse it, update ListView, update database
 		builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				String userString = userInput.getText().toString();
-				//BackgroundThread bt = new BackgroundThread(getActivity());
-				//bt.getPodcastInfoFromBackgroundThread(userString);
 				new HttpDownloadTask().execute(userString);
 			}
 		});
@@ -140,11 +118,9 @@ public class PodcastFragment extends ListFragment{
 		
 		builder.create().show();
 	}
-	// Subscription dialog presenter. Will prompt user for a URL and call the validator.
 	private OnClickListener subscribeClickListener = new OnClickListener(){
 		@Override
 		public void onClick(View button) {
-			//Create inflater for view for the Alert Dialog
 			LayoutInflater inflater = getActivity().getLayoutInflater();
 			
 			View promptsView = inflater.inflate(R.layout.subscribe_dialog, null);
@@ -155,7 +131,6 @@ public class PodcastFragment extends ListFragment{
 			AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 			builder.setView(promptsView);		
 
-			//Set listener for the paste button
 			paste_btn.setOnClickListener(new OnClickListener() {
 				@Override
 				public void onClick(View v) {
@@ -199,9 +174,7 @@ public class PodcastFragment extends ListFragment{
 	public void updateListAdapter(Context context){
 		podcastDao.open();
 		Cursor podcastCursor = podcastDao.getAllPodcastsAsCursor();
-		//SimpleCursorAdapter cursorAdapter = new SimpleCursorAdapter(getActivity(), android.R.layout.simple_list_item_1,
-		//		podcastCursor, new String[] { PodcastSqlHelper.COLUMN_TITLE }, new int[] { android.R.id.text1 }, 2);
-		PodcastAdapter cursorAdapter = new PodcastAdapter(getActivity(), podcastCursor, 0);
+		cursorAdapter = new PodcastAdapter(getActivity(), podcastCursor, 0);
 		setListAdapter(cursorAdapter);
 	}
 	
@@ -226,10 +199,7 @@ public class PodcastFragment extends ListFragment{
 				HttpURLConnection con = (HttpURLConnection) url.openConnection();
 				InputStream is = con.getInputStream();
 				reader = new BufferedReader(new InputStreamReader(is));
-				//Pass reader to parser
-				//podcastData = RssParser.parsePodcastFromXml(reader);
 				podcastData = RssParser.parsePodcastFromXml(is);
-				// Add podcast url to content value
 				podcastData.put(PodcastSqlHelper.COLUMN_LINK, urls[0]);
 			} 
 			catch(MalformedURLException e) {
@@ -248,7 +218,6 @@ public class PodcastFragment extends ListFragment{
 		@Override
 		protected void onPostExecute(ContentValues result){
 			podcastDao.open();
-
 			// Delete the placeholder "Loading ..." item
 			podcastDao.deletePodcast(id);			
 			if(result != null){
@@ -263,9 +232,7 @@ public class PodcastFragment extends ListFragment{
 				Toast.makeText(getActivity(), "Podcast subscription failed: Please check url", Toast.LENGTH_LONG).show();
 			}
 			updateListAdapter(getActivity());
-			
 		}
-
 	}
 	
 	OnItemClickListener channelListViewOnClickListener = new OnItemClickListener() {
@@ -287,7 +254,6 @@ public class PodcastFragment extends ListFragment{
 		public boolean onItemLongClick(AdapterView<?> arg0, View arg1,
 				int itemPosition, long itemId) {
 			podcastDao.deletePodcast(itemId);
-			// TODO delete items from playlist
 			EpisodeDAO edao = new EpisodeDAO(getActivity());
 			edao.open();
 			edao.deleteAllEpisodes(itemId);
@@ -302,7 +268,4 @@ public class PodcastFragment extends ListFragment{
 		listView.setOnItemClickListener(channelListViewOnClickListener);
 		listView.setOnItemLongClickListener(channelListViewOnItemLongClickListener);
 	}
-
-
-	
 }

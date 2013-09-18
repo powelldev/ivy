@@ -20,7 +20,7 @@ public class EpisodeSqlHelper extends SQLiteOpenHelper{
 	public static final String COLUMN_MP3 = "mp3";
 
 	public static final String DATABASE_NAME = "episode.db";
-	public static final int DATABASE_VER = 2;
+	public static final int DATABASE_VER = 4;
 	
     /*** A list of all the columns in the episode db, useful for queries */
 	public static final String[] allColumns = 

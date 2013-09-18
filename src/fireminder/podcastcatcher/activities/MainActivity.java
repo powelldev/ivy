@@ -18,9 +18,10 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 import fireminder.podcastcatcher.BackgroundThread;
-import fireminder.podcastcatcher.Helper;
+import fireminder.podcastcatcher.PlaySongCallback;
 import fireminder.podcastcatcher.PodcastFragment;
 import fireminder.podcastcatcher.R;
+import fireminder.podcastcatcher.db.Episode;
 
 public class MainActivity extends FragmentActivity {
 	Uri data = null;
@@ -40,8 +41,6 @@ public class MainActivity extends FragmentActivity {
 	 */
 	ViewPager mViewPager;
 	static PodcastFragment podcastFragment;
-
-	Intent playerService;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -87,6 +86,10 @@ public class MainActivity extends FragmentActivity {
 
 		case R.id.subscribe_setting:
 			podcastFragment.subscribe("http://");
+			return true;
+		case R.id.test:
+			Intent intent = new Intent(this, DownloadService.class);
+			this.startService(intent);
 			return true;
 		case R.id.get_new:
 			BackgroundThread bt = new BackgroundThread(this);
@@ -137,6 +140,9 @@ public class MainActivity extends FragmentActivity {
 				} else {
 					return podcastFragment = new PodcastFragment();
 				}
+			case 1:
+			case 2:
+				return new DummySectionFragment();
 			}
 			return null;
 		}

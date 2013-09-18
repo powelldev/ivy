@@ -137,12 +137,16 @@ public class ChannelActivity extends ListActivity {
 					bt = new BackgroundThread(getApplicationContext());
 					bt.downloadEpisodeMp3(_episode);
 				} else {
-					// TODO Launch playback intent
-					Toast.makeText(getApplicationContext(), "Playing..." + _episode.getMp3(),
+					Intent intent = new Intent();  
+					intent.setAction(android.content.Intent.ACTION_VIEW);  
+					File file = new File(_episode.getMp3());  
+					intent.setDataAndType(Uri.fromFile(file), "audio/*");  
+					startActivity(intent);
+					Toast.makeText(getApplicationContext(), "Playing...",
 							Toast.LENGTH_LONG).show();
 					
-					File file = new File(_episode.getMp3());
-					Uri uri = Uri.fromFile(file);
+					File mfile = new File(_episode.getMp3());
+					Uri uri = Uri.fromFile(mfile);
 					Intent playbackIntent = new Intent(Intent.CATEGORY_APP_MUSIC);
 					playbackIntent.setAction(Intent.ACTION_VIEW);
 					playbackIntent.setDataAndType(uri, "audio/*");

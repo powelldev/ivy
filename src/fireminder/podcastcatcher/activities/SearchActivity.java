@@ -1,5 +1,7 @@
 package fireminder.podcastcatcher.activities;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -53,11 +55,17 @@ public class SearchActivity extends ListActivity implements OnTaskCompleted {
 
 	/** Launches search */
 	public void search(View v) {
-		String s = search_field_et.getEditableText().toString();
-		if (!s.matches("")) {
+		String rawSearchTerm = search_field_et.getEditableText().toString();
+		// Sanitize string
+		if (!rawSearchTerm.matches("")) {
+			try {
+				rawSearchTerm = URLEncoder.encode(rawSearchTerm, "UTF-8");
+			} catch (UnsupportedEncodingException e) {
+				e.printStackTrace();
+			}
 			dialog = ProgressDialog.show(this, "Searching", "Please wait...",
 					true);
-			Helper.searchForPodcasts(this, s);
+			Helper.searchForPodcasts(this, rawSearchTerm);
 		}
 	}
 
@@ -70,7 +78,7 @@ public class SearchActivity extends ListActivity implements OnTaskCompleted {
 
 	@Override
 	public void onTaskCompleted(final List<String> result) {
-	AlertDialog.Builder mBuilder = new AlertDialog.Builder(this);
+		AlertDialog.Builder mBuilder = new AlertDialog.Builder(this);
 
 		dialog.dismiss();
 		if (result == null) {
@@ -80,7 +88,7 @@ public class SearchActivity extends ListActivity implements OnTaskCompleted {
 			finish();
 		} else if (result.size() > 1) {
 			final List<String> list = new ArrayList<String>();
-			for(int i = 0; i < result.size(); i++){
+			for (int i = 0; i < result.size(); i++) {
 				list.add(result.get(i));
 			}
 			OnClickListener listListener = new OnClickListener() {
@@ -91,10 +99,9 @@ public class SearchActivity extends ListActivity implements OnTaskCompleted {
 			};
 			CharSequence[] cs = list.toArray(new CharSequence[list.size()]);
 			mBuilder.setSingleChoiceItems(cs, -1, listListener);
-				
 
 			mBuilder.create().show();
-			//finishWithItem(result.get(2));
+			// finishWithItem(result.get(2));
 		} else {
 			Toast.makeText(this, "not found", Toast.LENGTH_LONG).show();
 			Intent returnIntent = new Intent();
@@ -103,6 +110,5 @@ public class SearchActivity extends ListActivity implements OnTaskCompleted {
 		}
 
 	}
-
 
 }
