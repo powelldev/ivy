@@ -1,4 +1,4 @@
-package fireminder.podcastcatcher;
+package fireminder.podcastcatcher.downloads;
 
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -19,10 +19,12 @@ import android.net.Uri;
 import android.os.Environment;
 import android.os.PowerManager;
 import android.util.Log;
-import fireminder.podcastcatcher.db.Episode;
+import fireminder.podcastcatcher.PodcastCatcher;
 import fireminder.podcastcatcher.db.EpisodeDAO;
 import fireminder.podcastcatcher.db.PodcastDAO;
 import fireminder.podcastcatcher.db.PodcastSqlHelper;
+import fireminder.podcastcatcher.utils.RssParser;
+import fireminder.podcastcatcher.valueobjects.Episode;
 
 public class ADownloadService extends IntentService {
 
@@ -134,7 +136,6 @@ public class ADownloadService extends IntentService {
 				.setDestinationInExternalPublicDir(
 						Environment.DIRECTORY_PODCASTS, fileName);
 		long enqueue = dm.enqueue(request);
-		PodcastCatcher.getInstance().addId(enqueue);
 		EpisodeDAO edao = new EpisodeDAO(this);
 		edao.open();
 		edao.updateEpisodeMp3(e.get_id(), Environment

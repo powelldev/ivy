@@ -1,4 +1,4 @@
-package fireminder.podcastcatcher;
+package fireminder.podcastcatcher.ui;
 
 import android.database.DataSetObserver;
 import android.view.View;

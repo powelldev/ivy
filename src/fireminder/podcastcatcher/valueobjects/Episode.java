@@ -1,4 +1,4 @@
-package fireminder.podcastcatcher.db;
+package fireminder.podcastcatcher.valueobjects;
 
 /***
  * A representation of an episode of a podcast.

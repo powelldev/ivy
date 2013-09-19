@@ -24,13 +24,13 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-import fireminder.podcastcatcher.BackgroundThread;
 import fireminder.podcastcatcher.R;
-import fireminder.podcastcatcher.db.Episode;
 import fireminder.podcastcatcher.db.EpisodeDAO;
-import fireminder.podcastcatcher.db.Podcast;
 import fireminder.podcastcatcher.db.PodcastDAO;
+import fireminder.podcastcatcher.downloads.BackgroundThread;
 import fireminder.podcastcatcher.ui.EpisodeAdapter;
+import fireminder.podcastcatcher.valueobjects.Episode;
+import fireminder.podcastcatcher.valueobjects.Podcast;
 
 /*
  * ChannelActivity displays a podcast's episodes. It gets the

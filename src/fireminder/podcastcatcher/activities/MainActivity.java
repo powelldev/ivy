@@ -18,12 +18,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
-import fireminder.podcastcatcher.ADownloadService;
-import fireminder.podcastcatcher.BackgroundThread;
 import fireminder.podcastcatcher.PlaySongCallback;
-import fireminder.podcastcatcher.PodcastFragment;
 import fireminder.podcastcatcher.R;
-import fireminder.podcastcatcher.db.Episode;
+import fireminder.podcastcatcher.downloads.ADownloadService;
+import fireminder.podcastcatcher.downloads.BackgroundThread;
+import fireminder.podcastcatcher.fragments.PodcastFragment;
+import fireminder.podcastcatcher.valueobjects.Episode;
 
 public class MainActivity extends FragmentActivity {
 	Uri data = null;

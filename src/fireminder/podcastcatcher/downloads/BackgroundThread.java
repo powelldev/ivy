@@ -1,4 +1,4 @@
-package fireminder.podcastcatcher;
+package fireminder.podcastcatcher.downloads;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
@@ -28,12 +28,18 @@ import android.os.AsyncTask;
 import android.os.Environment;
 import android.util.Log;
 import android.widget.Toast;
-import fireminder.podcastcatcher.db.Episode;
+import fireminder.podcastcatcher.OnTaskCompleted;
+import fireminder.podcastcatcher.PodcastCatcher;
+import fireminder.podcastcatcher.R;
+import fireminder.podcastcatcher.R.drawable;
 import fireminder.podcastcatcher.db.EpisodeDAO;
 import fireminder.podcastcatcher.db.EpisodeSqlHelper;
-import fireminder.podcastcatcher.db.Podcast;
 import fireminder.podcastcatcher.db.PodcastDAO;
 import fireminder.podcastcatcher.db.PodcastSqlHelper;
+import fireminder.podcastcatcher.utils.Helper;
+import fireminder.podcastcatcher.utils.RssParser;
+import fireminder.podcastcatcher.valueobjects.Episode;
+import fireminder.podcastcatcher.valueobjects.Podcast;
 
 /***
  * Encapsulation of the AsyncTasks this application utilizes.
@@ -164,7 +170,6 @@ public class BackgroundThread {
 								Environment.DIRECTORY_PODCASTS,
 								episode.getTitle() + ".mp3");
 				long enqueue = dm.enqueue(request);
-				PodcastCatcher.getInstance().addId(enqueue);
 			} else {
 				Log.d("Mp3 already exists", Environment.DIRECTORY_PODCASTS
 						+ episode.getTitle() + ".mp3");

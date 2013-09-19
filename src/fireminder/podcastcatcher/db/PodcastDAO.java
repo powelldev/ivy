@@ -3,6 +3,8 @@ package fireminder.podcastcatcher.db;
 import java.util.ArrayList;
 import java.util.List;
 
+import fireminder.podcastcatcher.valueobjects.Podcast;
+
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;

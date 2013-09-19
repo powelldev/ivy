@@ -18,9 +18,9 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
-import fireminder.podcastcatcher.Helper;
 import fireminder.podcastcatcher.OnTaskCompleted;
 import fireminder.podcastcatcher.R;
+import fireminder.podcastcatcher.utils.Helper;
 
 public class SearchActivity extends ListActivity implements OnTaskCompleted {
 	ListView resultsListView;

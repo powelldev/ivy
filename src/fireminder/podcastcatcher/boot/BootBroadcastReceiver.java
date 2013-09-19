@@ -1,4 +1,4 @@
-package fireminder.podcastcatcher.activities;
+package fireminder.podcastcatcher.boot;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;

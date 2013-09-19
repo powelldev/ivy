@@ -111,13 +111,13 @@
             </intent-filter>
         </activity>
 
-        <receiver android:name="fireminder.podcastcatcher.DmNotificationReceiver" >
+        <receiver android:name="fireminder.podcastcatcher.downloads.DmNotificationReceiver" >
             <intent-filter>
                 <action android:name="android.intent.action.DOWNLOAD_NOTIFICATION_CLICKED" />
             </intent-filter>
         </receiver>
 
-        <receiver android:name="fireminder.podcastcatcher.BootBroadcastReciever" >
+        <receiver android:name="fireminder.podcastcatcher.boot.BootBroadcastReciever" >
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETETD" />
             </intent-filter>

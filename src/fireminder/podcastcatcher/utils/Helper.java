@@ -1,4 +1,4 @@
-package fireminder.podcastcatcher;
+package fireminder.podcastcatcher.utils;
 
 import java.io.BufferedReader;
 import java.net.URL;
@@ -8,6 +8,8 @@ import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+
+import fireminder.podcastcatcher.downloads.BackgroundThread;
 
 import android.content.Context;
 import android.support.v4.app.FragmentActivity;

@@ -1,4 +1,4 @@
-package fireminder.podcastcatcher;
+package fireminder.podcastcatcher.utils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -17,10 +17,10 @@ import android.content.ContentValues;
 import android.util.Log;
 import android.util.Xml;
 import android.util.Xml.Encoding;
-import fireminder.podcastcatcher.db.Episode;
 import fireminder.podcastcatcher.db.EpisodeSqlHelper;
 import fireminder.podcastcatcher.db.PodcastSqlHelper;
 import fireminder.podcastcatcher.ui.LazyAdapter;
+import fireminder.podcastcatcher.valueobjects.Episode;
 
 /***
  * Contains methods for parsing data from RSS feeds.

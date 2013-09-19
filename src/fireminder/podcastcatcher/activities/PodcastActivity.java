@@ -39,15 +39,15 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Toast;
-import fireminder.podcastcatcher.BackgroundThread;
-import fireminder.podcastcatcher.ADownloadService;
-import fireminder.podcastcatcher.PodcastFragment;
 import fireminder.podcastcatcher.R;
-import fireminder.podcastcatcher.RssParser;
-import fireminder.podcastcatcher.db.Podcast;
 import fireminder.podcastcatcher.db.PodcastDAO;
 import fireminder.podcastcatcher.db.PodcastSqlHelper;
+import fireminder.podcastcatcher.downloads.ADownloadService;
+import fireminder.podcastcatcher.downloads.BackgroundThread;
+import fireminder.podcastcatcher.fragments.PodcastFragment;
 import fireminder.podcastcatcher.ui.PodcastAdapter;
+import fireminder.podcastcatcher.utils.RssParser;
+import fireminder.podcastcatcher.valueobjects.Podcast;
 
 public class PodcastActivity extends ListActivity {
 

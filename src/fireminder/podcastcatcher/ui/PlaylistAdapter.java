@@ -9,7 +9,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 import fireminder.podcastcatcher.R;
-import fireminder.podcastcatcher.db.Episode;
+import fireminder.podcastcatcher.valueobjects.Episode;
 
 public class PlaylistAdapter extends ArrayAdapter<Episode> {
 

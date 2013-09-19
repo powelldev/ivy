@@ -1,4 +1,4 @@
-package fireminder.podcastcatcher;
+package fireminder.podcastcatcher.fragments;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -33,12 +33,17 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Toast;
+import fireminder.podcastcatcher.R;
+import fireminder.podcastcatcher.R.id;
+import fireminder.podcastcatcher.R.layout;
 import fireminder.podcastcatcher.activities.ChannelActivity;
 import fireminder.podcastcatcher.db.EpisodeDAO;
-import fireminder.podcastcatcher.db.Podcast;
 import fireminder.podcastcatcher.db.PodcastDAO;
 import fireminder.podcastcatcher.db.PodcastSqlHelper;
+import fireminder.podcastcatcher.downloads.BackgroundThread;
 import fireminder.podcastcatcher.ui.PodcastAdapter;
+import fireminder.podcastcatcher.utils.RssParser;
+import fireminder.podcastcatcher.valueobjects.Podcast;
 
 public class PodcastFragment extends ListFragment {
 
