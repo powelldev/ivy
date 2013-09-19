@@ -20,7 +20,7 @@ public class PodcastDao2 {
 	public static final String COLUMN_IMAGELINK = "imagelink";
 
 	public static final String DATABASE_NAME = "podcast.db";
-	public static final int DATABASE_VER = 4;
+	public static final int DATABASE_VER = 5;
 
 	public static final String[] allColumns = { COLUMN_ID, COLUMN_TITLE,
 			COLUMN_DESCRIP, COLUMN_LINK, COLUMN_IMAGELINK };
@@ -30,7 +30,7 @@ public class PodcastDao2 {
 
 	public ArrayList<Podcast> getAll() {
 		ArrayList<Podcast> podcasts = new ArrayList<Podcast>();
-		SQLiteDatabase db = new SqlHelper(PodcastCatcher.getInstance())
+		SQLiteDatabase db = new SqlHelper(PodcastCatcher.getInstance().getContext())
 				.getReadableDatabase();
 		Cursor cursor = db.query(TABLE_NAME, allColumns, null, null, null,
 				null, null);
@@ -43,7 +43,7 @@ public class PodcastDao2 {
 	}
 
 	public Podcast get(long id) {
-		SQLiteDatabase db = new SqlHelper(PodcastCatcher.getInstance())
+		SQLiteDatabase db = new SqlHelper(PodcastCatcher.getInstance().getContext())
 				.getReadableDatabase();
 		Cursor cursor = db.query(TABLE_NAME, allColumns,
 				COLUMN_ID + " = " + id, null, null, null, null);
@@ -63,13 +63,13 @@ public class PodcastDao2 {
 	}
 
 	public void delete(Podcast podcast) {
-		SQLiteDatabase db = new SqlHelper(PodcastCatcher.getInstance()).getWritableDatabase();
+		SQLiteDatabase db = new SqlHelper(PodcastCatcher.getInstance().getContext()).getWritableDatabase();
 		db.delete(TABLE_NAME, COLUMN_ID + " = " + podcast.getId(), null);
 		db.close();
 	}
 
 	public void update(Podcast podcast) {
-		SQLiteDatabase db = new SqlHelper(PodcastCatcher.getInstance()).getWritableDatabase();
+		SQLiteDatabase db = new SqlHelper(PodcastCatcher.getInstance().getContext()).getWritableDatabase();
 		ContentValues cv = new ContentValues();
 		cv.put(COLUMN_ID, podcast.getId());
 		cv.put(COLUMN_TITLE, podcast.getTitle());
@@ -82,7 +82,7 @@ public class PodcastDao2 {
 
 	public long insert(Podcast podcast) {
 		long id = -1;
-		SQLiteDatabase db = new SqlHelper(PodcastCatcher.getInstance()).getWritableDatabase();
+		SQLiteDatabase db = new SqlHelper(PodcastCatcher.getInstance().getContext()).getWritableDatabase();
 		ContentValues cv = new ContentValues();
 		cv.put(COLUMN_TITLE, podcast.getTitle());
 		cv.put(COLUMN_LINK, podcast.getLink());
@@ -95,10 +95,9 @@ public class PodcastDao2 {
 
 	//TODO will change when ContentProvider added
 	public Cursor getAllPodcastsAsCursor(){
-		SQLiteDatabase db = new SqlHelper(PodcastCatcher.getInstance()).getReadableDatabase();
+		SQLiteDatabase db = new SqlHelper(PodcastCatcher.getInstance().getContext()).getWritableDatabase();
 		Cursor cursor = db.query(TABLE_NAME, allColumns,
 				null, null, null, null, null);
-		db.close();
 		return cursor;
 	}
 	

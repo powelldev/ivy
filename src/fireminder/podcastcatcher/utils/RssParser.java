@@ -15,12 +15,9 @@ import org.xmlpull.v1.XmlPullParserFactory;
 
 import android.content.ContentValues;
 import android.util.Log;
-import android.util.Xml;
-import android.util.Xml.Encoding;
 import fireminder.podcastcatcher.db.EpisodeSqlHelper;
-import fireminder.podcastcatcher.db.PodcastSqlHelper;
+import fireminder.podcastcatcher.db.PodcastDao2;
 import fireminder.podcastcatcher.ui.LazyAdapter;
-import fireminder.podcastcatcher.valueobjects.Episode;
 
 /***
  * Contains methods for parsing data from RSS feeds.
@@ -64,13 +61,13 @@ public class RssParser {
 					if(podcastItem.matches("title")){
 						podcastItem = xpp.nextText();
 						Log.d("TITLE: ", podcastItem);
-						contentValues.put(PodcastSqlHelper.COLUMN_TITLE, podcastItem);
+						contentValues.put(PodcastDao2.COLUMN_TITLE, podcastItem);
 						itemsCounter++;
 					}
 					else if(podcastItem.matches("description")){
 						podcastItem = xpp.nextText();
 						Log.d("DESCRIP: ", podcastItem);
-						contentValues.put(PodcastSqlHelper.COLUMN_DESCRIP, podcastItem);
+						contentValues.put(PodcastDao2.COLUMN_DESCRIP, podcastItem);
 						itemsCounter++;
 					}
 				}
@@ -107,13 +104,13 @@ public class RssParser {
 					if(podcastItem.matches("title")){
 						podcastItem = xpp.nextText();
 						Log.d("TITLE: ", podcastItem);
-						contentValues.put(PodcastSqlHelper.COLUMN_TITLE, podcastItem);
+						contentValues.put(PodcastDao2.COLUMN_TITLE, podcastItem);
 						itemsCounter++;
 					}
 					else if(podcastItem.matches("description")){
 						podcastItem = xpp.nextText();
 						Log.d("DESCRIP: ", podcastItem);
-						contentValues.put(PodcastSqlHelper.COLUMN_DESCRIP, podcastItem);
+						contentValues.put(PodcastDao2.COLUMN_DESCRIP, podcastItem);
 						itemsCounter++;
 					}
 				}

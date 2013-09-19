@@ -22,7 +22,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 import fireminder.podcastcatcher.R;
 import fireminder.podcastcatcher.db.EpisodeDAO;
-import fireminder.podcastcatcher.db.PodcastDAO;
 import fireminder.podcastcatcher.db.PodcastDao2;
 import fireminder.podcastcatcher.downloads.BackgroundThread;
 import fireminder.podcastcatcher.ui.EpisodeAdapter;

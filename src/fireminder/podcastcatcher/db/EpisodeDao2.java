@@ -9,6 +9,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 public class EpisodeDao2 {
@@ -22,7 +23,7 @@ public class EpisodeDao2 {
 	}
 
 	public void open() {
-		db = dbHelper.getWritableDatabase();
+	//	db = dbHelper.getWritableDatabase();
 	}
 
 	public void close() {
@@ -103,7 +104,7 @@ public class EpisodeDao2 {
 
 	public void deleteAllEpisodes(long id) {
 		if (db == null) {
-			db = dbHelper.getWritableDatabase();
+		//	db = dbHelper.getWritableDatabase();
 		}
 		db.delete(EpisodeSqlHelper.TABLE_NAME,
 				EpisodeSqlHelper.COLUMN_PODCAST_ID + " = ?", new String[] { ""
@@ -173,7 +174,7 @@ public class EpisodeDao2 {
 	 * Class containing commonly referenced strings and variables for
 	 * interacting with the database.
 	 */
-	public class EpisodeSqlHelper extends SQLiteOpenHelper {
+	public static class EpisodeSqlHelper extends SQLiteOpenHelper {
 
 		public static final String TABLE_NAME = "episodes";
 		public static final String COLUMN_ID = "_id";
@@ -185,7 +186,7 @@ public class EpisodeDao2 {
 		public static final String COLUMN_MP3 = "mp3";
 
 		public static final String DATABASE_NAME = "episode.db";
-		public static final int DATABASE_VER = 4;
+		public static final int DATABASE_VER = 5;
 
 		/*** A list of all the columns in the episode db, useful for queries */
 		public static final String[] allColumns = { COLUMN_ID,

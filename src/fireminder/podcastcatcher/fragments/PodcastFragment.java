@@ -15,7 +15,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.Loader;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -34,12 +33,9 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Toast;
 import fireminder.podcastcatcher.R;
-import fireminder.podcastcatcher.R.id;
-import fireminder.podcastcatcher.R.layout;
 import fireminder.podcastcatcher.activities.ChannelActivity;
 import fireminder.podcastcatcher.db.EpisodeDAO;
-import fireminder.podcastcatcher.db.PodcastDAO;
-import fireminder.podcastcatcher.db.PodcastSqlHelper;
+import fireminder.podcastcatcher.db.PodcastDao2;
 import fireminder.podcastcatcher.downloads.BackgroundThread;
 import fireminder.podcastcatcher.ui.PodcastAdapter;
 import fireminder.podcastcatcher.utils.RssParser;
@@ -50,7 +46,7 @@ public class PodcastFragment extends ListFragment {
 	final static String TAG = PodcastFragment.class.getSimpleName();
 
 	PodcastAdapter cursorAdapter;
-	public PodcastDAO podcastDao;
+	PodcastDao2 pdao = new PodcastDao2();
 	public BackgroundThread bt = new BackgroundThread(getActivity());
 	
 	@Override
@@ -64,10 +60,7 @@ public class PodcastFragment extends ListFragment {
 		
 		View rootView = inflater.inflate(R.layout.listfragment1, container, false);
 		
-		podcastDao = new PodcastDAO(getActivity());
-		podcastDao.open();
-		
-		updateListAdapter(getActivity());
+		updateListAdapter();
 		
         subscribeIfIntent();
 
@@ -176,26 +169,24 @@ public class PodcastFragment extends ListFragment {
 		}
 	};
 	
-	public void updateListAdapter(Context context){
-		podcastDao.open();
-		Cursor podcastCursor = podcastDao.getAllPodcastsAsCursor();
+	public void updateListAdapter(){
+		Cursor podcastCursor = pdao.getAllPodcastsAsCursor();
 		cursorAdapter = new PodcastAdapter(getActivity(), podcastCursor, 0);
 		setListAdapter(cursorAdapter);
 	}
 	
 
-	private class HttpDownloadTask extends AsyncTask<String, Void, ContentValues>{
+	private class HttpDownloadTask extends AsyncTask<String, Void, Podcast>{
 		long id;
 		@Override
 		protected void onPreExecute() {
 			super.onPreExecute();
-			podcastDao.open();
-			id = podcastDao.createAndInsertPodcast("Loading ...").getId();
-			updateListAdapter(getActivity());
+			id = pdao.insert(new Podcast("Loading ..."));
+			updateListAdapter();
 		}
 
 		@Override
-		protected ContentValues doInBackground(String... urls) {
+		protected Podcast doInBackground(String... urls) {
 			
 			BufferedReader reader = null;
 			ContentValues podcastData = null;
@@ -205,7 +196,7 @@ public class PodcastFragment extends ListFragment {
 				InputStream is = con.getInputStream();
 				reader = new BufferedReader(new InputStreamReader(is));
 				podcastData = RssParser.parsePodcastFromXml(is);
-				podcastData.put(PodcastSqlHelper.COLUMN_LINK, urls[0]);
+				podcastData.put(PodcastDao2.COLUMN_LINK, urls[0]);
 			} 
 			catch(MalformedURLException e) {
 				e.printStackTrace();
@@ -217,16 +208,20 @@ public class PodcastFragment extends ListFragment {
 				e.printStackTrace();
 				return null;
 			}
-			return podcastData;
+			Podcast podcast = new Podcast();
+			podcast.setLink(podcastData.getAsString(PodcastDao2.COLUMN_LINK));
+			podcast.setTitle(podcastData.getAsString(PodcastDao2.COLUMN_TITLE));
+			podcast.setDescription(podcastData.getAsString(PodcastDao2.COLUMN_DESCRIP));
+			podcast.setImagePath(podcastData.getAsString(PodcastDao2.COLUMN_IMAGELINK));
+			return podcast;
 		}
 		
 		@Override
-		protected void onPostExecute(ContentValues result){
-			podcastDao.open();
+		protected void onPostExecute(Podcast result){
 			// Delete the placeholder "Loading ..." item
-			podcastDao.deletePodcast(id);			
+			pdao.delete(pdao.get(id));
 			if(result != null){
-				Podcast podcast = podcastDao.insertPodcast(result);
+				Podcast podcast = pdao.get(pdao.insert(result));
 				BackgroundThread bt = new BackgroundThread(getActivity());
 				bt.getEpisodesFromBackgroundThread(podcast.getLink(), podcast.getId());
 //				bt.getPodcastImageFromBackgroundThread(podcast.getLink(), podcast.get_id());
@@ -236,7 +231,7 @@ public class PodcastFragment extends ListFragment {
 			else{
 				Toast.makeText(getActivity(), "Podcast subscription failed: Please check url", Toast.LENGTH_LONG).show();
 			}
-			updateListAdapter(getActivity());
+			updateListAdapter();
 		}
 	}
 	
@@ -258,12 +253,12 @@ public class PodcastFragment extends ListFragment {
 		@Override
 		public boolean onItemLongClick(AdapterView<?> arg0, View arg1,
 				int itemPosition, long itemId) {
-			podcastDao.deletePodcast(itemId);
+			pdao.delete(pdao.get(itemId));
 			EpisodeDAO edao = new EpisodeDAO(getActivity());
 			edao.open();
 			edao.deleteAllEpisodes(itemId);
 			edao.close();
-			updateListAdapter(getActivity());
+			updateListAdapter();
 			return false;
 		}
 	};

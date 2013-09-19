@@ -2,8 +2,6 @@ package fireminder.podcastcatcher.ui;
 
 import java.io.ByteArrayInputStream;
 
-import fireminder.podcastcatcher.R;
-import fireminder.podcastcatcher.db.PodcastSqlHelper;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -14,6 +12,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import fireminder.podcastcatcher.R;
+import fireminder.podcastcatcher.db.PodcastDao2;
 
 public class PodcastAdapter extends CursorAdapter{
 	
@@ -33,7 +33,7 @@ public class PodcastAdapter extends CursorAdapter{
 		ImageView iv = (ImageView) arg0.findViewById(R.id.podcast_iv);
 		
 		try {
-			ByteArrayInputStream is = new ByteArrayInputStream(cursor.getBlob(cursor.getColumnIndex(PodcastSqlHelper.COLUMN_IMAGELINK)));
+			ByteArrayInputStream is = new ByteArrayInputStream(cursor.getBlob(cursor.getColumnIndex(PodcastDao2.COLUMN_IMAGELINK)));
 			
 			BitmapFactory.Options options = new BitmapFactory.Options();
 			options.inSampleSize = 4;
@@ -45,7 +45,7 @@ public class PodcastAdapter extends CursorAdapter{
 		}
 		
 		TextView tv = (TextView) arg0.findViewById(R.id.podcast_tv);
-		tv.setText(cursor.getString(cursor.getColumnIndex(PodcastSqlHelper.COLUMN_TITLE)));
+		tv.setText(cursor.getString(cursor.getColumnIndex(PodcastDao2.COLUMN_TITLE)));
 	}
 
 	@Override

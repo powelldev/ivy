@@ -21,7 +21,6 @@ import android.os.PowerManager;
 import android.util.Log;
 import fireminder.podcastcatcher.db.EpisodeDAO;
 import fireminder.podcastcatcher.db.PodcastDao2;
-import fireminder.podcastcatcher.db.PodcastSqlHelper;
 import fireminder.podcastcatcher.utils.RssParser;
 import fireminder.podcastcatcher.valueobjects.Episode;
 
@@ -73,22 +72,22 @@ public class ADownloadService extends IntentService {
 		do {
 			Episode e = null;
 			e = edao.getLatestEpisode(cursor.getLong(cursor
-					.getColumnIndex(PodcastSqlHelper.COLUMN_ID)));
+					.getColumnIndex(PodcastDao2.COLUMN_ID)));
 			Log.e("IntentService",
 					""
 							+ cursor.getString(cursor
-									.getColumnIndex(PodcastSqlHelper.COLUMN_LINK)));
+									.getColumnIndex(PodcastDao2.COLUMN_LINK)));
 
 			try {
 				URL url = new URL(cursor.getString(cursor
-						.getColumnIndex(PodcastSqlHelper.COLUMN_LINK)));
+						.getColumnIndex(PodcastDao2.COLUMN_LINK)));
 				HttpURLConnection urlConn = (HttpURLConnection) url
 						.openConnection();
 				InputStream is = urlConn.getInputStream();
 
 				cvEpisodes = RssParser.parseNewEpisodesFromXml(is, cursor
 						.getInt(cursor
-								.getColumnIndex(PodcastSqlHelper.COLUMN_ID)), e
+								.getColumnIndex(PodcastDao2.COLUMN_ID)), e
 						.getPubDate());
 			} catch (Exception ex) {
 				ex.printStackTrace();

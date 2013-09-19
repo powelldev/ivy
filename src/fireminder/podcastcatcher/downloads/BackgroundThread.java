@@ -31,7 +31,6 @@ import fireminder.podcastcatcher.R;
 import fireminder.podcastcatcher.db.EpisodeDAO;
 import fireminder.podcastcatcher.db.EpisodeSqlHelper;
 import fireminder.podcastcatcher.db.PodcastDao2;
-import fireminder.podcastcatcher.db.PodcastSqlHelper;
 import fireminder.podcastcatcher.utils.Helper;
 import fireminder.podcastcatcher.utils.RssParser;
 import fireminder.podcastcatcher.valueobjects.Episode;
@@ -92,12 +91,6 @@ public class BackgroundThread {
 		// new ParseXmlForImage().execute(new String[] { url, "" + id });
 	}
 
-	/***
-	 * Launches AsyncTask for loading podcast details
-	 */
-	public void getPodcastInfoFromBackgroundThread(String url) {
-		new HttpDownloadTask().execute(new String[] { url });
-	}
 
 	/***
 	 * Downloads the given episodes enclosure file to
@@ -182,67 +175,7 @@ public class BackgroundThread {
 	/***
 	 * AsyncTask responsible for downloading a webpage
 	 */
-	private class HttpDownloadTask extends
-			AsyncTask<String, Void, ContentValues> {
-		long id;
-
-		@Override
-		protected void onPreExecute() {
-			super.onPreExecute();
-			id = pdao.insert(new Podcast("Loading..."));
-			Toast.makeText(context, "Loading new podcast...", Toast.LENGTH_LONG)
-					.show();
-			// updateListAdapter(context);
-		}
-
-		@Override
-		protected ContentValues doInBackground(String... urls) {
-
-			BufferedReader reader = null;
-			ContentValues podcastData = null;
-			try {
-				URL url = new URL(urls[0]);
-				HttpURLConnection con = (HttpURLConnection) url
-						.openConnection();
-				InputStream is = con.getInputStream();
-				reader = new BufferedReader(new InputStreamReader(is));
-				// Pass reader to parser
-				podcastData = RssParser.parsePodcastFromXml(reader);
-				// Add podcast url to content value
-				podcastData.put(PodcastSqlHelper.COLUMN_LINK, urls[0]);
-			} catch (Exception e) {
-				e.printStackTrace();
-				return null;
-			}
-			return podcastData;
-		}
-
-		@Override
-		protected void onPostExecute(ContentValues result) {
-			// Delete "Loading ..." item
-			pdao.delete(pdao.get(id));
-			if (result != null) {
-				Podcast podcast = podcastDao.insertPodcast(result);
-				// new ParseXmlForImage().execute(new String[]
-				// {podcast.getLink(), String.valueOf(podcast.get_id())});
-				BackgroundThread bt = new BackgroundThread(context);
-				bt.getEpisodesFromBackgroundThread(podcast.getLink(),
-						podcast.getId());
-				bt.getPodcastImageFromBackgroundThread(podcast.getLink(),
-						podcast.getImagePath(), podcast.getId());
-				Log.d("starting", "parsing for episodes");
-				// new ParseXmlForEpisodes().execute(new String[]
-				// {podcast.getLink(), String.valueOf(podcast.get_id())});
-			} else {
-				Toast.makeText(context,
-						"Podcast subscription failed =(, please check url",
-						Toast.LENGTH_LONG).show();
-			}
-			podcastDao.close();
-
-		}
-
-	}
+	
 
 	/***
 	 * AsyncTask responsible for parsing xml page for image
@@ -315,48 +248,41 @@ public class BackgroundThread {
 		}
 
 	}
-/*
-	private class ParseXmlForImageFile extends AsyncTask<String, Void, Void> {
-		@Override
-		protected void onPostExecute(Void result) {
 
-		}
-
-		@Override
-		protected Void doInBackground(String... params) {
-			ByteArrayOutputStream bytes = null;
-			Bitmap myBitmap;
-			try {
-				HttpURLConnection input = (HttpURLConnection) new URL(
-						params[0]).openConnection();
-				input.setDoInput(true);
-				input.connect();
-				 myBitmap = BitmapFactory.decodeStream(input.getInputStream());
-
-				bytes = new ByteArrayOutputStream();
-			} catch (Exception e) {
-			}
-			
-			  try { Log.e("***********TAG*********", params[0] + "File name: "
-			  + params[1]); URL url = new URL(params[0]); InputStream is =
-			  url.openStream(); OutputStream os = new
-			 FileOutputStream(params[1]);
-			  
-			  byte[] b = new byte[2048]; int length;
-			  
-			  while((length = is.read(b)) != -1) { os.write(b, 0, length); }
-			  
-			  is.close(); os.close();
-			  
-			  } catch (Exception e){
-			  
-			  }
-			 
-			return null;
-
-		}
-	}
-*/
+	/*
+	 * private class ParseXmlForImageFile extends AsyncTask<String, Void, Void>
+	 * {
+	 * 
+	 * @Override protected void onPostExecute(Void result) {
+	 * 
+	 * }
+	 * 
+	 * @Override protected Void doInBackground(String... params) {
+	 * ByteArrayOutputStream bytes = null; Bitmap myBitmap; try {
+	 * HttpURLConnection input = (HttpURLConnection) new URL(
+	 * params[0]).openConnection(); input.setDoInput(true); input.connect();
+	 * myBitmap = BitmapFactory.decodeStream(input.getInputStream());
+	 * 
+	 * bytes = new ByteArrayOutputStream(); } catch (Exception e) { }
+	 * 
+	 * try { Log.e("***********TAG*********", params[0] + "File name: " +
+	 * params[1]); URL url = new URL(params[0]); InputStream is =
+	 * url.openStream(); OutputStream os = new FileOutputStream(params[1]);
+	 * 
+	 * byte[] b = new byte[2048]; int length;
+	 * 
+	 * while((length = is.read(b)) != -1) { os.write(b, 0, length); }
+	 * 
+	 * is.close(); os.close();
+	 * 
+	 * } catch (Exception e){
+	 * 
+	 * }
+	 * 
+	 * return null;
+	 * 
+	 * } }
+	 */
 	/***
 	 * AsyncTask responsible for grabbing individual episodes from a podcast's
 	 * RSS.
@@ -480,15 +406,15 @@ public class BackgroundThread {
 			do {
 				Episode e = null;
 				e = edao.getLatestEpisode(cursor.getLong(cursor
-						.getColumnIndex(PodcastSqlHelper.COLUMN_ID)));
+						.getColumnIndex(PodcastDao2.COLUMN_ID)));
 				Log.e(TAG,
 						""
 								+ cursor.getString(cursor
-										.getColumnIndex(PodcastSqlHelper.COLUMN_LINK)));
+										.getColumnIndex(PodcastDao2.COLUMN_LINK)));
 
 				try {
 					URL url = new URL(cursor.getString(cursor
-							.getColumnIndex(PodcastSqlHelper.COLUMN_LINK)));
+							.getColumnIndex(PodcastDao2.COLUMN_LINK)));
 					HttpURLConnection urlConn = (HttpURLConnection) url
 							.openConnection();
 					InputStream is = urlConn.getInputStream();
@@ -497,7 +423,7 @@ public class BackgroundThread {
 							.parseNewEpisodesFromXml(
 									is,
 									cursor.getInt(cursor
-											.getColumnIndex(PodcastSqlHelper.COLUMN_ID)),
+											.getColumnIndex(PodcastDao2.COLUMN_ID)),
 									e.getPubDate());
 				} catch (Exception ex) {
 					ex.printStackTrace();
@@ -591,7 +517,7 @@ public class BackgroundThread {
 		EpisodeDAO eDao = new EpisodeDAO(context);
 		eDao.open();
 		List<Episode> episodes = eDao.getAllEpisodes(podcast_id);
-		for(Episode episode : episodes){
+		for (Episode episode : episodes) {
 			downloadEpisodeMp3(episode);
 		}
 		eDao.close();
