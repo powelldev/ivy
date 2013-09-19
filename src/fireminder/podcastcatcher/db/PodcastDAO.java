@@ -148,7 +148,7 @@ public class PodcastDAO {
 	public void updatePodcastImagelink(Podcast podcast) {
 		ContentValues args = new ContentValues();
 		args.put(PodcastSqlHelper.COLUMN_IMAGELINK, podcast.getImagePath());
-		long debug = db.update(PodcastSqlHelper.TABLE_NAME, args, PodcastSqlHelper.COLUMN_ID + " = " + podcast.get_id() , null);
+		long debug = db.update(PodcastSqlHelper.TABLE_NAME, args, PodcastSqlHelper.COLUMN_ID + " = " + podcast.getId() , null);
 		Log.d("rows updated: ", "" + debug);
 		
 		

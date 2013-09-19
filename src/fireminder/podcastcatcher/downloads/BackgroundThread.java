@@ -4,8 +4,6 @@ import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -29,12 +27,10 @@ import android.os.Environment;
 import android.util.Log;
 import android.widget.Toast;
 import fireminder.podcastcatcher.OnTaskCompleted;
-import fireminder.podcastcatcher.PodcastCatcher;
 import fireminder.podcastcatcher.R;
-import fireminder.podcastcatcher.R.drawable;
 import fireminder.podcastcatcher.db.EpisodeDAO;
 import fireminder.podcastcatcher.db.EpisodeSqlHelper;
-import fireminder.podcastcatcher.db.PodcastDAO;
+import fireminder.podcastcatcher.db.PodcastDao2;
 import fireminder.podcastcatcher.db.PodcastSqlHelper;
 import fireminder.podcastcatcher.utils.Helper;
 import fireminder.podcastcatcher.utils.RssParser;
@@ -48,6 +44,7 @@ public class BackgroundThread {
 
 	final static String TAG = BackgroundThread.class.getSimpleName();
 	private Context context;
+	PodcastDao2 pdao = new PodcastDao2();
 
 	public BackgroundThread(Context context) {
 		this.context = context;
@@ -187,15 +184,12 @@ public class BackgroundThread {
 	 */
 	private class HttpDownloadTask extends
 			AsyncTask<String, Void, ContentValues> {
-		PodcastDAO podcastDao;
 		long id;
 
 		@Override
 		protected void onPreExecute() {
 			super.onPreExecute();
-			podcastDao = new PodcastDAO(context);
-			podcastDao.open();
-			id = podcastDao.createAndInsertPodcast("Loading ...").get_id();
+			id = pdao.insert(new Podcast("Loading..."));
 			Toast.makeText(context, "Loading new podcast...", Toast.LENGTH_LONG)
 					.show();
 			// updateListAdapter(context);
@@ -225,18 +219,17 @@ public class BackgroundThread {
 
 		@Override
 		protected void onPostExecute(ContentValues result) {
-			podcastDao.open();
 			// Delete "Loading ..." item
-			podcastDao.deletePodcast(id);
+			pdao.delete(pdao.get(id));
 			if (result != null) {
 				Podcast podcast = podcastDao.insertPodcast(result);
 				// new ParseXmlForImage().execute(new String[]
 				// {podcast.getLink(), String.valueOf(podcast.get_id())});
 				BackgroundThread bt = new BackgroundThread(context);
 				bt.getEpisodesFromBackgroundThread(podcast.getLink(),
-						podcast.get_id());
+						podcast.getId());
 				bt.getPodcastImageFromBackgroundThread(podcast.getLink(),
-						podcast.getImagePath(), podcast.get_id());
+						podcast.getImagePath(), podcast.getId());
 				Log.d("starting", "parsing for episodes");
 				// new ParseXmlForEpisodes().execute(new String[]
 				// {podcast.getLink(), String.valueOf(podcast.get_id())});
@@ -257,7 +250,6 @@ public class BackgroundThread {
 	private class ParseXmlForImage extends
 			AsyncTask<String, Void, ByteArrayBuffer> {
 		String idForQuery;
-		PodcastDAO podcastDao;
 
 		@Override
 		protected ByteArrayBuffer doInBackground(String... urls) {
@@ -299,29 +291,25 @@ public class BackgroundThread {
 		@Override
 		protected void onPostExecute(ByteArrayBuffer result) {
 
-			podcastDao = new PodcastDAO(context);
-			podcastDao.open();
 			if (result != null) {
 				Log.d("Add this to db: ", result + " AT " + idForQuery);
-				Podcast podcast = podcastDao.getPodcast(Long
-						.parseLong(idForQuery));
+				Podcast podcast = pdao.get(Long.parseLong(idForQuery));
 				// podcast.setImagelink(result.toByteArray());
-				podcastDao.updatePodcastImagelink(podcast);
+				pdao.update(podcast);
 				// BackgroundThread bt = new BackgroundThread(getActivity());
 				// bt.getEpisodesFromBackgroundThread(podcast.getLink(),
 				// podcast.get_id());
 				// new ParseXmlForEpisodes().execute(new String[]
 				// {podcast.getLink(), String.valueOf(podcast.get_id())});
 			} else {
-				Podcast podcast = podcastDao.getPodcast(Long
-						.parseLong(idForQuery));
+				Podcast podcast = pdao.get(Long.parseLong(idForQuery));
 				Bitmap bmp = BitmapFactory.decodeResource(
 						context.getResources(), R.drawable.ic_launcher);
 				ByteArrayOutputStream stream = new ByteArrayOutputStream();
 				bmp.compress(Bitmap.CompressFormat.PNG, 100, stream);
 				byte[] byteArray = stream.toByteArray();
 				// podcast.setImagelink(byteArray);
-				podcastDao.updatePodcastImagelink(podcast);
+				pdao.update(podcast);
 			}
 
 		}
@@ -432,9 +420,7 @@ public class BackgroundThread {
 		protected Episode[] doInBackground(Integer... params) {
 			Integer podcast_id = params[0];
 
-			PodcastDAO pdao = new PodcastDAO(context);
-			pdao.open();
-			Podcast podcast = pdao.getPodcast(podcast_id);
+			Podcast podcast = pdao.get(podcast_id);
 			EpisodeDAO edao = new EpisodeDAO(context);
 			edao.open();
 			Episode latest = edao.getLatestEpisode(podcast_id);
@@ -451,7 +437,7 @@ public class BackgroundThread {
 				InputStream is = urlConn.getInputStream();
 
 				episodes = RssParser.parseNewEpisodesFromXml(is,
-						podcast.get_id(), latest.getPubDate());
+						podcast.getId(), latest.getPubDate());
 				// TODO WORKING HERE
 			} catch (Exception ex) {
 				ex.printStackTrace();
@@ -462,7 +448,6 @@ public class BackgroundThread {
 					Log.d(TAG, le.getTitle() + " " + le.getPubDate());
 				}
 			}
-			pdao.close();
 			edao.close();
 			// Open Podcast's URL
 			// Parse Podcast's url for episodes until an episodes pubDate is <=
@@ -478,7 +463,6 @@ public class BackgroundThread {
 
 	private class CheckXmlForNewEpisodes extends
 			AsyncTask<Void, Void, Episode[]> {
-		PodcastDAO pdao;
 		EpisodeDAO edao;
 
 		@Override
@@ -486,10 +470,8 @@ public class BackgroundThread {
 
 			Cursor cursor = null;
 			edao = new EpisodeDAO(context);
-			pdao = new PodcastDAO(context);
 			edao.open();
 			// Get a List of Podcasts
-			pdao.open();
 			cursor = pdao.getAllPodcastsAsCursor();
 
 			cursor.moveToFirst();
@@ -605,7 +587,7 @@ public class BackgroundThread {
 
 	}
 
-	public void downloadAll(Integer podcast_id) {
+	public void downloadAll(long podcast_id) {
 		EpisodeDAO eDao = new EpisodeDAO(context);
 		eDao.open();
 		List<Episode> episodes = eDao.getAllEpisodes(podcast_id);

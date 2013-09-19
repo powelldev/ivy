@@ -190,7 +190,7 @@ public class PodcastFragment extends ListFragment {
 		protected void onPreExecute() {
 			super.onPreExecute();
 			podcastDao.open();
-			id = podcastDao.createAndInsertPodcast("Loading ...").get_id();
+			id = podcastDao.createAndInsertPodcast("Loading ...").getId();
 			updateListAdapter(getActivity());
 		}
 
@@ -228,7 +228,7 @@ public class PodcastFragment extends ListFragment {
 			if(result != null){
 				Podcast podcast = podcastDao.insertPodcast(result);
 				BackgroundThread bt = new BackgroundThread(getActivity());
-				bt.getEpisodesFromBackgroundThread(podcast.getLink(), podcast.get_id());
+				bt.getEpisodesFromBackgroundThread(podcast.getLink(), podcast.getId());
 //				bt.getPodcastImageFromBackgroundThread(podcast.getLink(), podcast.get_id());
 				Log.d(TAG, "parsing for episodes");
 				//new ParseXmlForEpisodes().execute(new String[] {podcast.getLink(), String.valueOf(podcast.get_id())});

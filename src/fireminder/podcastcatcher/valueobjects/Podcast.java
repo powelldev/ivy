@@ -4,20 +4,20 @@ public class Podcast {
 
 	public Podcast(){};
 	public Podcast(String title){
-		this._id = null;
+		this._id = 0;
 		this.title = title;
 	}
-	public Podcast(Integer _id, String title) {
+	public Podcast(long _id, String title) {
 		super();
 		this._id = _id;
 		this.title = title;
 	}
-	public Podcast(Integer _id, String title, String descrip, String link) {
+	public Podcast(long _id, String title, String descrip, String link) {
 		super();
 		this._id = _id;
 		this.title = title;
 	}
-	private Integer _id;
+	private long _id;
 	private String title;
 	private String description;
 	private String link;
@@ -25,10 +25,10 @@ public class Podcast {
 	
 	
 	public String toString() { return title; }
-	public Integer get_id() {
+	public long getId() {
 		return _id;
 	}
-	public void setId(Integer _id) {
+	public void setId(long _id) {
 		this._id = _id;
 	}
 	public String getTitle() {

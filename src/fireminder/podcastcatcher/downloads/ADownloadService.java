@@ -19,14 +19,15 @@ import android.net.Uri;
 import android.os.Environment;
 import android.os.PowerManager;
 import android.util.Log;
-import fireminder.podcastcatcher.PodcastCatcher;
 import fireminder.podcastcatcher.db.EpisodeDAO;
-import fireminder.podcastcatcher.db.PodcastDAO;
+import fireminder.podcastcatcher.db.PodcastDao2;
 import fireminder.podcastcatcher.db.PodcastSqlHelper;
 import fireminder.podcastcatcher.utils.RssParser;
 import fireminder.podcastcatcher.valueobjects.Episode;
 
 public class ADownloadService extends IntentService {
+	
+	PodcastDao2 pdao = new PodcastDao2();
 
 	public ADownloadService() {
 		super("DownloadService");
@@ -55,17 +56,14 @@ public class ADownloadService extends IntentService {
 
 	}
 
-	PodcastDAO pdao;
 	EpisodeDAO edao;
 
 	protected List<Episode> doInBackground() {
 
 		Cursor cursor = null;
 		edao = new EpisodeDAO(this);
-		pdao = new PodcastDAO(this);
 		edao.open();
 		// Get a List of Podcasts
-		pdao.open();
 		cursor = pdao.getAllPodcastsAsCursor();
 
 		cursor.moveToFirst();

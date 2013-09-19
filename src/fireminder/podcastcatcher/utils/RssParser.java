@@ -364,7 +364,7 @@ public class RssParser {
 		return episodes;
 	} // end parseEpisodesFromXml()
 
-	public static List<ContentValues> parseNewEpisodesFromXml(InputStream stream, Integer id, long oldPubDate) throws XmlPullParserException, IOException, ParseException {
+	public static List<ContentValues> parseNewEpisodesFromXml(InputStream stream, long id, long oldPubDate) throws XmlPullParserException, IOException, ParseException {
         List<ContentValues> episodes = new ArrayList<ContentValues>();
         final int ITEM_DEPTH = 4;
         XmlPullParserFactory factory = XmlPullParserFactory.newInstance();

@@ -1,7 +1,6 @@
 package fireminder.podcastcatcher.activities;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -23,7 +22,6 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.text.ClipboardManager;
 import android.util.Log;
@@ -41,6 +39,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 import fireminder.podcastcatcher.R;
 import fireminder.podcastcatcher.db.PodcastDAO;
+import fireminder.podcastcatcher.db.PodcastDao2;
 import fireminder.podcastcatcher.db.PodcastSqlHelper;
 import fireminder.podcastcatcher.downloads.ADownloadService;
 import fireminder.podcastcatcher.downloads.BackgroundThread;
@@ -54,9 +53,8 @@ public class PodcastActivity extends ListActivity {
 	final static String TAG = PodcastFragment.class.getSimpleName();
 	Intent intent;
 	static Handler mHandler;
+	PodcastDao2 pdao = new PodcastDao2();
 
-	/* Podcast Database Object */
-	public PodcastDAO podcastDao;
 	public BackgroundThread bt = new BackgroundThread(this);
 
 	@Override
@@ -64,8 +62,6 @@ public class PodcastActivity extends ListActivity {
 		super.onCreate(icile);
 		setContentView(R.layout.listfragment1);
 
-		podcastDao = new PodcastDAO(this);
-		podcastDao.open();
 		updateListAdapter(this);
 		initialize();
 		try {
@@ -243,27 +239,25 @@ public class PodcastActivity extends ListActivity {
 	};
 
 	public void updateListAdapter(Context context) {
-		podcastDao.open();
-		Cursor podcastCursor = podcastDao.getAllPodcastsAsCursor();
+		Cursor podcastCursor = pdao.getAllPodcastsAsCursor();
 		PodcastAdapter cursorAdapter = new PodcastAdapter(this, podcastCursor,
 				0);
 		setListAdapter(cursorAdapter);
 	}
 
 	private class HttpDownloadTask extends
-			AsyncTask<String, Void, ContentValues> {
+			AsyncTask<String, Void, Podcast> {
 		long id;
 
 		@Override
 		protected void onPreExecute() {
 			super.onPreExecute();
-			podcastDao.open();
-			id = podcastDao.createAndInsertPodcast("Loading ...").get_id();
+			id = pdao.insert(new Podcast("Loading..."));
 			updateListAdapter(getApplicationContext());
 		}
 
 		@Override
-		protected ContentValues doInBackground(String... urls) {
+		protected Podcast doInBackground(String... urls) {
 
 			BufferedReader reader = null;
 			ContentValues podcastData = null;
@@ -292,20 +286,17 @@ public class PodcastActivity extends ListActivity {
 		}
 
 		@Override
-		protected void onPostExecute(ContentValues result) {
-			podcastDao.open();
-
+		protected void onPostExecute(Podcast result) {
 			// Delete the placeholder "Loading ..." item
-			podcastDao.deletePodcast(id);
+			pdao.delete(pdao.get(id));
 			if (result != null) {
-				Podcast podcast = podcastDao.insertPodcast(result);
-				podcastDao.updatePodcastImagelink(podcast);
+				result = pdao.get(pdao.insert(result));
 				BackgroundThread bt = new BackgroundThread(
 						getApplicationContext());
-				bt.getEpisodesFromBackgroundThread(podcast.getLink(),
-						podcast.get_id());
-				bt.getPodcastImageFromBackgroundThread(podcast.getLink(), podcast.getImagePath(),
-						podcast.get_id());
+				bt.getEpisodesFromBackgroundThread(result.getLink(),
+						result.getId());
+				bt.getPodcastImageFromBackgroundThread(result.getLink(), result.getImagePath(),
+						result.getId());
 				Log.d(TAG, "parsing for episodes");
 				// new ParseXmlForEpisodes().execute(new String[]
 				// {podcast.getLink(), String.valueOf(podcast.get_id())});
@@ -365,8 +356,7 @@ public class PodcastActivity extends ListActivity {
 	};
 
 	public void deletePodcast(long itemId) {
-		podcastDao.open();
-		podcastDao.deletePodcast(itemId);
+		pdao.delete(pdao.get(itemId));
 		updateListAdapter(getApplicationContext());
 	}
 

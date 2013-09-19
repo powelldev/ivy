@@ -1,6 +1,5 @@
 package fireminder.podcastcatcher.activities;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 
 import android.annotation.SuppressLint;
@@ -8,11 +7,8 @@ import android.app.ListActivity;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -27,6 +23,7 @@ import android.widget.Toast;
 import fireminder.podcastcatcher.R;
 import fireminder.podcastcatcher.db.EpisodeDAO;
 import fireminder.podcastcatcher.db.PodcastDAO;
+import fireminder.podcastcatcher.db.PodcastDao2;
 import fireminder.podcastcatcher.downloads.BackgroundThread;
 import fireminder.podcastcatcher.ui.EpisodeAdapter;
 import fireminder.podcastcatcher.valueobjects.Episode;
@@ -45,8 +42,10 @@ public class ChannelActivity extends ListActivity {
 	TextView descrip_tv;
 	ImageView image_iv;
 	EpisodeDAO edao;
-	Integer podcast_id;
+	long podcast_id;
 	ImageButton play_btn;
+	
+	PodcastDao2 pdao = new PodcastDao2();
 
 	@Override
 	protected void onCreate(Bundle bundle) {
@@ -96,18 +95,17 @@ public class ChannelActivity extends ListActivity {
 	private void setupViews() {
 		Intent intent;
 		long id;
-		PodcastDAO pdao;
 		Podcast podcast;
 
 		intent = getIntent();
 		id = intent.getLongExtra("channel_id", 0);
 
-		podcast = getPodcast(id);
+		podcast = pdao.get(id);
 
 		edao = new EpisodeDAO(this);
 		edao.open();
 
-		podcast_id = podcast.get_id();
+		podcast_id = podcast.getId();
 
 		title_tv.setText(podcast.getTitle());
 
@@ -169,18 +167,8 @@ public class ChannelActivity extends ListActivity {
 		});
 
 		registerForContextMenu(getListView());
-		updateListAdapter(this, podcast.get_id());
+		updateListAdapter(this, podcast.getId());
 
-	}
-
-	private Podcast getPodcast(long id) {
-		PodcastDAO pdao;
-		Podcast podcast;
-		pdao = new PodcastDAO(getApplicationContext());
-		pdao.open();
-		podcast = pdao.getPodcast(id);
-		pdao.close();
-		return podcast;
 	}
 
 	private void updateListAdapter(Context context, long id) {
