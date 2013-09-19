@@ -19,7 +19,7 @@ import android.net.Uri;
 import android.os.Environment;
 import android.os.PowerManager;
 import android.util.Log;
-import fireminder.podcastcatcher.db.EpisodeDAO;
+import fireminder.podcastcatcher.db.EpisodeDao2;
 import fireminder.podcastcatcher.db.PodcastDao2;
 import fireminder.podcastcatcher.utils.RssParser;
 import fireminder.podcastcatcher.valueobjects.Episode;
@@ -27,6 +27,7 @@ import fireminder.podcastcatcher.valueobjects.Episode;
 public class ADownloadService extends IntentService {
 	
 	PodcastDao2 pdao = new PodcastDao2();
+	EpisodeDao2 edao = new EpisodeDao2();
 
 	public ADownloadService() {
 		super("DownloadService");
@@ -55,13 +56,11 @@ public class ADownloadService extends IntentService {
 
 	}
 
-	EpisodeDAO edao;
+
 
 	protected List<Episode> doInBackground() {
 
 		Cursor cursor = null;
-		edao = new EpisodeDAO(this);
-		edao.open();
 		// Get a List of Podcasts
 		cursor = pdao.getAllPodcastsAsCursor();
 
@@ -97,7 +96,15 @@ public class ADownloadService extends IntentService {
 				for (ContentValues cv : cvEpisodes) {
 					// TODO Download automatically?
 					// Add to playlist?
-					Episode le = edao.insertEpisode(cv);
+
+					Episode episode = new Episode();
+					episode.setTitle(cv.getAsString(EpisodeDao2.COLUMN_TITLE));
+					episode.setDescription(cv.getAsString(EpisodeDao2.COLUMN_DESCRIP));
+					episode.setUrl(cv.getAsString(EpisodeDao2.COLUMN_URL));
+					episode.setPubDate(cv.getAsLong(EpisodeDao2.COLUMN_PUBDATE));
+					episode.setMp3(cv.getAsString(EpisodeDao2.COLUMN_MP3));
+					episode.setPodcast_id(cv.getAsLong(EpisodeDao2.COLUMN_PODCAST_ID));
+					Episode le = edao.get(edao.insert(episode));
 					episodes.add(le);
 					Log.d("IntentService", le.getTitle() + " " + le.getPubDate());
 				}
@@ -133,13 +140,8 @@ public class ADownloadService extends IntentService {
 				.setDestinationInExternalPublicDir(
 						Environment.DIRECTORY_PODCASTS, fileName);
 		long enqueue = dm.enqueue(request);
-		EpisodeDAO edao = new EpisodeDAO(this);
-		edao.open();
-		edao.updateEpisodeMp3(e.get_id(), Environment
-				.getExternalStorageDirectory().getPath()
-				+ "/"
-				+ Environment.DIRECTORY_PODCASTS + fileName);
-		edao.close();
+		e.setMp3(Environment.getExternalStorageDirectory().getPath() + "/" + Environment.DIRECTORY_PODCASTS + fileName);
+		edao.update(e);
 	}
 
 }

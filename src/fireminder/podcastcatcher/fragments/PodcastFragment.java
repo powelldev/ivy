@@ -34,7 +34,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 import fireminder.podcastcatcher.R;
 import fireminder.podcastcatcher.activities.ChannelActivity;
-import fireminder.podcastcatcher.db.EpisodeDAO;
+import fireminder.podcastcatcher.db.EpisodeDao2;
 import fireminder.podcastcatcher.db.PodcastDao2;
 import fireminder.podcastcatcher.downloads.BackgroundThread;
 import fireminder.podcastcatcher.ui.PodcastAdapter;
@@ -47,6 +47,7 @@ public class PodcastFragment extends ListFragment {
 
 	PodcastAdapter cursorAdapter;
 	PodcastDao2 pdao = new PodcastDao2();
+	EpisodeDao2 edao = new EpisodeDao2();
 	public BackgroundThread bt = new BackgroundThread(getActivity());
 	
 	@Override
@@ -224,7 +225,7 @@ public class PodcastFragment extends ListFragment {
 				Podcast podcast = pdao.get(pdao.insert(result));
 				BackgroundThread bt = new BackgroundThread(getActivity());
 				bt.getEpisodesFromBackgroundThread(podcast.getLink(), podcast.getId());
-//				bt.getPodcastImageFromBackgroundThread(podcast.getLink(), podcast.get_id());
+				bt.getPodcastImageFromBackgroundThread(podcast.getLink(), podcast.getId());
 				Log.d(TAG, "parsing for episodes");
 				//new ParseXmlForEpisodes().execute(new String[] {podcast.getLink(), String.valueOf(podcast.get_id())});
 			}
@@ -254,10 +255,7 @@ public class PodcastFragment extends ListFragment {
 		public boolean onItemLongClick(AdapterView<?> arg0, View arg1,
 				int itemPosition, long itemId) {
 			pdao.delete(pdao.get(itemId));
-			EpisodeDAO edao = new EpisodeDAO(getActivity());
-			edao.open();
 			edao.deleteAllEpisodes(itemId);
-			edao.close();
 			updateListAdapter();
 			return false;
 		}

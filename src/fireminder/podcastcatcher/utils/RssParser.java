@@ -15,7 +15,7 @@ import org.xmlpull.v1.XmlPullParserFactory;
 
 import android.content.ContentValues;
 import android.util.Log;
-import fireminder.podcastcatcher.db.EpisodeSqlHelper;
+import fireminder.podcastcatcher.db.EpisodeDao2;
 import fireminder.podcastcatcher.db.PodcastDao2;
 import fireminder.podcastcatcher.ui.LazyAdapter;
 
@@ -312,12 +312,12 @@ public class RssParser {
 				if(name.matches("title") && xpp.getDepth()==ITEM_DEPTH){
 					content = xpp.nextText();
 					test += content + "\n";
-					cv.put(EpisodeSqlHelper.COLUMN_TITLE, content);
+					cv.put(EpisodeDao2.COLUMN_TITLE, content);
 				}
 				else if(name.matches("description") && xpp.getDepth()==ITEM_DEPTH){
 					content = xpp.nextText();
 					test += content + "\n";
-					cv.put(EpisodeSqlHelper.COLUMN_DESCRIP, content);
+					cv.put(EpisodeDao2.COLUMN_DESCRIP, content);
 				}
 				else if(name.matches("pubDate") && xpp.getDepth()==ITEM_DEPTH){
 					content = xpp.nextText();
@@ -325,13 +325,13 @@ public class RssParser {
 					Date pubDate = pubDateFormatter.parse(content);
 					Log.d("pubdate", content);
 					Log.d("pubDate", "" + LazyAdapter.getDate(pubDate.getTime(), "EEE, dd MMM yyyy HH:mm:ss zzzz"));
-					cv.put(EpisodeSqlHelper.COLUMN_PUBDATE, pubDate.getTime());
+					cv.put(EpisodeDao2.COLUMN_PUBDATE, pubDate.getTime());
 				}
 				else if(name.matches("enclosure") && xpp.getDepth()==ITEM_DEPTH){
 					content = xpp.getAttributeValue(null, "url");
 					encl = true;
 					test += content + "\n";
-					cv.put(EpisodeSqlHelper.COLUMN_URL, content);
+					cv.put(EpisodeDao2.COLUMN_URL, content);
 				}
 				break;
 			
@@ -342,7 +342,7 @@ public class RssParser {
 				test += "item ended" + "\n";
 				if(encl == true){
 					testStringList.add(test);
-					cv.put(EpisodeSqlHelper.COLUMN_PODCAST_ID, id);
+					cv.put(EpisodeDao2.COLUMN_PODCAST_ID, id);
 					episodes.add(cv);
 					cv = new ContentValues();
 					test = ""; encl = false;
@@ -394,13 +394,13 @@ public class RssParser {
                     if(name.matches("title") && xpp.getDepth()==ITEM_DEPTH) {
                         content = xpp.nextText();
                         test += content + "\n";
-                        cv.put(EpisodeSqlHelper.COLUMN_TITLE, content);
+                        cv.put(EpisodeDao2.COLUMN_TITLE, content);
                     }
                     else if(name.matches("description") && xpp.getDepth() ==
                             ITEM_DEPTH){
                         content = xpp.nextText();
                         test += content + "\n";
-                        cv.put(EpisodeSqlHelper.COLUMN_DESCRIP, content);
+                        cv.put(EpisodeDao2.COLUMN_DESCRIP, content);
                     }
                     else if(name.matches("pubDate") && xpp.getDepth() ==
                             ITEM_DEPTH){
@@ -412,14 +412,14 @@ public class RssParser {
                             oldEpisodeFound = true;
                             break;
                         }
-                        cv.put(EpisodeSqlHelper.COLUMN_PUBDATE, pubDate.getTime());
+                        cv.put(EpisodeDao2.COLUMN_PUBDATE, pubDate.getTime());
                     }
 
                     else if(name.matches("enclosure") && xpp.getDepth() == ITEM_DEPTH){
                         content = xpp.getAttributeValue(null, "url");
                         encl = true;
                         test += content + "\n";
-                        cv.put(EpisodeSqlHelper.COLUMN_URL, content);
+                        cv.put(EpisodeDao2.COLUMN_URL, content);
                     }
                     break;
                 case(XmlPullParser.END_TAG):
@@ -427,7 +427,7 @@ public class RssParser {
                         test+= "item ended" + "\n";
                         if(encl==true && oldEpisodeFound == false){
                             testStringList.add(test);
-                            cv.put(EpisodeSqlHelper.COLUMN_PODCAST_ID, id);
+                            cv.put(EpisodeDao2.COLUMN_PODCAST_ID, id);
                             episodes.add(cv);
                             cv = new ContentValues();
                             test = ""; encl = false;

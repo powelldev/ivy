@@ -21,7 +21,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import fireminder.podcastcatcher.R;
-import fireminder.podcastcatcher.db.EpisodeDAO;
+import fireminder.podcastcatcher.db.EpisodeDao2;
 import fireminder.podcastcatcher.db.PodcastDao2;
 import fireminder.podcastcatcher.downloads.BackgroundThread;
 import fireminder.podcastcatcher.ui.EpisodeAdapter;
@@ -40,9 +40,10 @@ public class ChannelActivity extends ListActivity {
 	TextView title_tv;
 	TextView descrip_tv;
 	ImageView image_iv;
-	EpisodeDAO edao;
 	long podcast_id;
 	ImageButton play_btn;
+	
+	EpisodeDao2 edao = new EpisodeDao2();
 	
 	PodcastDao2 pdao = new PodcastDao2();
 
@@ -70,8 +71,7 @@ public class ChannelActivity extends ListActivity {
 		switch (item.getItemId()) {
 		case R.id.delete:
 			Log.d("menu delete", "Delete clicked: " + info.id);
-			edao.open();
-			edao.deleteEpisode(info.id);
+			edao.delete(edao.get(info.id));
 			updateListAdapter(getApplicationContext(), podcast_id);
 			return true;
 		case R.id.downloadAll:
@@ -84,7 +84,6 @@ public class ChannelActivity extends ListActivity {
 	@Override
 	protected void onPause() {
 		super.onPause();
-		edao.close();
 	}
 
 	/**
@@ -100,9 +99,6 @@ public class ChannelActivity extends ListActivity {
 		id = intent.getLongExtra("channel_id", 0);
 
 		podcast = pdao.get(id);
-
-		edao = new EpisodeDAO(this);
-		edao.open();
 
 		podcast_id = podcast.getId();
 
@@ -127,8 +123,7 @@ public class ChannelActivity extends ListActivity {
 				Episode _episode;
 				BackgroundThread bt;
 
-				edao.open();
-				_episode = edao.getEpisode(episode_id);
+				_episode = edao.get(episode_id);
 
 				if (_episode.getMp3() == null) {
 					Toast.makeText(getApplicationContext(), "Downloading ...",

@@ -28,8 +28,7 @@ import android.util.Log;
 import android.widget.Toast;
 import fireminder.podcastcatcher.OnTaskCompleted;
 import fireminder.podcastcatcher.R;
-import fireminder.podcastcatcher.db.EpisodeDAO;
-import fireminder.podcastcatcher.db.EpisodeSqlHelper;
+import fireminder.podcastcatcher.db.EpisodeDao2;
 import fireminder.podcastcatcher.db.PodcastDao2;
 import fireminder.podcastcatcher.utils.Helper;
 import fireminder.podcastcatcher.utils.RssParser;
@@ -44,6 +43,7 @@ public class BackgroundThread {
 	final static String TAG = BackgroundThread.class.getSimpleName();
 	private Context context;
 	PodcastDao2 pdao = new PodcastDao2();
+	EpisodeDao2 edao = new EpisodeDao2();
 
 	public BackgroundThread(Context context) {
 		this.context = context;
@@ -84,11 +84,11 @@ public class BackgroundThread {
 	 * @param id
 	 */
 	public void getPodcastImageFromBackgroundThread(String url,
-			String filePath, long id) {
-		new ParseXmlForImage().executeOnExecutor(
-				AsyncTask.THREAD_POOL_EXECUTOR, new String[] { url, filePath,
-						"" + id });
-		// new ParseXmlForImage().execute(new String[] { url, "" + id });
+			long id) {
+		//new ParseXmlForImage().executeOnExecutor(
+		//		AsyncTask.THREAD_POOL_EXECUTOR, new String[] { url, filePath,
+		//				"" + id });
+		 new ParseXmlForImage().execute(new String[] { url, "" + id });
 	}
 
 
@@ -122,13 +122,8 @@ public class BackgroundThread {
 							Environment.DIRECTORY_PODCASTS, fileName);
 			long enqueue = dm.enqueue(request);
 		}
-		EpisodeDAO edao = new EpisodeDAO(context);
-		edao.open();
-		edao.updateEpisodeMp3(e.get_id(), Environment
-				.getExternalStorageDirectory().getPath()
-				+ "/"
-				+ Environment.DIRECTORY_PODCASTS + fileName);
-		edao.close();
+		e.setMp3(Environment.getExternalStorageDirectory().getPath() + "/" + Environment.DIRECTORY_PODCASTS + fileName);
+		edao.update(e);
 	}
 
 	/***
@@ -136,12 +131,8 @@ public class BackgroundThread {
 	 */
 	private class Mp3DownloadTask extends
 			AsyncTask<Episode, Void, ByteArrayBuffer> {
-		EpisodeDAO edao;
 
 		protected void onPreExecute() {
-			edao = new EpisodeDAO(context);
-			// Check if thing exists already
-
 		}
 
 		protected ByteArrayBuffer doInBackground(Episode... episodes) {
@@ -227,7 +218,7 @@ public class BackgroundThread {
 			if (result != null) {
 				Log.d("Add this to db: ", result + " AT " + idForQuery);
 				Podcast podcast = pdao.get(Long.parseLong(idForQuery));
-				// podcast.setImagelink(result.toByteArray());
+				// podcast.setImagePath(result.toByteArray());
 				pdao.update(podcast);
 				// BackgroundThread bt = new BackgroundThread(getActivity());
 				// bt.getEpisodesFromBackgroundThread(podcast.getLink(),
@@ -289,7 +280,6 @@ public class BackgroundThread {
 	 */
 	private class ParseXmlForEpisodes extends AsyncTask<String, Void, Void> {
 		long idForQuery;
-		EpisodeDAO edao;
 
 		@Override
 		protected Void doInBackground(String... urls) {
@@ -307,14 +297,18 @@ public class BackgroundThread {
 				// episodes = RssParser.parseEpisodesFromXml(reader,
 				// idForQuery);
 				episodes = RssParser.parseEpisodesFromXml(is, idForQuery);
-				edao = new EpisodeDAO(context);
-				edao.open();
 				for (ContentValues e : episodes) {
 					Log.d("Inserting: ",
-							e.getAsString(EpisodeSqlHelper.COLUMN_TITLE));
-					edao.insertEpisode(e);
+							e.getAsString(EpisodeDao2.COLUMN_TITLE));
+					Episode episode = new Episode();
+					episode.setTitle(e.getAsString(EpisodeDao2.COLUMN_TITLE));
+					episode.setDescription(e.getAsString(EpisodeDao2.COLUMN_DESCRIP));
+					episode.setUrl(e.getAsString(EpisodeDao2.COLUMN_URL));
+					episode.setPubDate(e.getAsLong(EpisodeDao2.COLUMN_PUBDATE));
+					episode.setMp3(e.getAsString(EpisodeDao2.COLUMN_MP3));
+					episode.setPodcast_id(e.getAsLong(EpisodeDao2.COLUMN_PODCAST_ID));
+					edao.insert(episode);
 				}
-				edao.close();
 
 				return null;
 			} catch (Exception e) {
@@ -347,8 +341,6 @@ public class BackgroundThread {
 			Integer podcast_id = params[0];
 
 			Podcast podcast = pdao.get(podcast_id);
-			EpisodeDAO edao = new EpisodeDAO(context);
-			edao.open();
 			Episode latest = edao.getLatestEpisode(podcast_id);
 
 			// For each Podcast, get the latest episode's pubDate
@@ -370,11 +362,17 @@ public class BackgroundThread {
 			}
 			if (episodes != null) {
 				for (ContentValues cv : episodes) {
-					Episode le = edao.insertEpisode(cv);
+					Episode episode = new Episode();
+					episode.setTitle(cv.getAsString(EpisodeDao2.COLUMN_TITLE));
+					episode.setDescription(cv.getAsString(EpisodeDao2.COLUMN_DESCRIP));
+					episode.setUrl(cv.getAsString(EpisodeDao2.COLUMN_URL));
+					episode.setPubDate(cv.getAsLong(EpisodeDao2.COLUMN_PUBDATE));
+					episode.setMp3(cv.getAsString(EpisodeDao2.COLUMN_MP3));
+					episode.setPodcast_id(cv.getAsLong(EpisodeDao2.COLUMN_PODCAST_ID));
+					Episode le = edao.get(edao.insert(episode));
 					Log.d(TAG, le.getTitle() + " " + le.getPubDate());
 				}
 			}
-			edao.close();
 			// Open Podcast's URL
 			// Parse Podcast's url for episodes until an episodes pubDate is <=
 			// current latest pubDate
@@ -389,14 +387,11 @@ public class BackgroundThread {
 
 	private class CheckXmlForNewEpisodes extends
 			AsyncTask<Void, Void, Episode[]> {
-		EpisodeDAO edao;
 
 		@Override
 		protected Episode[] doInBackground(Void... params) {
 
 			Cursor cursor = null;
-			edao = new EpisodeDAO(context);
-			edao.open();
 			// Get a List of Podcasts
 			cursor = pdao.getAllPodcastsAsCursor();
 
@@ -431,9 +426,14 @@ public class BackgroundThread {
 
 				if (episodes != null) {
 					for (ContentValues cv : episodes) {
-						// TODO Download automatically?
-						// Add to playlist?
-						Episode le = edao.insertEpisode(cv);
+					Episode episode = new Episode();
+					episode.setTitle(cv.getAsString(EpisodeDao2.COLUMN_TITLE));
+					episode.setDescription(cv.getAsString(EpisodeDao2.COLUMN_DESCRIP));
+					episode.setUrl(cv.getAsString(EpisodeDao2.COLUMN_URL));
+					episode.setPubDate(cv.getAsLong(EpisodeDao2.COLUMN_PUBDATE));
+					episode.setMp3(cv.getAsString(EpisodeDao2.COLUMN_MP3));
+					episode.setPodcast_id(cv.getAsLong(EpisodeDao2.COLUMN_PODCAST_ID));
+					Episode le = edao.get(edao.insert(episode));
 						new BackgroundThread(context).downloadEpisodeMp3(le);
 						Log.d(TAG, le.getTitle() + " " + le.getPubDate());
 					}
@@ -514,13 +514,10 @@ public class BackgroundThread {
 	}
 
 	public void downloadAll(long podcast_id) {
-		EpisodeDAO eDao = new EpisodeDAO(context);
-		eDao.open();
-		List<Episode> episodes = eDao.getAllEpisodes(podcast_id);
+		List<Episode> episodes = edao.getAllEpisodes(podcast_id);
 		for (Episode episode : episodes) {
 			downloadEpisodeMp3(episode);
 		}
-		eDao.close();
 	}
 
 }

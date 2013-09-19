@@ -14,7 +14,7 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import fireminder.podcastcatcher.R;
-import fireminder.podcastcatcher.db.EpisodeSqlHelper;
+import fireminder.podcastcatcher.db.EpisodeDao2;
 
 public class EpisodeAdapter extends CursorAdapter {
 
@@ -35,12 +35,12 @@ public class EpisodeAdapter extends CursorAdapter {
 		TextView episodeTitle = (TextView) arg0
 				.findViewById(R.id.list_item_episode_tv);
 		episodeTitle.setText(cursor.getString(cursor
-				.getColumnIndex(EpisodeSqlHelper.COLUMN_TITLE)));
+				.getColumnIndex(EpisodeDao2.COLUMN_TITLE)));
 
 		TextView episodeDate = (TextView) arg0
 				.findViewById(R.id.list_item_date_tv);
 		long milliseconds = cursor.getLong(cursor
-				.getColumnIndex(EpisodeSqlHelper.COLUMN_PUBDATE));
+				.getColumnIndex(EpisodeDao2.COLUMN_PUBDATE));
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTimeInMillis(milliseconds);
 		Date date = calendar.getTime();
@@ -50,11 +50,11 @@ public class EpisodeAdapter extends CursorAdapter {
 		ImageButton playIcon = (ImageButton) arg0
 				.findViewById(R.id.play_icon_iv);
 		String file_mp3 = cursor.getString(cursor
-				.getColumnIndex(EpisodeSqlHelper.COLUMN_MP3));
+				.getColumnIndex(EpisodeDao2.COLUMN_MP3));
 
 		if (file_mp3 != null) {
 			File mp3 = new File(cursor.getString(cursor
-					.getColumnIndex(EpisodeSqlHelper.COLUMN_MP3)));
+					.getColumnIndex(EpisodeDao2.COLUMN_MP3)));
 			if (mp3.exists()) {
 				playIcon.setVisibility(View.VISIBLE);
 				playIcon.setFocusable(false);
