@@ -100,10 +100,12 @@ public class MainActivity extends FragmentActivity {
 		case R.id.search:
 			Intent i = new Intent(this, SearchActivity.class);
 			startActivityForResult(i, 42);
+            return true;
 		case R.id.viewDownloads:
 		        Intent dlIntent = new Intent();
 		        dlIntent.setAction(DownloadManager.ACTION_VIEW_DOWNLOADS);
 		        startActivity(dlIntent);
+                return true;
 		default:
 			return super.onOptionsItemSelected(item);
 		}
