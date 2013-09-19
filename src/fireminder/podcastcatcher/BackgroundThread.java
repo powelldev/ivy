@@ -9,7 +9,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -84,7 +83,7 @@ public class BackgroundThread {
 	 */
 	public void getPodcastImageFromBackgroundThread(String url,
 			String filePath, long id) {
-		new ParseXmlForImageFile().executeOnExecutor(
+		new ParseXmlForImage().executeOnExecutor(
 				AsyncTask.THREAD_POOL_EXECUTOR, new String[] { url, filePath,
 						"" + id });
 		// new ParseXmlForImage().execute(new String[] { url, "" + id });
@@ -323,7 +322,7 @@ public class BackgroundThread {
 		}
 
 	}
-
+/*
 	private class ParseXmlForImageFile extends AsyncTask<String, Void, Void> {
 		@Override
 		protected void onPostExecute(Void result) {
@@ -335,60 +334,36 @@ public class BackgroundThread {
 			ByteArrayOutputStream bytes = null;
 			Bitmap myBitmap;
 			try {
-				/*--- this method will save your downloaded image to SD card ---*/
-				HttpURLConnection connection = (HttpURLConnection) new URL(
+				HttpURLConnection input = (HttpURLConnection) new URL(
 						params[0]).openConnection();
-				connection.setDoInput(true);
-				connection.connect();
-				InputStream input = connection.getInputStream();
-				// myBitmap = BitmapFactory.decodeStream(input);
+				input.setDoInput(true);
+				input.connect();
+				 myBitmap = BitmapFactory.decodeStream(input.getInputStream());
 
 				bytes = new ByteArrayOutputStream();
-				/*--- you can select your preferred CompressFormat and quality. 
-				 * I'm going to use JPEG and 100% quality ---*/
-				/*--- create a new file on SD card ---*/
 			} catch (Exception e) {
 			}
-			File file = new File(params[1]);
-			try {
-				file.createNewFile();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			/*--- create a new FileOutputStream and write bytes to file ---*/
-			FileOutputStream fos = null;
-			try {
-				fos = new FileOutputStream(file);
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-			}
-			try {
-				fos.write(bytes.toByteArray());
-				fos.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			/*
-			 * try { Log.e("***********TAG*********", params[0] + "File name: "
-			 * + params[1]); URL url = new URL(params[0]); InputStream is =
-			 * url.openStream(); OutputStream os = new
-			 * FileOutputStream(params[1]);
-			 * 
-			 * byte[] b = new byte[2048]; int length;
-			 * 
-			 * while((length = is.read(b)) != -1) { os.write(b, 0, length); }
-			 * 
-			 * is.close(); os.close();
-			 * 
-			 * } catch (Exception e){
-			 * 
-			 * }
-			 */
+			
+			  try { Log.e("***********TAG*********", params[0] + "File name: "
+			  + params[1]); URL url = new URL(params[0]); InputStream is =
+			  url.openStream(); OutputStream os = new
+			 FileOutputStream(params[1]);
+			  
+			  byte[] b = new byte[2048]; int length;
+			  
+			  while((length = is.read(b)) != -1) { os.write(b, 0, length); }
+			  
+			  is.close(); os.close();
+			  
+			  } catch (Exception e){
+			  
+			  }
+			 
 			return null;
 
 		}
 	}
-
+*/
 	/***
 	 * AsyncTask responsible for grabbing individual episodes from a podcast's
 	 * RSS.
@@ -623,6 +598,16 @@ public class BackgroundThread {
 		new Search((OnTaskCompleted) context)
 				.execute(new String[] { searchURL });
 
+	}
+
+	public void downloadAll(Integer podcast_id) {
+		EpisodeDAO eDao = new EpisodeDAO(context);
+		eDao.open();
+		List<Episode> episodes = eDao.getAllEpisodes(podcast_id);
+		for(Episode episode : episodes){
+			downloadEpisodeMp3(episode);
+		}
+		eDao.close();
 	}
 
 }

@@ -1,5 +1,6 @@
 package fireminder.podcastcatcher.db;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import android.content.ContentValues;
@@ -27,7 +28,6 @@ public class EpisodeDAO {
 	}
 	
 	public static Episode cursorToEpisode(Cursor cursor){
-		cursor.moveToFirst();
 		Episode e = new Episode();
 		e.set_id(cursor.getLong(cursor.getColumnIndex(EpisodeSqlHelper.COLUMN_ID)));
 		e.setPodcast_id(cursor.getLong(cursor.getColumnIndex(EpisodeSqlHelper.COLUMN_PODCAST_ID)));
@@ -118,12 +118,25 @@ public class EpisodeDAO {
 		if(c.getCount() == 0) {
 			return null;
 		}
+		c.moveToFirst();
 		e = cursorToEpisode(c);
 		return e;
 	}
 
 	public Cursor getAllEpisodesAsCursorByDate(long id) {
 		return db.query(EpisodeSqlHelper.TABLE_NAME, EpisodeSqlHelper.allColumns, EpisodeSqlHelper.COLUMN_PODCAST_ID + " = " + id, null, null, null, EpisodeSqlHelper.COLUMN_PUBDATE + " DESC " , null);
+	}
+	
+	public List<Episode> getAllEpisodes(long id) {
+		List<Episode> episodes = new ArrayList<Episode>();
+		Cursor cursor = db.query(EpisodeSqlHelper.TABLE_NAME, EpisodeSqlHelper.allColumns, EpisodeSqlHelper.COLUMN_PODCAST_ID + " = " + id, null, null, null, EpisodeSqlHelper.COLUMN_PUBDATE + " DESC " , null);
+		cursor.moveToFirst();
+
+		do {
+			episodes.add(cursorToEpisode(cursor));
+		}while(cursor.moveToNext());
+		
+		return episodes;
 	}
 
 

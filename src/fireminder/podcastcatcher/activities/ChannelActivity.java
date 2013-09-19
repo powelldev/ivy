@@ -76,6 +76,8 @@ public class ChannelActivity extends ListActivity {
 			edao.deleteEpisode(info.id);
 			updateListAdapter(getApplicationContext(), podcast_id);
 			return true;
+		case R.id.downloadAll:
+			new BackgroundThread(this).downloadAll(podcast_id);
 		default:
 			return super.onContextItemSelected(item);
 		}

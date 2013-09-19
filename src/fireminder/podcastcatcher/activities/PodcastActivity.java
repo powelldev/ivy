@@ -299,10 +299,6 @@ public class PodcastActivity extends ListActivity {
 			podcastDao.deletePodcast(id);
 			if (result != null) {
 				Podcast podcast = podcastDao.insertPodcast(result);
-				String filePath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES) + File.separator + podcast.getTitle().replaceAll("\\W+", "");
-				filePath = filePath + ".png";
-				File file = new File(filePath);
-				podcast.setImagePath(filePath);
 				podcastDao.updatePodcastImagelink(podcast);
 				BackgroundThread bt = new BackgroundThread(
 						getApplicationContext());
