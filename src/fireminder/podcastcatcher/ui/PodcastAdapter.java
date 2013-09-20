@@ -91,6 +91,7 @@ public class PodcastAdapter extends CursorAdapter{
 	// This returns the closest power of 2: 2 ^ (log2 inSampleSize) 
 	// @author: powelldev
 	return (int) Math.pow(2, Math.ceil(Math.log10(inSampleSize)/Math.log10(2)));
+	 
 	}
 
 }
