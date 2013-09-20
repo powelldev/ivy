@@ -1,5 +1,6 @@
 package fireminder.podcastcatcher.activities;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 
 import android.annotation.SuppressLint;
@@ -7,6 +8,8 @@ import android.app.ListActivity;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -105,10 +108,10 @@ public class ChannelActivity extends ListActivity {
 		title_tv.setText(podcast.getTitle());
 
 		try {
-			// ByteArrayInputStream is = new ByteArrayInputStream(
-			// podcast.getImagePath());
-			// Bitmap image = BitmapFactory.decodeStream(is);
-			// image_iv.setImageBitmap(image);
+			ByteArrayInputStream is = new ByteArrayInputStream(
+			podcast.getImagePath());
+			Bitmap image = BitmapFactory.decodeStream(is);
+			image_iv.setImageBitmap(image);
 		} catch (Exception e) {
 			image_iv.setImageResource(R.drawable.ic_launcher);
 			e.printStackTrace();

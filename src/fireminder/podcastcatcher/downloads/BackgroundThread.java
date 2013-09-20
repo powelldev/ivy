@@ -218,7 +218,7 @@ public class BackgroundThread {
 			if (result != null) {
 				Log.d("Add this to db: ", result + " AT " + idForQuery);
 				Podcast podcast = pdao.get(Long.parseLong(idForQuery));
-				// podcast.setImagePath(result.toByteArray());
+				podcast.setImagePath(result.toByteArray());
 				pdao.update(podcast);
 				// BackgroundThread bt = new BackgroundThread(getActivity());
 				// bt.getEpisodesFromBackgroundThread(podcast.getLink(),
