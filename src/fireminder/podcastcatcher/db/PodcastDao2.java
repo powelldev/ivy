@@ -58,7 +58,7 @@ public class PodcastDao2 {
 		podcast.setTitle(cursor.getString(cursor.getColumnIndex(COLUMN_TITLE)));
 		podcast.setDescription(cursor.getString(cursor.getColumnIndex(COLUMN_DESCRIP)));
 		podcast.setLink(cursor.getString(cursor.getColumnIndex(COLUMN_LINK)));
-		podcast.setImagePath(cursor.getString(cursor.getColumnIndex(COLUMN_IMAGELINK)));
+		podcast.setImagePath(cursor.getBlob(cursor.getColumnIndex(COLUMN_IMAGELINK)));
 		return podcast;
 	}
 

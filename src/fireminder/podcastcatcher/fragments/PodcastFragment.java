@@ -213,7 +213,7 @@ public class PodcastFragment extends ListFragment {
 			podcast.setLink(podcastData.getAsString(PodcastDao2.COLUMN_LINK));
 			podcast.setTitle(podcastData.getAsString(PodcastDao2.COLUMN_TITLE));
 			podcast.setDescription(podcastData.getAsString(PodcastDao2.COLUMN_DESCRIP));
-			podcast.setImagePath(podcastData.getAsString(PodcastDao2.COLUMN_IMAGELINK));
+			podcast.setImagePath(podcastData.getAsByteArray(PodcastDao2.COLUMN_IMAGELINK));
 			return podcast;
 		}
 		
