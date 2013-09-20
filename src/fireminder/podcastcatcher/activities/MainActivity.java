@@ -1,8 +1,12 @@
 package fireminder.podcastcatcher.activities;
 
+import java.util.Calendar;
 import java.util.Locale;
 
+import android.app.AlarmManager;
 import android.app.DownloadManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -16,15 +20,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 import android.widget.Toast;
-import fireminder.podcastcatcher.PlaySongCallback;
 import fireminder.podcastcatcher.PodcastCatcher;
 import fireminder.podcastcatcher.R;
 import fireminder.podcastcatcher.downloads.ADownloadService;
 import fireminder.podcastcatcher.downloads.BackgroundThread;
 import fireminder.podcastcatcher.fragments.PodcastFragment;
-import fireminder.podcastcatcher.valueobjects.Episode;
 
 public class MainActivity extends FragmentActivity {
 	Uri data = null;
@@ -64,6 +65,12 @@ public class MainActivity extends FragmentActivity {
 		mViewPager = (ViewPager) findViewById(R.id.pager);
 		mViewPager.setAdapter(mSectionsPagerAdapter);
 
+		AlarmManager alarmManager = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
+		Intent i = new Intent(this, ADownloadService.class);
+		PendingIntent pi = PendingIntent.getActivity(this, 0, i, 0);
+		alarmManager.cancel(pi);
+		alarmManager.set(AlarmManager.ELAPSED_REALTIME, 10000, pi);
+		alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, Calendar.getInstance().getTimeInMillis(), AlarmManager.INTERVAL_HOUR, pi);
 	}
 
 	@Override
