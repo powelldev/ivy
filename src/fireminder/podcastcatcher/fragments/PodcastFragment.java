@@ -11,7 +11,6 @@ import java.net.URL;
 import org.xmlpull.v1.XmlPullParserException;
 
 import android.app.AlertDialog;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -190,14 +189,14 @@ public class PodcastFragment extends ListFragment {
 		protected Podcast doInBackground(String... urls) {
 			
 			BufferedReader reader = null;
-			ContentValues podcastData = null;
+			Podcast podcast = null;
 			try{
 				URL url = new URL(urls[0]);
 				HttpURLConnection con = (HttpURLConnection) url.openConnection();
 				InputStream is = con.getInputStream();
 				reader = new BufferedReader(new InputStreamReader(is));
-				podcastData = RssParser.parsePodcastFromXml(is);
-				podcastData.put(PodcastDao2.COLUMN_LINK, urls[0]);
+				podcast= RssParser.parsePodcastFromXml(is);
+				podcast.setLink(urls[0]);
 			} 
 			catch(MalformedURLException e) {
 				e.printStackTrace();
@@ -209,11 +208,6 @@ public class PodcastFragment extends ListFragment {
 				e.printStackTrace();
 				return null;
 			}
-			Podcast podcast = new Podcast();
-			podcast.setLink(podcastData.getAsString(PodcastDao2.COLUMN_LINK));
-			podcast.setTitle(podcastData.getAsString(PodcastDao2.COLUMN_TITLE));
-			podcast.setDescription(podcastData.getAsString(PodcastDao2.COLUMN_DESCRIP));
-			podcast.setImagePath(podcastData.getAsByteArray(PodcastDao2.COLUMN_IMAGELINK));
 			return podcast;
 		}
 		

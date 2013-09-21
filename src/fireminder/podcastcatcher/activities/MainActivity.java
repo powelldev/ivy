@@ -23,6 +23,7 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 import fireminder.podcastcatcher.PodcastCatcher;
 import fireminder.podcastcatcher.R;
+import fireminder.podcastcatcher.boot.BootService;
 import fireminder.podcastcatcher.downloads.ADownloadService;
 import fireminder.podcastcatcher.downloads.BackgroundThread;
 import fireminder.podcastcatcher.fragments.PodcastFragment;
@@ -52,6 +53,9 @@ public class MainActivity extends FragmentActivity {
 		setContentView(R.layout.activity_main);
 		PodcastCatcher.getInstance().setContext(this);
 		// updateSongList();
+		
+		Intent updateIntent = new Intent(MainActivity.this, BootService.class);
+		startService(updateIntent);
 
 		Intent intent = getIntent();
 		data = intent.getData();

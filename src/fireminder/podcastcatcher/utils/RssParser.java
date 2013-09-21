@@ -13,11 +13,10 @@ import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 import org.xmlpull.v1.XmlPullParserFactory;
 
-import android.content.ContentValues;
 import android.util.Log;
-import fireminder.podcastcatcher.db.EpisodeDao2;
-import fireminder.podcastcatcher.db.PodcastDao2;
 import fireminder.podcastcatcher.ui.LazyAdapter;
+import fireminder.podcastcatcher.valueobjects.Episode;
+import fireminder.podcastcatcher.valueobjects.Podcast;
 
 /***
  * Contains methods for parsing data from RSS feeds.
@@ -37,8 +36,8 @@ public class RssParser {
 	/***
 	 * Pulls podcast title and description from RSS feed
 	 */
-	public static ContentValues parsePodcastFromXml(BufferedReader reader) throws XmlPullParserException, IOException{
-		ContentValues contentValues = new ContentValues(); /** Contains the values we will add to the podcast */
+	public static Podcast parsePodcastFromXml(BufferedReader reader) throws XmlPullParserException, IOException{
+		Podcast podcast = new Podcast();
 		final int NUM_PODCAST_ITEMS = 2; /** allows exiting of parsing once files found */
 		final int XML_CHANNEL_DEPTH = 3; /** depth of title and description fields in the xml tree */
 		int 	itemsCounter = 0;       /** a counter for the items we want to add into a podcast */
@@ -61,13 +60,13 @@ public class RssParser {
 					if(podcastItem.matches("title")){
 						podcastItem = xpp.nextText();
 						Log.d("TITLE: ", podcastItem);
-						contentValues.put(PodcastDao2.COLUMN_TITLE, podcastItem);
+						podcast.setTitle(podcastItem);
 						itemsCounter++;
 					}
 					else if(podcastItem.matches("description")){
 						podcastItem = xpp.nextText();
 						Log.d("DESCRIP: ", podcastItem);
-						contentValues.put(PodcastDao2.COLUMN_DESCRIP, podcastItem);
+						podcast.setDescription(podcastItem);
 						itemsCounter++;
 					}
 				}
@@ -77,12 +76,12 @@ public class RssParser {
 			}
 			eventType = xpp.next();
 		}
-		return contentValues;
+		return podcast;
 		
 	}
 
-	public static ContentValues parsePodcastFromXml(InputStream stream) throws XmlPullParserException, IOException{
-		ContentValues contentValues = new ContentValues();
+	public static Podcast parsePodcastFromXml(InputStream stream) throws XmlPullParserException, IOException{
+		Podcast podcast = new Podcast();
 		final int NUM_PODCAST_ITEMS = 2;
 		final int XML_CHANNEL_DEPTH = 3;
 		int 	itemsCounter = 0;
@@ -104,13 +103,13 @@ public class RssParser {
 					if(podcastItem.matches("title")){
 						podcastItem = xpp.nextText();
 						Log.d("TITLE: ", podcastItem);
-						contentValues.put(PodcastDao2.COLUMN_TITLE, podcastItem);
+						podcast.setTitle(podcastItem);
 						itemsCounter++;
 					}
 					else if(podcastItem.matches("description")){
 						podcastItem = xpp.nextText();
 						Log.d("DESCRIP: ", podcastItem);
-						contentValues.put(PodcastDao2.COLUMN_DESCRIP, podcastItem);
+						podcast.setDescription(podcastItem);
 						itemsCounter++;
 					}
 				}
@@ -120,7 +119,7 @@ public class RssParser {
 			}
 			eventType = xpp.next();
 		}
-		return contentValues;
+		return podcast;
 		
 	}
 //	public static String parsePodcastImageFromXml(BufferedReader reader) throws XmlPullParserException, IOException {
@@ -285,8 +284,8 @@ public class RssParser {
 		return imagelink;
 	}
 
-	public static List<ContentValues> parseEpisodesFromXml(InputStream stream, long id) throws XmlPullParserException, IOException, ParseException {
-		List<ContentValues> episodes = new ArrayList<ContentValues>();
+	public static List<Episode> parseEpisodesFromXml(InputStream stream, long id) throws XmlPullParserException, IOException, ParseException {
+		List<Episode> episodes = new ArrayList<Episode>();
 		final int ITEM_DEPTH = 4;
 		XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
 		factory.setNamespaceAware(true);
@@ -297,7 +296,7 @@ public class RssParser {
 		String test = "";
 		String content = "";
 		SimpleDateFormat pubDateFormatter = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss zzzz");
-		ContentValues cv = new ContentValues();
+		Episode episode = new Episode();
 		List<String> testStringList = new ArrayList<String>();
 		boolean encl = false;
 		while(eventType != XmlPullParser.END_DOCUMENT){
@@ -312,12 +311,12 @@ public class RssParser {
 				if(name.matches("title") && xpp.getDepth()==ITEM_DEPTH){
 					content = xpp.nextText();
 					test += content + "\n";
-					cv.put(EpisodeDao2.COLUMN_TITLE, content);
+					episode.setTitle(content);
 				}
 				else if(name.matches("description") && xpp.getDepth()==ITEM_DEPTH){
 					content = xpp.nextText();
 					test += content + "\n";
-					cv.put(EpisodeDao2.COLUMN_DESCRIP, content);
+					episode.setDescription(content);
 				}
 				else if(name.matches("pubDate") && xpp.getDepth()==ITEM_DEPTH){
 					content = xpp.nextText();
@@ -325,13 +324,13 @@ public class RssParser {
 					Date pubDate = pubDateFormatter.parse(content);
 					Log.d("pubdate", content);
 					Log.d("pubDate", "" + LazyAdapter.getDate(pubDate.getTime(), "EEE, dd MMM yyyy HH:mm:ss zzzz"));
-					cv.put(EpisodeDao2.COLUMN_PUBDATE, pubDate.getTime());
+					episode.setPubDate(pubDate.getTime());
 				}
 				else if(name.matches("enclosure") && xpp.getDepth()==ITEM_DEPTH){
 					content = xpp.getAttributeValue(null, "url");
 					encl = true;
 					test += content + "\n";
-					cv.put(EpisodeDao2.COLUMN_URL, content);
+					episode.setUrl(content);
 				}
 				break;
 			
@@ -342,9 +341,9 @@ public class RssParser {
 				test += "item ended" + "\n";
 				if(encl == true){
 					testStringList.add(test);
-					cv.put(EpisodeDao2.COLUMN_PODCAST_ID, id);
-					episodes.add(cv);
-					cv = new ContentValues();
+					episode.setPodcast_id(id);
+					episodes.add(episode);
+					episode = new Episode();
 					test = ""; encl = false;
 				} else {
 					test = ""; encl = false;
@@ -361,8 +360,8 @@ public class RssParser {
 		return episodes;
 	} // end parseEpisodesFromXml()
 
-	public static List<ContentValues> parseNewEpisodesFromXml(InputStream stream, long id, long oldPubDate) throws XmlPullParserException, IOException, ParseException {
-        List<ContentValues> episodes = new ArrayList<ContentValues>();
+	public static List<Episode> parseNewEpisodesFromXml(InputStream stream, long id, long oldPubDate) throws XmlPullParserException, IOException, ParseException {
+        List<Episode> episodes = new ArrayList<Episode>();
         final int ITEM_DEPTH = 4;
         XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
         factory.setNamespaceAware(true);
@@ -378,7 +377,7 @@ public class RssParser {
         SimpleDateFormat pubDateFormatter = new SimpleDateFormat("EEE, dd MMM yyy HH:mm:ss zzzz");
 
 
-        ContentValues cv = new ContentValues();
+        Episode episode = new Episode();
         List<String> testStringList = new ArrayList<String>();
 
         boolean encl = false;
@@ -394,13 +393,13 @@ public class RssParser {
                     if(name.matches("title") && xpp.getDepth()==ITEM_DEPTH) {
                         content = xpp.nextText();
                         test += content + "\n";
-                        cv.put(EpisodeDao2.COLUMN_TITLE, content);
+                        episode.setTitle(content);
                     }
                     else if(name.matches("description") && xpp.getDepth() ==
                             ITEM_DEPTH){
                         content = xpp.nextText();
                         test += content + "\n";
-                        cv.put(EpisodeDao2.COLUMN_DESCRIP, content);
+                        episode.setDescription(content);
                     }
                     else if(name.matches("pubDate") && xpp.getDepth() ==
                             ITEM_DEPTH){
@@ -412,14 +411,14 @@ public class RssParser {
                             oldEpisodeFound = true;
                             break;
                         }
-                        cv.put(EpisodeDao2.COLUMN_PUBDATE, pubDate.getTime());
+                        episode.setPubDate(pubDate.getTime());
                     }
 
                     else if(name.matches("enclosure") && xpp.getDepth() == ITEM_DEPTH){
                         content = xpp.getAttributeValue(null, "url");
                         encl = true;
                         test += content + "\n";
-                        cv.put(EpisodeDao2.COLUMN_URL, content);
+                        episode.setUrl(content);
                     }
                     break;
                 case(XmlPullParser.END_TAG):
@@ -427,9 +426,9 @@ public class RssParser {
                         test+= "item ended" + "\n";
                         if(encl==true && oldEpisodeFound == false){
                             testStringList.add(test);
-                            cv.put(EpisodeDao2.COLUMN_PODCAST_ID, id);
-                            episodes.add(cv);
-                            cv = new ContentValues();
+                            episode.setPodcast_id(id);
+                            episodes.add(episode);
+                            episode = new Episode();
                             test = ""; encl = false;
                         }
                         else {

@@ -1,22 +1,46 @@
 package fireminder.podcastcatcher.utils;
 
 import java.io.BufferedReader;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import fireminder.podcastcatcher.downloads.BackgroundThread;
-
+import android.app.DownloadManager;
+import android.app.DownloadManager.Request;
 import android.content.Context;
+import android.net.Uri;
+import android.os.Environment;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
+import fireminder.podcastcatcher.PodcastCatcher;
+import fireminder.podcastcatcher.db.EpisodeDao2;
+import fireminder.podcastcatcher.downloads.BackgroundThread;
+import fireminder.podcastcatcher.valueobjects.Episode;
 
 public class Helper {
 
+
+	public static void downloadEpisodeMp3(Episode e) {
+		String fileName = e.getUrl();
+		fileName = fileName.substring(fileName.lastIndexOf("/"));
+		Log.d("Downloading...", fileName);
+		// TODO Make download notification point back at app - or allow
+		// cessation of download
+		final DownloadManager dm = (DownloadManager) PodcastCatcher.getInstance().getContext()
+				.getSystemService(Context.DOWNLOAD_SERVICE);
+		
+		Request request = new Request(Uri.parse(e.getUrl()));
+		request.setTitle(e.getTitle())
+				.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+				.setDescription("Touch to cancel")
+				.setDestinationInExternalPublicDir(
+						Environment.DIRECTORY_PODCASTS, fileName);
+		long enqueue = dm.enqueue(request);
+		e.setMp3(Environment.getExternalStorageDirectory().getPath() + "/" + Environment.DIRECTORY_PODCASTS + fileName);
+		new EpisodeDao2().update(e);
+	}
 	public static void searchForPodcasts(Context context, String term){
 		String searchURL = String.format("https://itunes.apple.com/search?media=podcast&limit=5&term=%s&attribute=titleTerm", term);
 		Log.d("SearchURL: ", searchURL);

@@ -28,6 +28,7 @@ import fireminder.podcastcatcher.db.EpisodeDao2;
 import fireminder.podcastcatcher.db.PodcastDao2;
 import fireminder.podcastcatcher.downloads.BackgroundThread;
 import fireminder.podcastcatcher.ui.EpisodeAdapter;
+import fireminder.podcastcatcher.utils.Helper;
 import fireminder.podcastcatcher.valueobjects.Episode;
 import fireminder.podcastcatcher.valueobjects.Podcast;
 
@@ -132,7 +133,8 @@ public class ChannelActivity extends ListActivity {
 					Toast.makeText(getApplicationContext(), "Downloading ...",
 							Toast.LENGTH_SHORT).show();
 					bt = new BackgroundThread(getApplicationContext());
-					bt.downloadEpisodeMp3(_episode);
+					//bt.downloadEpisodeMp3(_episode);
+					Helper.downloadEpisodeMp3(_episode);
 				} else {
 					Intent intent = new Intent();
 					intent.setAction(android.content.Intent.ACTION_VIEW);
@@ -141,7 +143,8 @@ public class ChannelActivity extends ListActivity {
 						Toast.makeText(getApplicationContext(),
 								"Downloading ...", Toast.LENGTH_SHORT).show();
 						bt = new BackgroundThread(getApplicationContext());
-						bt.downloadEpisodeMp3(_episode);
+						//bt.downloadEpisodeMp3(_episode);
+					Helper.downloadEpisodeMp3(_episode);
 					} else {
 						intent.setDataAndType(Uri.fromFile(file), "audio/*");
 						startActivity(intent);

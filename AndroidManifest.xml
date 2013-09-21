@@ -94,6 +94,8 @@
                     android:scheme="http" />
             </intent-filter>
         </activity>
+        <service android:name="fireminder.podcastcatcher.downloads.ADownloadService"></service>
+        <service android:name="fireminder.podcastcatcher.boot.BootService"></service>
         <activity
             android:name="fireminder.podcastcatcher.activities.SearchActivity"
             android:label="Search" >

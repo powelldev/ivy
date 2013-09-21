@@ -139,6 +139,7 @@ public class EpisodeDao2 {
 		}
 		c.moveToFirst();
 		e = cursorToEpisode(c);
+		db.close();
 		return e;
 	}
 

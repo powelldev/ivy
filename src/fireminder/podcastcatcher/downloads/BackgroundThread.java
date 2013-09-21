@@ -10,13 +10,13 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.http.util.ByteArrayBuffer;
 
 import android.app.DownloadManager;
 import android.app.DownloadManager.Request;
-import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -83,23 +83,20 @@ public class BackgroundThread {
 	 * @param url
 	 * @param id
 	 */
-	public void getPodcastImageFromBackgroundThread(String url,
-			long id) {
-		//new ParseXmlForImage().executeOnExecutor(
-		//		AsyncTask.THREAD_POOL_EXECUTOR, new String[] { url, filePath,
-		//				"" + id });
-		 new ParseXmlForImage().execute(new String[] { url, "" + id });
+	public void getPodcastImageFromBackgroundThread(String url, long id) {
+		// new ParseXmlForImage().executeOnExecutor(
+		// AsyncTask.THREAD_POOL_EXECUTOR, new String[] { url, filePath,
+		// "" + id });
+		new ParseXmlForImage().execute(new String[] { url, "" + id });
 	}
-
 
 	/***
 	 * Downloads the given episodes enclosure file to
 	 * Environment.DIRECTORY_PODCASTS.
-	 */
-	public void downloadEpisodeMp3(Episode e) {
-		// TODO check if episode .mp3 exists already, if so, no need to download
+	 *
+	public void downloadEpisodeMp3(Episode episode) {
 		boolean exists = false;
-		String fileName = e.getUrl();
+		String fileName = episode.getUrl();
 		fileName = fileName.substring(fileName.lastIndexOf("/"));
 		try {
 			File testFile = new File(fileName);
@@ -113,8 +110,8 @@ public class BackgroundThread {
 		if (!exists) {
 			DownloadManager dm = (DownloadManager) context
 					.getSystemService(Context.DOWNLOAD_SERVICE);
-			Request request = new Request(Uri.parse(e.getUrl()));
-			request.setTitle(e.getTitle())
+			Request request = new Request(Uri.parse(episode.getUrl()));
+			request.setTitle(episode.getTitle())
 					.setDescription("Touch to Cancel")
 					.setNotificationVisibility(
 							Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
@@ -122,10 +119,12 @@ public class BackgroundThread {
 							Environment.DIRECTORY_PODCASTS, fileName);
 			long enqueue = dm.enqueue(request);
 		}
-		e.setMp3(Environment.getExternalStorageDirectory().getPath() + "/" + Environment.DIRECTORY_PODCASTS + fileName);
-		edao.update(e);
+		episode.setMp3(Environment.getExternalStorageDirectory().getPath() + "/"
+				+ Environment.DIRECTORY_PODCASTS + fileName);
+		edao.update(episode);
 	}
 
+*/
 	/***
 	 * AsyncTask responsible for downlaoding an MP3.
 	 */
@@ -166,7 +165,6 @@ public class BackgroundThread {
 	/***
 	 * AsyncTask responsible for downloading a webpage
 	 */
-	
 
 	/***
 	 * AsyncTask responsible for parsing xml page for image
@@ -286,7 +284,7 @@ public class BackgroundThread {
 			URL url;
 			idForQuery = Long.parseLong(urls[1]);
 			BufferedReader reader = null;
-			List<ContentValues> episodes = null;
+			List<Episode> episodes = null;
 			try {
 				url = new URL(urls[0]);
 				HttpURLConnection con = (HttpURLConnection) url
@@ -297,16 +295,8 @@ public class BackgroundThread {
 				// episodes = RssParser.parseEpisodesFromXml(reader,
 				// idForQuery);
 				episodes = RssParser.parseEpisodesFromXml(is, idForQuery);
-				for (ContentValues e : episodes) {
-					Log.d("Inserting: ",
-							e.getAsString(EpisodeDao2.COLUMN_TITLE));
-					Episode episode = new Episode();
-					episode.setTitle(e.getAsString(EpisodeDao2.COLUMN_TITLE));
-					episode.setDescription(e.getAsString(EpisodeDao2.COLUMN_DESCRIP));
-					episode.setUrl(e.getAsString(EpisodeDao2.COLUMN_URL));
-					episode.setPubDate(e.getAsLong(EpisodeDao2.COLUMN_PUBDATE));
-					episode.setMp3(e.getAsString(EpisodeDao2.COLUMN_MP3));
-					episode.setPodcast_id(e.getAsLong(EpisodeDao2.COLUMN_PODCAST_ID));
+				for (Episode episode : episodes) {
+					Log.d("Inserting: ", episode.getTitle());
 					edao.insert(episode);
 				}
 
@@ -345,7 +335,7 @@ public class BackgroundThread {
 
 			// For each Podcast, get the latest episode's pubDate
 
-			List<ContentValues> episodes = null;
+			List<Episode> episodes = null;
 			Log.d(TAG, "Latest Epi:" + latest.getTitle() + latest.getPubDate());
 			try {
 
@@ -361,16 +351,9 @@ public class BackgroundThread {
 				ex.printStackTrace();
 			}
 			if (episodes != null) {
-				for (ContentValues cv : episodes) {
-					Episode episode = new Episode();
-					episode.setTitle(cv.getAsString(EpisodeDao2.COLUMN_TITLE));
-					episode.setDescription(cv.getAsString(EpisodeDao2.COLUMN_DESCRIP));
-					episode.setUrl(cv.getAsString(EpisodeDao2.COLUMN_URL));
-					episode.setPubDate(cv.getAsLong(EpisodeDao2.COLUMN_PUBDATE));
-					episode.setMp3(cv.getAsString(EpisodeDao2.COLUMN_MP3));
-					episode.setPodcast_id(cv.getAsLong(EpisodeDao2.COLUMN_PODCAST_ID));
-					Episode le = edao.get(edao.insert(episode));
-					Log.d(TAG, le.getTitle() + " " + le.getPubDate());
+				for (Episode episode : episodes) {
+					episode = edao.get(edao.insert(episode));
+					Log.d(TAG, episode.getTitle() + " " + episode.getPubDate());
 				}
 			}
 			// Open Podcast's URL
@@ -397,7 +380,8 @@ public class BackgroundThread {
 
 			cursor.moveToFirst();
 
-			List<ContentValues> episodes = null;
+			List<Episode> episodes = new ArrayList<Episode>();
+			List<Episode> indivEpisodes = null;
 			do {
 				Episode e = null;
 				e = edao.getLatestEpisode(cursor.getLong(cursor
@@ -414,28 +398,22 @@ public class BackgroundThread {
 							.openConnection();
 					InputStream is = urlConn.getInputStream();
 
-					episodes = RssParser
-							.parseNewEpisodesFromXml(
-									is,
-									cursor.getInt(cursor
-											.getColumnIndex(PodcastDao2.COLUMN_ID)),
-									e.getPubDate());
+					indivEpisodes = RssParser.parseNewEpisodesFromXml(is, cursor
+							.getInt(cursor
+									.getColumnIndex(PodcastDao2.COLUMN_ID)), e
+							.getPubDate());
 				} catch (Exception ex) {
 					ex.printStackTrace();
 				}
 
-				if (episodes != null) {
-					for (ContentValues cv : episodes) {
-					Episode episode = new Episode();
-					episode.setTitle(cv.getAsString(EpisodeDao2.COLUMN_TITLE));
-					episode.setDescription(cv.getAsString(EpisodeDao2.COLUMN_DESCRIP));
-					episode.setUrl(cv.getAsString(EpisodeDao2.COLUMN_URL));
-					episode.setPubDate(cv.getAsLong(EpisodeDao2.COLUMN_PUBDATE));
-					episode.setMp3(cv.getAsString(EpisodeDao2.COLUMN_MP3));
-					episode.setPodcast_id(cv.getAsLong(EpisodeDao2.COLUMN_PODCAST_ID));
-					Episode le = edao.get(edao.insert(episode));
-						new BackgroundThread(context).downloadEpisodeMp3(le);
-						Log.d(TAG, le.getTitle() + " " + le.getPubDate());
+				if (indivEpisodes.size() != 0) {
+					for (Episode episode : indivEpisodes) {
+						episode = edao.get(edao.insert(episode));
+						//new BackgroundThread(context)
+						//		.downloadEpisodeMp3(episode);
+						Helper.downloadEpisodeMp3(episode);
+						Log.d(TAG,
+								episode.getTitle() + " " + episode.getPubDate());
 					}
 				}
 
@@ -452,8 +430,9 @@ public class BackgroundThread {
 		protected void onPostExecute(Episode[] result) {
 			super.onPostExecute(result);
 			for (Episode e : result) {
-				downloadEpisodeMp3(e);
+				Helper.downloadEpisodeMp3(e);
 			}
+			Log.e("Finished", "Getting new episodes");
 		}
 	}
 
@@ -508,15 +487,15 @@ public class BackgroundThread {
 
 	/*** Wrapper for iTunes Search AsyncTask */
 	public void searchItunesForPodcasts(String searchURL) {
-		new Search((OnTaskCompleted) context)
-				.execute(new String[] { searchURL });
+		new Search((OnTaskCompleted) context).executeOnExecutor(
+				AsyncTask.THREAD_POOL_EXECUTOR, new String[] { searchURL });
 
 	}
 
 	public void downloadAll(long podcast_id) {
 		List<Episode> episodes = edao.getAllEpisodes(podcast_id);
 		for (Episode episode : episodes) {
-			downloadEpisodeMp3(episode);
+			Helper.downloadEpisodeMp3(episode);
 		}
 	}
 
