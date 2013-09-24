@@ -25,7 +25,10 @@ public class Helper {
 	public static void downloadEpisodeMp3(Episode e) {
 		String fileName = e.getUrl();
 		fileName = fileName.substring(fileName.lastIndexOf("/"));
-		Log.d("Downloading...", fileName);
+		fileName = fileName.replaceAll("\\.", "_");
+		fileName = fileName.replaceAll("%20", "_");
+		fileName = fileName.replaceAll("_mp3", ".mp3");
+		Log.e("Downloading...", fileName);
 		// TODO Make download notification point back at app - or allow
 		// cessation of download
 		final DownloadManager dm = (DownloadManager) PodcastCatcher.getInstance().getContext()
