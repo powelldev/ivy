@@ -44,8 +44,10 @@ public class ChannelActivity extends ListActivity {
 	TextView title_tv;
 	TextView descrip_tv;
 	ImageView image_iv;
-	long podcast_id;
+	long mPodcastId;
 	ImageButton play_btn;
+	
+	Cursor mCursor;
 	
 	EpisodeDao2 edao = new EpisodeDao2();
 	
@@ -76,10 +78,10 @@ public class ChannelActivity extends ListActivity {
 		case R.id.delete:
 			Log.d("menu delete", "Delete clicked: " + info.id);
 			edao.delete(edao.get(info.id));
-			updateListAdapter(getApplicationContext(), podcast_id);
+			updateListAdapter(getApplicationContext(), mPodcastId);
 			return true;
 		case R.id.downloadAll:
-			new BackgroundThread(this).downloadAll(podcast_id);
+			new BackgroundThread(this).downloadAll(mPodcastId);
 		default:
 			return super.onContextItemSelected(item);
 		}
@@ -88,6 +90,13 @@ public class ChannelActivity extends ListActivity {
 	@Override
 	protected void onPause() {
 		super.onPause();
+		mCursor.close();
+	}
+	
+	@Override
+	protected void onResume() {
+		super.onResume();
+		updateListAdapter(this, mPodcastId);
 	}
 
 	/**
@@ -96,15 +105,14 @@ public class ChannelActivity extends ListActivity {
 	 */
 	private void setupViews() {
 		Intent intent;
-		long id;
 		Podcast podcast;
 
 		intent = getIntent();
-		id = intent.getLongExtra("channel_id", 0);
+		mPodcastId = intent.getLongExtra("channel_id", 0);
 
-		podcast = pdao.get(id);
+		podcast = pdao.get(mPodcastId);
 
-		podcast_id = podcast.getId();
+		mPodcastId = podcast.getId();
 
 		title_tv.setText(podcast.getTitle());
 
@@ -172,9 +180,9 @@ public class ChannelActivity extends ListActivity {
 	}
 
 	private void updateListAdapter(Context context, long id) {
-		Cursor episodeCursor = edao.getAllEpisodesAsCursorByDate(id);
+		mCursor = edao.getAllEpisodesAsCursorByDate(id);
 		EpisodeAdapter cursorAdapter = new EpisodeAdapter(context,
-				episodeCursor, 0);
+				mCursor, 0);
 		setListAdapter(cursorAdapter);
 	}
 

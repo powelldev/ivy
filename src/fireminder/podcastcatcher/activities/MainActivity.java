@@ -24,6 +24,7 @@ import android.widget.Toast;
 import fireminder.podcastcatcher.PodcastCatcher;
 import fireminder.podcastcatcher.R;
 import fireminder.podcastcatcher.boot.BootService;
+import fireminder.podcastcatcher.db.EpisodeDao2;
 import fireminder.podcastcatcher.downloads.ADownloadService;
 import fireminder.podcastcatcher.downloads.BackgroundThread;
 import fireminder.podcastcatcher.fragments.PodcastFragment;

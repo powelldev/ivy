@@ -33,7 +33,7 @@ public class Helper {
 		
 		Request request = new Request(Uri.parse(e.getUrl()));
 		request.setTitle(e.getTitle())
-				.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+				.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE)
 				.setDescription("Touch to cancel")
 				.setDestinationInExternalPublicDir(
 						Environment.DIRECTORY_PODCASTS, fileName);

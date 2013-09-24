@@ -1,6 +1,7 @@
 package fireminder.podcastcatcher.db;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import fireminder.podcastcatcher.PodcastCatcher;
@@ -168,6 +169,20 @@ public class EpisodeDao2 {
 		db.close();
 
 		return episodes;
+	}
+	
+	public Cursor getAllRecentEpisodes(){
+		SQLiteDatabase db = new SqlHelper(PodcastCatcher.getInstance()
+				.getContext()).getWritableDatabase();
+		List<Episode> episodes = new ArrayList<Episode>();
+		long lastWeekInMillis = Calendar.getInstance().getTimeInMillis() - (7 * 24 * 60 * 60 * 1000);
+		Cursor cursor = db.rawQuery(
+				"SELECT * FROM " + TABLE_NAME +  
+				" WHERE " + COLUMN_PUBDATE + " >= " + lastWeekInMillis + 
+				" ORDER BY " + COLUMN_PUBDATE + " DESC "
+				, null);
+		
+		return cursor;
 	}
 
 	/***

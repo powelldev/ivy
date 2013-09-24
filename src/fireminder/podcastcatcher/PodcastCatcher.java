@@ -1,6 +1,5 @@
 package fireminder.podcastcatcher;
 
-import android.app.Application;
 import android.content.Context;
 
 public class PodcastCatcher {
