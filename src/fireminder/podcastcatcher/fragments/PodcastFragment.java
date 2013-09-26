@@ -44,7 +44,7 @@ public class PodcastFragment extends ListFragment {
 
 	final static String TAG = PodcastFragment.class.getSimpleName();
 
-	PodcastAdapter cursorAdapter;
+	public PodcastAdapter cursorAdapter;
 	PodcastDao2 pdao = new PodcastDao2();
 	EpisodeDao2 edao = new EpisodeDao2();
 	public BackgroundThread bt = new BackgroundThread(getActivity());
@@ -63,7 +63,6 @@ public class PodcastFragment extends ListFragment {
 		updateListAdapter();
 		
         subscribeIfIntent();
-
 		return rootView;
 	}
 

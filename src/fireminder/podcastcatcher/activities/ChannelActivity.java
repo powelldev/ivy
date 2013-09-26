@@ -60,6 +60,7 @@ public class ChannelActivity extends ListActivity {
 		findViewsById();
 		setupViews();
 	}
+	
 
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v,
@@ -90,7 +91,6 @@ public class ChannelActivity extends ListActivity {
 	@Override
 	protected void onPause() {
 		super.onPause();
-		mCursor.close();
 	}
 	
 	@Override

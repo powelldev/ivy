@@ -1,6 +1,7 @@
 package fireminder.podcastcatcher.activities;
 
 import java.util.Calendar;
+import java.util.List;
 import java.util.Locale;
 
 import android.app.AlarmManager;
@@ -21,6 +22,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
+import fireminder.podcastcatcher.OnTaskCompleted;
 import fireminder.podcastcatcher.PodcastCatcher;
 import fireminder.podcastcatcher.R;
 import fireminder.podcastcatcher.boot.BootService;
@@ -29,7 +31,7 @@ import fireminder.podcastcatcher.downloads.ADownloadService;
 import fireminder.podcastcatcher.downloads.BackgroundThread;
 import fireminder.podcastcatcher.fragments.PodcastFragment;
 
-public class MainActivity extends FragmentActivity {
+public class MainActivity extends FragmentActivity implements OnTaskCompleted {
 	Uri data = null;
 
 	/**
@@ -53,6 +55,8 @@ public class MainActivity extends FragmentActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		PodcastCatcher.getInstance().setContext(this);
+		PodcastCatcher.getInstance().setActivity(this);
+
 		// updateSongList();
 		
 		Intent updateIntent = new Intent(MainActivity.this, BootService.class);
@@ -210,5 +214,10 @@ public class MainActivity extends FragmentActivity {
 			 */
 			return rootView;
 		}
+	}
+
+	@Override
+	public void onTaskCompleted(List<String> result) {
+		podcastFragment.cursorAdapter.notifyDataSetChanged();
 	}
 }

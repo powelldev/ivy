@@ -19,7 +19,9 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 import fireminder.podcastcatcher.OnTaskCompleted;
+import fireminder.podcastcatcher.PodcastCatcher;
 import fireminder.podcastcatcher.R;
+import fireminder.podcastcatcher.downloads.BackgroundThread;
 import fireminder.podcastcatcher.utils.Helper;
 
 public class SearchActivity extends ListActivity implements OnTaskCompleted {
@@ -94,7 +96,8 @@ public class SearchActivity extends ListActivity implements OnTaskCompleted {
 			OnClickListener listListener = new OnClickListener() {
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
-					finishWithItem(list.get(which));
+					new BackgroundThread(PodcastCatcher.getInstance().getContext()).subscribeToPodcast(list.get(which));
+//					finishWithItem(list.get(which));
 				}
 			};
 			CharSequence[] cs = list.toArray(new CharSequence[list.size()]);

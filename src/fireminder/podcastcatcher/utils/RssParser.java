@@ -299,6 +299,7 @@ public class RssParser {
 		Episode episode = new Episode();
 		List<String> testStringList = new ArrayList<String>();
 		boolean encl = false;
+		long startTime = System.nanoTime();
 		while(eventType != XmlPullParser.END_DOCUMENT){
 			name = xpp.getName();
 			switch(eventType){
@@ -357,6 +358,7 @@ public class RssParser {
 		for(String s: testStringList){
 			Log.d("TestString", s);
 		}
+		Log.e("ParseEpisodeTiming", "" + ((System.nanoTime() - startTime) / 1000));
 		return episodes;
 	} // end parseEpisodesFromXml()
 

@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.http.util.ByteArrayBuffer;
+import org.xmlpull.v1.XmlPullParserException;
 
 import android.app.DownloadManager;
 import android.app.DownloadManager.Request;
@@ -27,6 +28,7 @@ import android.os.Environment;
 import android.util.Log;
 import android.widget.Toast;
 import fireminder.podcastcatcher.OnTaskCompleted;
+import fireminder.podcastcatcher.PodcastCatcher;
 import fireminder.podcastcatcher.R;
 import fireminder.podcastcatcher.db.EpisodeDao2;
 import fireminder.podcastcatcher.db.PodcastDao2;
@@ -497,6 +499,60 @@ public class BackgroundThread {
 		for (Episode episode : episodes) {
 			Helper.downloadEpisodeMp3(episode);
 		}
+	}
+
+	public class SubscribeAsyncTask extends AsyncTask<String, Void, Podcast>{
+		@Override
+		protected void onPreExecute() {
+			super.onPreExecute();
+		}
+
+		@Override
+		protected Podcast doInBackground(String... urls) {
+			
+			BufferedReader reader = null;
+			Podcast podcast = null;
+			try{
+				URL url = new URL(urls[0]);
+				HttpURLConnection con = (HttpURLConnection) url.openConnection();
+				InputStream is = con.getInputStream();
+				reader = new BufferedReader(new InputStreamReader(is));
+				podcast= RssParser.parsePodcastFromXml(is);
+				podcast.setLink(urls[0]);
+			} 
+			catch(MalformedURLException e) {
+				e.printStackTrace();
+				return null;
+			} catch (IOException e) {
+				e.printStackTrace();
+				return null;
+			} catch (XmlPullParserException e) {
+				e.printStackTrace();
+				return null;
+			}
+			return podcast;
+		}
+		
+		@Override
+		protected void onPostExecute(Podcast result){
+			OnTaskCompleted mListener = PodcastCatcher.getInstance().getMainActivity();
+			if(result != null){
+				Podcast podcast = pdao.get(pdao.insert(result));
+				BackgroundThread bt = new BackgroundThread(PodcastCatcher.getInstance().getContext());
+				bt.getEpisodesFromBackgroundThread(podcast.getLink(), podcast.getId());
+				bt.getPodcastImageFromBackgroundThread(podcast.getLink(), podcast.getId());
+				Log.d(TAG, "parsing for episodes");
+				mListener.onTaskCompleted(null);
+				//new ParseXmlForEpisodes().execute(new String[] {podcast.getLink(), String.valueOf(podcast.get_id())});
+			}
+			else{
+				Toast.makeText(PodcastCatcher.getInstance().getContext(), "Podcast subscription failed: Please check url", Toast.LENGTH_LONG).show();
+			}
+		}
+	}
+	
+	public void subscribeToPodcast(String url) {
+		new SubscribeAsyncTask().execute(new String[] {url});
 	}
 
 }
