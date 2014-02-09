@@ -235,7 +235,7 @@ public class BackgroundThread {
 				// podcast.setImagelink(byteArray);
 				pdao.update(podcast);
 			}
-
+			PodcastCatcher.getInstance().getMainActivity().onTaskCompleted(null);
 		}
 
 	}
@@ -502,9 +502,13 @@ public class BackgroundThread {
 	}
 
 	public class SubscribeAsyncTask extends AsyncTask<String, Void, Podcast>{
+		private OnTaskCompleted sListener = PodcastCatcher.getInstance().getMainActivity();
+		private long id;
 		@Override
 		protected void onPreExecute() {
 			super.onPreExecute();
+			id = pdao.insert(new Podcast("Loading ..."));
+			sListener.onTaskCompleted(null);
 		}
 
 		@Override
@@ -535,15 +539,13 @@ public class BackgroundThread {
 		
 		@Override
 		protected void onPostExecute(Podcast result){
-			OnTaskCompleted mListener = PodcastCatcher.getInstance().getMainActivity();
+			pdao.delete(pdao.get(id));
 			if(result != null){
 				Podcast podcast = pdao.get(pdao.insert(result));
 				BackgroundThread bt = new BackgroundThread(PodcastCatcher.getInstance().getContext());
 				bt.getEpisodesFromBackgroundThread(podcast.getLink(), podcast.getId());
 				bt.getPodcastImageFromBackgroundThread(podcast.getLink(), podcast.getId());
-				Log.d(TAG, "parsing for episodes");
-				mListener.onTaskCompleted(null);
-				//new ParseXmlForEpisodes().execute(new String[] {podcast.getLink(), String.valueOf(podcast.get_id())});
+				sListener.onTaskCompleted(null);
 			}
 			else{
 				Toast.makeText(PodcastCatcher.getInstance().getContext(), "Podcast subscription failed: Please check url", Toast.LENGTH_LONG).show();

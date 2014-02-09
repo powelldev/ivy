@@ -15,6 +15,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -25,93 +26,113 @@ import fireminder.podcastcatcher.downloads.BackgroundThread;
 import fireminder.podcastcatcher.utils.Helper;
 
 public class SearchActivity extends ListActivity implements OnTaskCompleted {
-	ListView resultsListView;
-	EditText search_field_et;
-	ProgressDialog dialog;
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.search_layout);
+    private ListView resultsListView;
+    private EditText search_field_et;
+    private ProgressDialog dialog;
 
-		search_field_et = (EditText) findViewById(R.id.search_field_et);
-		resultsListView = getListView();
-		resultsListView.setOnItemClickListener(new OnItemClickListener() {
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.search_layout);
 
-			@Override
-			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
-					long arg3) {
-				finishWithItem(null);
-			}
+        Button searchBtn = (Button) findViewById(R.id.search_btn);
+        searchBtn.setOnClickListener(new android.view.View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                search(v);
+            }
+        });
 
-		});
-	}
+        search_field_et = (EditText) findViewById(R.id.search_field_et);
+        resultsListView = getListView();
+        resultsListView.setOnItemClickListener(new OnItemClickListener() {
 
-	@Override
-	protected void onPause() {
-		super.onPause();
-		Intent returnIntent = new Intent();
-		setResult(RESULT_CANCELED, returnIntent);
-		finish();
-	}
+            @Override
+            public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
+                    long arg3) {
+                finishWithItem(null);
+            }
 
-	/** Launches search */
-	public void search(View v) {
-		String rawSearchTerm = search_field_et.getEditableText().toString();
-		// Sanitize string
-		if (!rawSearchTerm.matches("")) {
-			try {
-				rawSearchTerm = URLEncoder.encode(rawSearchTerm, "UTF-8");
-			} catch (UnsupportedEncodingException e) {
-				e.printStackTrace();
-			}
-			dialog = ProgressDialog.show(this, "Searching", "Please wait...",
-					true);
-			Helper.searchForPodcasts(this, rawSearchTerm);
-		}
-	}
+        });
+    }
 
-	public void finishWithItem(String url) {
-		Intent returnIntent = new Intent();
-		returnIntent.putExtra("result", url);
-		setResult(RESULT_OK, returnIntent);
-		finish();
-	}
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Intent returnIntent = new Intent();
+        setResult(RESULT_CANCELED, returnIntent);
+        finish();
+    }
 
-	@Override
-	public void onTaskCompleted(final List<String> result) {
-		AlertDialog.Builder mBuilder = new AlertDialog.Builder(this);
+    public void search(View v) {
+        String rawSearchTerm = search_field_et.getEditableText().toString();
+        // Sanitize string
+        if (!rawSearchTerm.matches("")) {
+            try {
+                rawSearchTerm = URLEncoder.encode(rawSearchTerm, "UTF-8");
+            } catch (UnsupportedEncodingException e) {
+                e.printStackTrace();
+            }
+            dialog = ProgressDialog.show(this, "Searching", "Please wait...",
+                    true);
+            Helper.searchForPodcasts(this, rawSearchTerm);
+        }
+    }
 
-		dialog.dismiss();
-		if (result == null) {
-			Toast.makeText(this, "not found", Toast.LENGTH_LONG).show();
-			Intent returnIntent = new Intent();
-			setResult(RESULT_CANCELED, returnIntent);
-			finish();
-		} else if (result.size() > 1) {
-			final List<String> list = new ArrayList<String>();
-			for (int i = 0; i < result.size(); i++) {
-				list.add(result.get(i));
-			}
-			OnClickListener listListener = new OnClickListener() {
-				@Override
-				public void onClick(DialogInterface dialog, int which) {
-					new BackgroundThread(PodcastCatcher.getInstance().getContext()).subscribeToPodcast(list.get(which));
-//					finishWithItem(list.get(which));
-				}
-			};
-			CharSequence[] cs = list.toArray(new CharSequence[list.size()]);
-			mBuilder.setSingleChoiceItems(cs, -1, listListener);
+    public void finishWithItem(String url) {
+        Intent returnIntent = new Intent();
+        setResult(RESULT_OK, returnIntent);
+        finish();
+    }
 
-			mBuilder.create().show();
-			// finishWithItem(result.get(2));
-		} else {
-			Toast.makeText(this, "not found", Toast.LENGTH_LONG).show();
-			Intent returnIntent = new Intent();
-			setResult(RESULT_CANCELED, returnIntent);
-			finish();
-		}
+    @Override
+    public void onTaskCompleted(final List<String> result) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
-	}
+        dialog.dismiss();
+        if (result == null) {
+            Toast.makeText(this, R.string.search_not_found, Toast.LENGTH_LONG)
+                    .show();
+        } else if (result.size() > 1) {
+            mSearchResultsList = result;
+            CharSequence[] cs = mSearchResultsList
+                    .toArray(new CharSequence[mSearchResultsList.size()]);
+            builder.setMultiChoiceItems(cs, null, mSearchResultListListener);
+            builder.setPositiveButton(R.string.ok,
+                    new DialogInterface.OnClickListener() {
 
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            BackgroundThread bt = new BackgroundThread(
+                                    PodcastCatcher.getInstance().getContext());
+                            for (String podcast : mSelectedPodcasts) {
+                                bt.subscribeToPodcast(podcast);
+                            }
+                            finishWithItem(null);
+                        }
+                    });
+            builder.create().show();
+            // finishWithItem(result.get(2));
+        } else {
+            Toast.makeText(this, R.string.search_not_found, Toast.LENGTH_LONG)
+                    .show();
+        }
+
+    }
+
+    private List<String> mSearchResultsList;
+    private List<String> mSelectedPodcasts = new ArrayList<String>();
+
+    private DialogInterface.OnMultiChoiceClickListener mSearchResultListListener = new DialogInterface.OnMultiChoiceClickListener() {
+        @Override
+        public void onClick(DialogInterface dialog, int which, boolean isChecked) {
+            String result = mSearchResultsList.get(which);
+            if (isChecked) {
+                mSelectedPodcasts.add(result);
+            } else {
+                mSelectedPodcasts.remove(result);
+            }
+        }
+    };
 }

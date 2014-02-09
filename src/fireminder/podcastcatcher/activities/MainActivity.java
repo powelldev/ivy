@@ -130,10 +130,8 @@ public class MainActivity extends FragmentActivity implements OnTaskCompleted {
 
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if (requestCode == 42 && resultCode == RESULT_OK) {
-			// podcastFragment.subscribe(data.getStringExtra("result"));
-			Toast.makeText(this, data.getStringExtra("result"),
-					Toast.LENGTH_LONG).show();
-			podcastFragment.subscribe(data.getStringExtra("result"));
+		    // Search finished, update ListView?
+		    podcastFragment.updateListAdapter();
 		} else {
 			super.onActivityResult(requestCode, resultCode, data);
 		}
@@ -218,6 +216,6 @@ public class MainActivity extends FragmentActivity implements OnTaskCompleted {
 
 	@Override
 	public void onTaskCompleted(List<String> result) {
-		podcastFragment.cursorAdapter.notifyDataSetChanged();
+		podcastFragment.updateListAdapter();
 	}
 }

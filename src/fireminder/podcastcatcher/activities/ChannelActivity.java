@@ -39,156 +39,147 @@ import fireminder.podcastcatcher.valueobjects.Podcast;
  */
 public class ChannelActivity extends ListActivity {
 
-	final static String TAG = ChannelActivity.class.getSimpleName();
+    final static String TAG = ChannelActivity.class.getSimpleName();
 
-	TextView title_tv;
-	TextView descrip_tv;
-	ImageView image_iv;
-	long mPodcastId;
-	ImageButton play_btn;
-	
-	Cursor mCursor;
-	
-	EpisodeDao2 edao = new EpisodeDao2();
-	
-	PodcastDao2 pdao = new PodcastDao2();
+    TextView title_tv;
+    TextView descrip_tv;
+    ImageView image_iv;
+    long mPodcastId;
+    ImageButton play_btn;
+    
+    Cursor mCursor;
+    
+    EpisodeDao2 edao = new EpisodeDao2();
+    
+    PodcastDao2 pdao = new PodcastDao2();
 
-	@Override
-	protected void onCreate(Bundle bundle) {
-		super.onCreate(bundle);
-		setContentView(R.layout.channel);
-		findViewsById();
-		setupViews();
-	}
-	
+    @Override
+    protected void onCreate(Bundle bundle) {
+        super.onCreate(bundle);
+        setContentView(R.layout.channel);
+        findViewsById();
+        setupViews();
+    }
+    
 
-	@Override
-	public void onCreateContextMenu(ContextMenu menu, View v,
-			ContextMenuInfo menuInfo) {
-		super.onCreateContextMenu(menu, v, menuInfo);
-		// TODO add a Download all
-		android.view.MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.episode_menu, (android.view.Menu) menu);
-	}
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v,
+            ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        // TODO add a Download all
+        android.view.MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.episode_menu, (android.view.Menu) menu);
+    }
 
-	@Override
-	public boolean onContextItemSelected(android.view.MenuItem item) {
-		AdapterContextMenuInfo info = (AdapterContextMenuInfo) item
-				.getMenuInfo();
-		switch (item.getItemId()) {
-		case R.id.delete:
-			Log.d("menu delete", "Delete clicked: " + info.id);
-			edao.delete(edao.get(info.id));
-			updateListAdapter(getApplicationContext(), mPodcastId);
-			return true;
-		case R.id.downloadAll:
-			new BackgroundThread(this).downloadAll(mPodcastId);
-		default:
-			return super.onContextItemSelected(item);
-		}
-	}
+    @Override
+    public boolean onContextItemSelected(android.view.MenuItem item) {
+        AdapterContextMenuInfo info = (AdapterContextMenuInfo) item
+                .getMenuInfo();
+        switch (item.getItemId()) {
+        case R.id.delete:
+            Log.d("menu delete", "Delete clicked: " + info.id);
+            edao.delete(edao.get(info.id));
+            updateListAdapter(getApplicationContext(), mPodcastId);
+            return true;
+        case R.id.downloadAll:
+            new BackgroundThread(this).downloadAll(mPodcastId);
+        default:
+            return super.onContextItemSelected(item);
+        }
+    }
 
-	@Override
-	protected void onPause() {
-		super.onPause();
-	}
-	
-	@Override
-	protected void onResume() {
-		super.onResume();
-		updateListAdapter(this, mPodcastId);
-	}
+    @Override
+    protected void onPause() {
+        super.onPause();
+    }
+    
+    @Override
+    protected void onResume() {
+        super.onResume();
+        updateListAdapter(this, mPodcastId);
+    }
 
-	/**
-	 * Find corresponding view ids for the layout Query podcast db via podcast
-	 * data-access object Query episode db set Listeners
-	 */
-	private void setupViews() {
-		Intent intent;
-		Podcast podcast;
+    /**
+     * Find corresponding view ids for the layout Query podcast db via podcast
+     * data-access object Query episode db set Listeners
+     */
+    private void setupViews() {
+        Intent intent;
+        Podcast podcast;
 
-		intent = getIntent();
-		mPodcastId = intent.getLongExtra("channel_id", 0);
+        intent = getIntent();
+        mPodcastId = intent.getLongExtra("channel_id", 0);
 
-		podcast = pdao.get(mPodcastId);
+        podcast = pdao.get(mPodcastId);
 
-		mPodcastId = podcast.getId();
+        mPodcastId = podcast.getId();
 
-		title_tv.setText(podcast.getTitle());
+        title_tv.setText(podcast.getTitle());
 
-		try {
-			ByteArrayInputStream is = new ByteArrayInputStream(
-			podcast.getImagePath());
-			Bitmap image = BitmapFactory.decodeStream(is);
-			image_iv.setImageBitmap(image);
-		} catch (Exception e) {
-			image_iv.setImageResource(R.drawable.ic_launcher);
-			e.printStackTrace();
-		}
+        try {
+            ByteArrayInputStream is = new ByteArrayInputStream(
+            podcast.getImagePath());
+            Bitmap image = BitmapFactory.decodeStream(is);
+            image_iv.setImageBitmap(image);
+        } catch (Exception e) {
+            image_iv.setImageResource(R.drawable.ic_launcher);
+            e.printStackTrace();
+        }
 
-		getListView().setOnItemClickListener(new OnItemClickListener() {
+        getListView().setOnItemClickListener(new OnItemClickListener() {
 
-			@SuppressLint("NewApi")
-			@Override
-			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
-					long episode_id) {
-				Episode _episode;
-				BackgroundThread bt;
+            @SuppressLint("NewApi")
+            @Override
+            public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
+                    long episode_id) {
+                Episode _episode;
+                BackgroundThread bt;
 
-				_episode = edao.get(episode_id);
+                _episode = edao.get(episode_id);
 
-				if (_episode.getMp3() == null) {
-					Toast.makeText(getApplicationContext(), "Downloading ...",
-							Toast.LENGTH_SHORT).show();
-					bt = new BackgroundThread(getApplicationContext());
-					//bt.downloadEpisodeMp3(_episode);
-					Helper.downloadEpisodeMp3(_episode);
-				} else {
-					Intent intent = new Intent();
-					intent.setAction(android.content.Intent.ACTION_VIEW);
-					File file = new File(_episode.getMp3());
-					if (!file.exists()) {
-						Toast.makeText(getApplicationContext(),
-								"Downloading ...", Toast.LENGTH_SHORT).show();
-						bt = new BackgroundThread(getApplicationContext());
-						//bt.downloadEpisodeMp3(_episode);
-					Helper.downloadEpisodeMp3(_episode);
-					} else {
-						intent.setDataAndType(Uri.fromFile(file), "audio/*");
-						startActivity(intent);
-						Toast.makeText(getApplicationContext(), "Playing...",
-								Toast.LENGTH_LONG).show();
+                if (_episode.getMp3() == null) {
+                    Toast.makeText(getApplicationContext(), "Downloading ...",
+                            Toast.LENGTH_SHORT).show();
+                    bt = new BackgroundThread(getApplicationContext());
+                    //bt.downloadEpisodeMp3(_episode);
+                    Helper.downloadEpisodeMp3(_episode);
+                } else {
+                    Intent intent = new Intent();
+                    intent.setAction(android.content.Intent.ACTION_VIEW);
+                    File file = new File(_episode.getMp3());
+                    if (!file.exists()) {
+                        Toast.makeText(getApplicationContext(),
+                                "Downloading ...", Toast.LENGTH_SHORT).show();
+                        bt = new BackgroundThread(getApplicationContext());
+                        //bt.downloadEpisodeMp3(_episode);
+                    Helper.downloadEpisodeMp3(_episode);
+                    } else {
+                        intent.setDataAndType(Uri.fromFile(file), "audio/*");
+                        startActivity(intent);
+                        Toast.makeText(getApplicationContext(), "Playing...",
+                                Toast.LENGTH_LONG).show();
+                    }
+                }
 
-						/*
-						 * File mfile = new File(_episode.getMp3()); Uri uri =
-						 * Uri.fromFile(mfile); Intent playbackIntent = new
-						 * Intent( Intent.CATEGORY_APP_MUSIC);
-						 * playbackIntent.setAction(Intent.ACTION_VIEW);
-						 * playbackIntent.setDataAndType(uri, "audio/*");
-						 * startActivity(playbackIntent);
-						 */
-					}
-				}
+            }
 
-			}
+        });
 
-		});
+        registerForContextMenu(getListView());
+        updateListAdapter(this, podcast.getId());
 
-		registerForContextMenu(getListView());
-		updateListAdapter(this, podcast.getId());
+    }
 
-	}
+    private void updateListAdapter(Context context, long id) {
+        mCursor = edao.getAllEpisodesAsCursorByDate(id);
+        EpisodeAdapter cursorAdapter = new EpisodeAdapter(context,
+                mCursor, 0);
+        setListAdapter(cursorAdapter);
+    }
 
-	private void updateListAdapter(Context context, long id) {
-		mCursor = edao.getAllEpisodesAsCursorByDate(id);
-		EpisodeAdapter cursorAdapter = new EpisodeAdapter(context,
-				mCursor, 0);
-		setListAdapter(cursorAdapter);
-	}
-
-	private void findViewsById() {
-		title_tv = (TextView) findViewById(R.id.title_tv);
-		image_iv = (ImageView) findViewById(R.id.podcast_image);
-		play_btn = (ImageButton) findViewById(R.id.play_icon_iv);
-	}
+    private void findViewsById() {
+        title_tv = (TextView) findViewById(R.id.title_tv);
+        image_iv = (ImageView) findViewById(R.id.podcast_image);
+        play_btn = (ImageButton) findViewById(R.id.play_icon_iv);
+    }
 }
