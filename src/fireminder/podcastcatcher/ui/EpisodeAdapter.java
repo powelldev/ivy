@@ -15,46 +15,44 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 import fireminder.podcastcatcher.R;
 import fireminder.podcastcatcher.db.EpisodeDao2;
+import fireminder.podcastcatcher.utils.Utils;
 
 public class EpisodeAdapter extends CursorAdapter {
 
-	private Context context;
-	private Cursor cursor;
-	private final LayoutInflater mLayoutInflater;
+    private Context context;
+    private Cursor cursor;
+    private final LayoutInflater mLayoutInflater;
 
-	public EpisodeAdapter(Context context, Cursor c, int flags) {
+    public EpisodeAdapter(Context context, Cursor c, int flags) {
 
-		super(context, c, flags);
-		mLayoutInflater = LayoutInflater.from(context);
-		this.context = context;
-		this.cursor = c;
-	}
+        super(context, c, flags);
+        mLayoutInflater = LayoutInflater.from(context);
+        this.context = context;
+        this.cursor = c;
+    }
 
-	@Override
+    @Override
 	public void bindView(View arg0, Context arg1, Cursor cursor) {
+		ImageButton playIcon = (ImageButton) arg0
+				.findViewById(R.id.play_icon_iv);
 		TextView episodeTitle = (TextView) arg0
 				.findViewById(R.id.list_item_episode_tv);
-		episodeTitle.setText(cursor.getString(cursor
-				.getColumnIndex(EpisodeDao2.COLUMN_TITLE)));
-
 		TextView episodeDate = (TextView) arg0
 				.findViewById(R.id.list_item_date_tv);
-		long milliseconds = cursor.getLong(cursor
-				.getColumnIndex(EpisodeDao2.COLUMN_PUBDATE));
+
+
+		long milliseconds = cursor.getLong(cursor.getColumnIndex(EpisodeDao2.COLUMN_PUBDATE));
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTimeInMillis(milliseconds);
 		Date date = calendar.getTime();
 		SimpleDateFormat sdf = new SimpleDateFormat("dd MMM");
+
 		episodeDate.setText(sdf.format(date));
+		episodeTitle.setText(Utils.getStringFromCursor(cursor, EpisodeDao2.COLUMN_TITLE));
 
-		ImageButton playIcon = (ImageButton) arg0
-				.findViewById(R.id.play_icon_iv);
-		String file_mp3 = cursor.getString(cursor
-				.getColumnIndex(EpisodeDao2.COLUMN_MP3));
-
+		String file_mp3 = Utils.getStringFromCursor(cursor, EpisodeDao2.COLUMN_MP3);
 		if (file_mp3 != null) {
-			File mp3 = new File(cursor.getString(cursor
-					.getColumnIndex(EpisodeDao2.COLUMN_MP3)));
+			File mp3 = new File(Utils.getStringFromCursor(cursor, EpisodeDao2.COLUMN_MP3));
 			if (mp3.exists()) {
 				playIcon.setVisibility(View.VISIBLE);
 				playIcon.setFocusable(false);
@@ -67,11 +65,11 @@ public class EpisodeAdapter extends CursorAdapter {
 		}
 	}
 
-	@Override
-	public View newView(Context context, Cursor arg1, ViewGroup arg2) {
-		View view = mLayoutInflater.inflate(R.layout.episode_list_item, arg2,
-				false);
-		return view;
-	}
+    @Override
+    public View newView(Context context, Cursor arg1, ViewGroup arg2) {
+        View view = mLayoutInflater.inflate(R.layout.episode_list_item, arg2,
+                false);
+        return view;
+    }
 
 }
