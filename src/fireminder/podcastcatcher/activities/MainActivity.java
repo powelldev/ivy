@@ -106,7 +106,7 @@ public class MainActivity extends FragmentActivity implements OnTaskCompleted {
 		case R.id.subscribe_setting:
 			podcastFragment.subscribe("http://");
 			return true;
-		case R.id.test:
+		case R.id.download_service:
 			Intent intent = new Intent(this, ADownloadService.class);
 			this.startService(intent);
 			return true;

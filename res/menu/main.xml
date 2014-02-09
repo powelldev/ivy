@@ -8,15 +8,15 @@
         android:title="Subscribe"
         />
     <item 
-        android:id="@+id/test"
-        android:title="Test"
+        android:id="@+id/download_service"
+        android:title="Start Download Service"
         />
     <item
         android:id="@+id/get_new"
         android:showAsAction="ifRoom"
         android:icon="@drawable/navigation_refresh"
         android:orderInCategory="400"
-        android:title="New"/>
+        android:title="Get New"/>
     <item
         android:id="@+id/search"
         android:orderInCategory="200"
