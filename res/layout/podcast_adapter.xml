@@ -14,7 +14,7 @@
         />
     
 	<ImageView
-	     android:background="@drawable/gradient_shape"
+	     android:background="@drawable/fireminder_podcast_selector"
 	     android:layout_width="match_parent"
 	     android:layout_height="match_parent"
 	     android:scaleType="centerCrop"
