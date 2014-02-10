@@ -33,6 +33,7 @@ public class ADownloadService extends IntentService {
 	@Override
 	protected void onHandleIntent(Intent intent) {
 
+		Log.e("HAPT", "DownloadService started at " + System.currentTimeMillis() + "");
 		BackgroundThread bt = new BackgroundThread(this);
 		bt.getNewEpisodes();
 //		
