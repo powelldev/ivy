@@ -21,6 +21,7 @@ import fireminder.podcastcatcher.boot.BootService;
 import fireminder.podcastcatcher.downloads.ADownloadService;
 import fireminder.podcastcatcher.downloads.BackgroundThread;
 import fireminder.podcastcatcher.fragments.PodcastFragment;
+import fireminder.podcastcatcher.fragments.SettingsFragment;
 
 public class MainActivity extends Activity implements OnTaskCompleted {
 
@@ -84,6 +85,13 @@ public class MainActivity extends Activity implements OnTaskCompleted {
 		return true;
 	}
 
+	public void startPreferenceFragment() {
+		FragmentTransaction trans = getFragmentManager()
+				.beginTransaction();
+		trans.replace(R.id.fragment_container, new SettingsFragment());
+		trans.addToBackStack(null);
+		trans.commit();
+	}
 	public void setChannelFragment(long channelId) {
 		mChannelFragment = ChannelFragment.newInstance(channelId);
 		FragmentTransaction trans = getFragmentManager()
@@ -116,6 +124,9 @@ public class MainActivity extends Activity implements OnTaskCompleted {
 			Intent dlIntent = new Intent();
 			dlIntent.setAction(DownloadManager.ACTION_VIEW_DOWNLOADS);
 			startActivity(dlIntent);
+			return true;
+		case R.id.settings:
+			this.startPreferenceFragment();
 			return true;
 		default:
 			return super.onOptionsItemSelected(item);

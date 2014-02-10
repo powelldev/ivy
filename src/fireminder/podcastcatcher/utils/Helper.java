@@ -44,7 +44,7 @@ public class Helper {
         new EpisodeDao2().update(e);
     }
     public static void searchForPodcasts(Context context, String term){
-        String searchURL = String.format("https://itunes.apple.com/search?media=podcast&limit=5&term=%s&attribute=titleTerm", term);
+        String searchURL = String.format("https://itunes.apple.com/search?media=podcast&term=%s&attribute=titleTerm", term);
         Log.d("SearchURL: ", searchURL);
         BackgroundThread bt = new BackgroundThread(context);
         bt.searchItunesForPodcasts(searchURL);
