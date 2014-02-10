@@ -11,13 +11,12 @@ import java.net.URL;
 import org.xmlpull.v1.XmlPullParserException;
 
 import android.app.AlertDialog;
+import android.app.ListFragment;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.ListFragment;
 import android.text.ClipboardManager;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -32,7 +31,7 @@ import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Toast;
 import fireminder.podcastcatcher.R;
-import fireminder.podcastcatcher.activities.ChannelActivity;
+import fireminder.podcastcatcher.activities.MainActivity;
 import fireminder.podcastcatcher.db.EpisodeDao2;
 import fireminder.podcastcatcher.db.PodcastDao2;
 import fireminder.podcastcatcher.downloads.BackgroundThread;
@@ -232,13 +231,9 @@ public class PodcastFragment extends ListFragment {
 	OnItemClickListener channelListViewOnClickListener = new OnItemClickListener() {
 		public void onItemClick(AdapterView<?> arg0, View arg1, int itemPosition,
 				long itemId) {
-//			Helper.getNewEpisodesFromPodcast(getActivity() , itemId);
 
-			Intent intent = new Intent();
-			intent.setClass(getActivity(), ChannelActivity.class);
-			intent.putExtra("channel_id", itemId);
-			
-			startActivity(intent);
+			((MainActivity) getActivity()).setChannelFragment(itemId);
+
 			
 		}
 	};

@@ -103,7 +103,6 @@ public class EpisodeDao2 {
 		Cursor cursor =  db.query(TABLE_NAME,
 				allColumns, COLUMN_PODCAST_ID
 						+ "=" + id, null, null, null, null);
-		db.close();
 		return cursor;
 	}
 

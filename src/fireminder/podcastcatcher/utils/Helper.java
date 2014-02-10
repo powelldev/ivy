@@ -12,7 +12,6 @@ import android.app.DownloadManager.Request;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Environment;
-import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import fireminder.podcastcatcher.PodcastCatcher;
 import fireminder.podcastcatcher.db.EpisodeDao2;
@@ -155,9 +154,9 @@ public class Helper {
         return messages;
     }
 
-    public static void getNewEpisodesFromPodcast(FragmentActivity fragmentActivity, long itemId) {
+    public static void getNewEpisodesFromPodcast(Context context , long itemId) {
 
-        BackgroundThread bt = new BackgroundThread(fragmentActivity);
+        BackgroundThread bt = new BackgroundThread(context);
         bt.getNewEpisodesForPodcast((int) itemId);
     }
 }

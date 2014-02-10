@@ -1,8 +1,8 @@
 package fireminder.podcastcatcher.fragments;
 
+import android.app.ListFragment;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.support.v4.app.ListFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;

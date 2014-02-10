@@ -90,7 +90,9 @@ public class SearchActivity extends ListActivity implements OnTaskCompleted {
     public void onTaskCompleted(final List<String> result) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
+        try {
         dialog.dismiss();
+        } catch (Exception e) {}
         if (result == null) {
             Toast.makeText(this, R.string.search_not_found, Toast.LENGTH_LONG)
                     .show();
