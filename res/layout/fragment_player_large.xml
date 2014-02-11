@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" >
+
+    <!-- Header -->
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="?android:attr/actionBarSize"
+        android:padding="5dp" >
+
+        <ImageView
+            android:id="@+id/fragment_player_small_album_cover"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_alignParentLeft="true"
+            android:src="#000" />
+
+        <TextView
+            android:id="@+id/fragment_player_small_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/fragment_player_small_album_cover"
+            android:paddingLeft="5dp"
+            android:paddingTop="5dp"
+            android:text="The Warded Man 03 o.."
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/fragment_player_small_author"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/fragment_player_small_title"
+            android:layout_toRightOf="@id/fragment_player_small_album_cover"
+            android:paddingLeft="5dp"
+            android:text="Peter V. Brett"
+            android:textSize="12sp" />
+    </RelativeLayout>
+
+    <!-- Footer -->
+
+    <RelativeLayout
+        android:layout_alignParentBottom="true"
+        android:background="#eee"
+        android:layout_width="match_parent"
+        android:layout_height="68dp" >
+
+        <ImageView
+            android:id="@+id/fragment_player_playpause_icon"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="#000" />
+
+        <ImageView
+            android:id="@+id/fragment_player_rewind_icon"
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@id/fragment_player_playpause_icon"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="#000" />
+        <ImageView
+            android:id="@+id/fragment_player_ff_icon"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@id/fragment_player_playpause_icon"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="#000" />
+    </RelativeLayout>
+
+</RelativeLayout>

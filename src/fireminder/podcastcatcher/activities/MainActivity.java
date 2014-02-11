@@ -14,12 +14,22 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.Window;
+import android.widget.Toast;
+
+import com.sothree.slidinguppanel.SlidingUpPanelLayout;
+import com.sothree.slidinguppanel.SlidingUpPanelLayout.PanelSlideListener;
+
 import fireminder.podcastcatcher.OnTaskCompleted;
 import fireminder.podcastcatcher.PodcastCatcher;
 import fireminder.podcastcatcher.R;
 import fireminder.podcastcatcher.boot.BootService;
 import fireminder.podcastcatcher.downloads.ADownloadService;
 import fireminder.podcastcatcher.downloads.BackgroundThread;
+import fireminder.podcastcatcher.fragments.ChannelFragment;
+import fireminder.podcastcatcher.fragments.PlayerFragment;
+import fireminder.podcastcatcher.fragments.PlayerLargeFragment;
 import fireminder.podcastcatcher.fragments.PodcastFragment;
 import fireminder.podcastcatcher.fragments.SettingsFragment;
 
@@ -27,12 +37,18 @@ public class MainActivity extends Activity implements OnTaskCompleted {
 
 	private Uri data = null;
 
+	private static final String ACTION_BAR_STATE_HIDDEN = "saved_state_action_bar";
+
 	static PodcastFragment podcastFragment;
+	static PlayerFragment playerFragment;
+	static PlayerLargeFragment playerLargeFragment;
 	ChannelFragment mChannelFragment;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
+		getWindow().requestFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
 
 		setContentView(R.layout.activity_main);
 
@@ -48,12 +64,56 @@ public class MainActivity extends Activity implements OnTaskCompleted {
 			podcastFragment = new PodcastFragment();
 		}
 
+		playerFragment = new PlayerFragment();
+		playerLargeFragment = new PlayerLargeFragment();
+
 		FragmentTransaction trans = getFragmentManager().beginTransaction();
 		trans.add(R.id.fragment_container, podcastFragment);
+		trans.add(R.id.lower_container, playerFragment);
 		trans.commit();
 
 		PodcastCatcher.getInstance().setContext(this);
 		PodcastCatcher.getInstance().setActivity(this);
+
+		SlidingUpPanelLayout layout = (SlidingUpPanelLayout) findViewById(R.id.sliding_layout);
+		layout.setPanelSlideListener(new PanelSlideListener() {
+
+			@Override
+			public void onPanelSlide(View panel, float slideOffset) {
+				if (slideOffset < 0.4) {
+					if (getActionBar().isShowing()) {
+						getActionBar().hide();
+					}
+				} else {
+					if (!getActionBar().isShowing()) {
+						getActionBar().show();
+					}
+				}
+
+			}
+
+			@Override
+			public void onPanelCollapsed(View panel) {
+				getFragmentManager().beginTransaction().replace(
+						R.id.lower_container, playerFragment).commit();
+				showToast("Panel Collapsed");
+
+			}
+
+			@Override
+			public void onPanelExpanded(View panel) {
+				getFragmentManager().beginTransaction().replace(
+						R.id.lower_container, playerLargeFragment).commit();
+				showToast("Panel Expanded");
+			}
+
+			@Override
+			public void onPanelAnchored(View panel) {
+				showToast("Panel Anchored");
+
+			}
+
+		});
 
 		Intent updateIntent = new Intent(MainActivity.this, BootService.class);
 		startService(updateIntent);
@@ -67,6 +127,20 @@ public class MainActivity extends Activity implements OnTaskCompleted {
 		alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, Calendar
 				.getInstance().getTimeInMillis(), AlarmManager.INTERVAL_HOUR,
 				pi);
+
+		boolean actionBarHidden = savedInstanceState != null ? savedInstanceState
+				.getBoolean(ACTION_BAR_STATE_HIDDEN, false) : false;
+
+		if (actionBarHidden) {
+			getActionBar().hide();
+		}
+	}
+
+	@Override
+	protected void onSaveInstanceState(Bundle state) {
+		super.onSaveInstanceState(state);
+		state.putBoolean(ACTION_BAR_STATE_HIDDEN, !getActionBar().isShowing());
+
 	}
 
 	@Override
@@ -86,16 +160,15 @@ public class MainActivity extends Activity implements OnTaskCompleted {
 	}
 
 	public void startPreferenceFragment() {
-		FragmentTransaction trans = getFragmentManager()
-				.beginTransaction();
+		FragmentTransaction trans = getFragmentManager().beginTransaction();
 		trans.replace(R.id.fragment_container, new SettingsFragment());
 		trans.addToBackStack(null);
 		trans.commit();
 	}
+
 	public void setChannelFragment(long channelId) {
 		mChannelFragment = ChannelFragment.newInstance(channelId);
-		FragmentTransaction trans = getFragmentManager()
-				.beginTransaction();
+		FragmentTransaction trans = getFragmentManager().beginTransaction();
 		trans.replace(R.id.fragment_container, mChannelFragment);
 		trans.addToBackStack(null);
 		trans.commit();
@@ -145,5 +218,9 @@ public class MainActivity extends Activity implements OnTaskCompleted {
 	@Override
 	public void onTaskCompleted(List<String> result) {
 		podcastFragment.updateListAdapter();
+	}
+
+	public void showToast(String msg) {
+		Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
 	}
 }
