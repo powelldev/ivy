@@ -28,97 +28,97 @@ import fireminder.podcastcatcher.valueobjects.Episode;
 import fireminder.podcastcatcher.valueobjects.Podcast;
 
 public class ChannelFragment extends ListFragment implements
-		OnItemClickListener {
+        OnItemClickListener {
 
-	private final static String TAG = ChannelFragment.class.getSimpleName();
+    private final static String TAG = ChannelFragment.class.getSimpleName();
 
-	EpisodeDao2 mEdao = new EpisodeDao2();
-	PodcastDao2 mPdao = new PodcastDao2();
+    EpisodeDao2 mEdao = new EpisodeDao2();
+    PodcastDao2 mPdao = new PodcastDao2();
 
-	public static ChannelFragment newInstance(long channelId) {
-		ChannelFragment channelFragment = new ChannelFragment();
-		Bundle args = new Bundle();
-		args.putLong("channel_id", channelId);
-		channelFragment.setArguments(args);
-		return channelFragment;
-	}
+    public static ChannelFragment newInstance(long channelId) {
+        ChannelFragment channelFragment = new ChannelFragment();
+        Bundle args = new Bundle();
+        args.putLong("channel_id", channelId);
+        channelFragment.setArguments(args);
+        return channelFragment;
+    }
 
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-			Bundle savedInstanceState) {
-		long channelId;
-		Podcast podcast;
-		Bitmap image;
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+            Bundle savedInstanceState) {
+        long channelId;
+        Podcast podcast;
+        Bitmap image;
 
-		View rootView = (View) inflater.inflate(R.layout.channel, container,
-				false);
+        View rootView = (View) inflater.inflate(R.layout.channel, container,
+                false);
 
-		channelId = getArguments().getLong("channel_id");
+        channelId = getArguments().getLong("channel_id");
 
-		podcast = mPdao.get(channelId);
+        podcast = mPdao.get(channelId);
 
-		try {
-			ByteArrayInputStream is = new ByteArrayInputStream(
-					podcast.getImagePath());
-			image = BitmapFactory.decodeStream(is);
-		} catch (Exception e) {
-			image = null;
-		}
+        try {
+            ByteArrayInputStream is = new ByteArrayInputStream(
+                    podcast.getImagePath());
+            image = BitmapFactory.decodeStream(is);
+        } catch (Exception e) {
+            image = null;
+        }
 
-		((TextView) rootView.findViewById(R.id.title_tv)).setText(podcast
-				.getTitle());
-		if (image != null)
-			((ImageView) rootView.findViewById(R.id.podcast_image))
-					.setImageBitmap(image);
-		else
-			((ImageView) rootView.findViewById(R.id.podcast_image))
-					.setImageResource(R.drawable.ic_launcher);
+        ((TextView) rootView.findViewById(R.id.title_tv)).setText(podcast
+                .getTitle());
+        if (image != null)
+            ((ImageView) rootView.findViewById(R.id.podcast_image))
+                    .setImageBitmap(image);
+        else
+            ((ImageView) rootView.findViewById(R.id.podcast_image))
+                    .setImageResource(R.drawable.ic_launcher);
 
-		return rootView;
-	}
+        return rootView;
+    }
 
-	@Override
-	public void onPause() {
-		super.onPause();
-	}
+    @Override
+    public void onPause() {
+        super.onPause();
+    }
 
-	@Override
-	public void onResume() {
-		super.onResume();
-		getListView().setOnItemClickListener(this);
-	}
+    @Override
+    public void onResume() {
+        super.onResume();
+        getListView().setOnItemClickListener(this);
+    }
 
-	@Override
-	public void onViewCreated(View view, Bundle savedInstanceState) {
-		updateListAdapter(PodcastCatcher.getInstance().getContext());
-		super.onViewCreated(view, savedInstanceState);
-	}
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        updateListAdapter(PodcastCatcher.getInstance().getContext());
+        super.onViewCreated(view, savedInstanceState);
+    }
 
-	private void updateListAdapter(Context context) {
-		Cursor cursor = mEdao.getAllEpisodesAsCursor(getArguments().getLong(
-				"channel_id"));
-		EpisodeAdapter cursorAdapter = new EpisodeAdapter(context, cursor, 0);
-		setListAdapter(cursorAdapter);
-	}
+    private void updateListAdapter(Context context) {
+        Cursor cursor = mEdao.getAllEpisodesAsCursor(getArguments().getLong(
+                "channel_id"));
+        EpisodeAdapter cursorAdapter = new EpisodeAdapter(context, cursor, 0);
+        setListAdapter(cursorAdapter);
+    }
 
-	@Override
-	public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
-			long episode_id) {
+    @Override
+    public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
+            long episode_id) {
 
-		Episode episode = mEdao.get(episode_id);
-		
-		
-		if (episode.getMp3().matches("")) {
-			Helper.downloadEpisodeMp3(episode);
-		} else {
-			File mp3 = new File(episode.getMp3());
-			if (mp3.exists()){
-				MainActivity activity = (MainActivity) getActivity();
-				activity.startPlayingEpisode(episode, mPdao.get(episode.getPodcast_id()));
-				Toast.makeText(getActivity(), "Playing", Toast.LENGTH_SHORT).show();
-			}
-		}
+        Episode episode = mEdao.get(episode_id);
+        
+        
+        if (episode.getMp3().matches("")) {
+            Helper.downloadEpisodeMp3(episode);
+        } else {
+            File mp3 = new File(episode.getMp3());
+            if (mp3.exists()){
+                MainActivity activity = (MainActivity) getActivity();
+                activity.startPlayingEpisode(episode, mPdao.get(episode.getPodcast_id()));
+                Toast.makeText(getActivity(), "Playing", Toast.LENGTH_SHORT).show();
+            }
+        }
 
-	}
+    }
 
 }

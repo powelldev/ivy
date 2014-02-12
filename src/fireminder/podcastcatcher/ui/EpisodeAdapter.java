@@ -32,38 +32,38 @@ public class EpisodeAdapter extends CursorAdapter {
     }
 
     @Override
-	public void bindView(View arg0, Context arg1, Cursor cursor) {
-		ImageButton playIcon = (ImageButton) arg0
-				.findViewById(R.id.play_icon_iv);
-		TextView episodeTitle = (TextView) arg0
-				.findViewById(R.id.list_item_episode_tv);
-		TextView episodeDate = (TextView) arg0
-				.findViewById(R.id.list_item_date_tv);
+    public void bindView(View arg0, Context arg1, Cursor cursor) {
+        ImageButton playIcon = (ImageButton) arg0
+                .findViewById(R.id.play_icon_iv);
+        TextView episodeTitle = (TextView) arg0
+                .findViewById(R.id.list_item_episode_tv);
+        TextView episodeDate = (TextView) arg0
+                .findViewById(R.id.list_item_date_tv);
 
 
-		long milliseconds = cursor.getLong(cursor.getColumnIndex(EpisodeDao2.COLUMN_PUBDATE));
-		Calendar calendar = Calendar.getInstance();
-		calendar.setTimeInMillis(milliseconds);
-		Date date = calendar.getTime();
-		SimpleDateFormat sdf = new SimpleDateFormat("dd MMM");
+        long milliseconds = cursor.getLong(cursor.getColumnIndex(EpisodeDao2.COLUMN_PUBDATE));
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(milliseconds);
+        Date date = calendar.getTime();
+        SimpleDateFormat sdf = new SimpleDateFormat("dd MMM");
 
-		episodeDate.setText(sdf.format(date));
-		episodeTitle.setText(Utils.getStringFromCursor(cursor, EpisodeDao2.COLUMN_TITLE));
+        episodeDate.setText(sdf.format(date));
+        episodeTitle.setText(Utils.getStringFromCursor(cursor, EpisodeDao2.COLUMN_TITLE));
 
-		String file_mp3 = Utils.getStringFromCursor(cursor, EpisodeDao2.COLUMN_MP3);
-		if (file_mp3 != null) {
-			File mp3 = new File(Utils.getStringFromCursor(cursor, EpisodeDao2.COLUMN_MP3));
-			if (mp3.exists()) {
-				playIcon.setVisibility(View.VISIBLE);
-				playIcon.setFocusable(false);
-			} else {
-				playIcon.setVisibility(View.GONE);
-			}
+        String file_mp3 = Utils.getStringFromCursor(cursor, EpisodeDao2.COLUMN_MP3);
+        if (file_mp3 != null) {
+            File mp3 = new File(Utils.getStringFromCursor(cursor, EpisodeDao2.COLUMN_MP3));
+            if (mp3.exists()) {
+                playIcon.setVisibility(View.VISIBLE);
+                playIcon.setFocusable(false);
+            } else {
+                playIcon.setVisibility(View.GONE);
+            }
 
-		} else {
-			playIcon.setVisibility(View.GONE);
-		}
-	}
+        } else {
+            playIcon.setVisibility(View.GONE);
+        }
+    }
 
     @Override
     public View newView(Context context, Cursor arg1, ViewGroup arg2) {

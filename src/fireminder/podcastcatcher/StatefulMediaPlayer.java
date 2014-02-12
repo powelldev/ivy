@@ -7,103 +7,103 @@ import android.util.Log;
 
 public class StatefulMediaPlayer extends MediaPlayer {
 
-	public State mState;
+    public State mState;
 
-	private String mCurrentTrack = "";
-	public enum State {
-		STARTED, STOPPED, PAUSED, PREPARED, CREATED;
-	}
+    private String mCurrentTrack = "";
+    public enum State {
+        STARTED, STOPPED, PAUSED, PREPARED, CREATED;
+    }
 
-	public StatefulMediaPlayer() {
-		super();
-		mState = State.CREATED;
-	}
+    public StatefulMediaPlayer() {
+        super();
+        mState = State.CREATED;
+    }
 
-	public State getState() {
-		return mState;
-	}
+    public State getState() {
+        return mState;
+    }
 
-	public void setDataSource(File file) {
-		this.stop();
-		mState = State.STOPPED;
-			Log.e("TAG", "STOPPED");
-		try {
-			Log.e("TAG", file.getAbsolutePath());
-			super.setDataSource(file.getAbsolutePath());
-			super.prepare();
-			mState = State.PREPARED;
-		} catch (Exception e) {
-			Log.e("TAG", e.getMessage());
-			mState = State.CREATED;
-		}
-		
-		
-	}
-	public void stop() {
-		if (mState == State.STARTED) {
+    public void setDataSource(File file) {
+        this.stop();
+        mState = State.STOPPED;
+            Log.e("TAG", "STOPPED");
+        try {
+            Log.e("TAG", file.getAbsolutePath());
+            super.setDataSource(file.getAbsolutePath());
+            super.prepare();
+            mState = State.PREPARED;
+        } catch (Exception e) {
+            Log.e("TAG", e.getMessage());
+            mState = State.CREATED;
+        }
+        
+        
+    }
+    public void stop() {
+        if (mState == State.STARTED) {
 
-			super.stop();
+            super.stop();
 
-			mState = State.STOPPED;
+            mState = State.STOPPED;
 
-		} else if (mState == State.STOPPED) {
+        } else if (mState == State.STOPPED) {
 
-		} else if (mState == State.PAUSED) {
-			
-			super.stop();
-			
-			mState = State.STOPPED;
+        } else if (mState == State.PAUSED) {
+            
+            super.stop();
+            
+            mState = State.STOPPED;
 
-		} else if (mState == State.PREPARED) {
+        } else if (mState == State.PREPARED) {
 
-		} else if (mState == State.CREATED) {
+        } else if (mState == State.CREATED) {
 
-		}
-	}
-	public void pause() {
-		if (mState == State.STARTED) {
+        }
+    }
+    public void pause() {
+        if (mState == State.STARTED) {
 
-			super.pause();
+            super.pause();
 
-			mState = State.PAUSED;
+            mState = State.PAUSED;
 
-		} else if (mState == State.STOPPED) {
+        } else if (mState == State.STOPPED) {
 
-		} else if (mState == State.PAUSED) {
+        } else if (mState == State.PAUSED) {
 
-		} else if (mState == State.PREPARED) {
+        } else if (mState == State.PREPARED) {
 
-		} else if (mState == State.CREATED) {
+        } else if (mState == State.CREATED) {
 
-		}
-	}
+        }
+    }
 
-	public void start() {
-		if (mState == State.STARTED) {
+    public void start() {
+        if (mState == State.STARTED) {
 
-		} else if (mState == State.STOPPED) {
+        } else if (mState == State.STOPPED) {
 
-		} else if (mState == State.PAUSED) {
+        } else if (mState == State.PAUSED) {
 
-			super.start();
+            super.start();
 
-			mState = State.STARTED;
+            mState = State.STARTED;
 
-		} else if (mState == State.PREPARED) {
+        } else if (mState == State.PREPARED) {
 
-			super.start();
+            super.start();
 
-			mState = State.STARTED;
+            mState = State.STARTED;
 
-		} else if (mState == State.CREATED) {
+        } else if (mState == State.CREATED) {
 
-		}
-	}
+        }
+    }
 
-	public String getCurrentTrack() {
+    public String getCurrentTrack() {
 
-		return mCurrentTrack;
-	}
-	
-	
+        return mCurrentTrack;
+    }
+    
+    
 }
