@@ -31,6 +31,7 @@ public class PodcastAdapter extends CursorAdapter {
         this.context = context;
         this.mInflater = LayoutInflater.from(context);
         this.cursor = c;
+
     }
 
     @Override
@@ -76,19 +77,20 @@ public class PodcastAdapter extends CursorAdapter {
     }
 
     public static Bitmap getBitmapFromPodcast(Podcast podcast) {
-        WindowManager wm = (WindowManager) PodcastCatcher.getInstance().getContext()
-                .getSystemService(Context.WINDOW_SERVICE);
+        WindowManager wm = (WindowManager) PodcastCatcher.getInstance()
+                .getContext().getSystemService(Context.WINDOW_SERVICE);
         Display display = wm.getDefaultDisplay();
 
-        ByteArrayInputStream is = new ByteArrayInputStream(podcast.getImagePath());
+        ByteArrayInputStream is = new ByteArrayInputStream(
+                podcast.getImagePath());
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
         Bitmap image = BitmapFactory.decodeStream(is, null, options);
 
-        ByteArrayInputStream is2 = new ByteArrayInputStream(podcast.getImagePath());
+        ByteArrayInputStream is2 = new ByteArrayInputStream(
+                podcast.getImagePath());
         BitmapFactory.Options options2 = new BitmapFactory.Options();
-        options2.inSampleSize = calculateInSampleSize(options,
-                48, 48);
+        options2.inSampleSize = calculateInSampleSize(options, 48, 48);
         Bitmap image2 = BitmapFactory.decodeStream(is2, null, options2);
         return image2;
     }

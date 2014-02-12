@@ -33,6 +33,7 @@ public class Episode {
     private long pubDate;
     //mp3 location on disk of downloaded episode
     private String mp3;
+    private String mDuration;
     
     @Override
     public String toString(){
@@ -103,6 +104,14 @@ public class Episode {
 
     public void setMp3(String mp3) {
         this.mp3 = mp3;
+    }
+
+    public String getDuration() {
+        return mDuration;
+    }
+
+    public void setDuration(String duration) {
+        mDuration = duration;
     }
 
     public Long getPodcast_id() {

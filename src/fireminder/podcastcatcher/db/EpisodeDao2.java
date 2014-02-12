@@ -5,6 +5,7 @@ import java.util.Calendar;
 import java.util.List;
 
 import fireminder.podcastcatcher.PodcastCatcher;
+import fireminder.podcastcatcher.utils.Utils;
 import fireminder.podcastcatcher.valueobjects.Episode;
 
 import android.content.ContentValues;
@@ -24,14 +25,16 @@ public class EpisodeDao2 {
     public static final String COLUMN_URL = "url";
     public static final String COLUMN_PUBDATE = "pubdate";
     public static final String COLUMN_MP3 = "mp3";
+    public static final String COLUMN_DURATION = "duration";
 
+    //TODO rename db
     public static final String DATABASE_NAME = "episode.db";
-    public static final int DATABASE_VER = 5;
+    public static final int DATABASE_VER = 1;
 
     /*** A list of all the columns in the episode db, useful for queries */
     public static final String[] allColumns = { COLUMN_ID, COLUMN_PODCAST_ID,
             COLUMN_TITLE, COLUMN_DESCRIP, COLUMN_URL, COLUMN_PUBDATE,
-            COLUMN_MP3 };
+            COLUMN_MP3, COLUMN_DURATION };
     public static String TAG = EpisodeDao2.class.getSimpleName();
 
     public EpisodeDao2() {
@@ -46,6 +49,7 @@ public class EpisodeDao2 {
         e.setUrl(cursor.getString(cursor.getColumnIndex(COLUMN_URL)));
         e.setPubDate(cursor.getLong(cursor.getColumnIndex(COLUMN_PUBDATE)));
         e.setMp3(cursor.getString(cursor.getColumnIndex(COLUMN_MP3)));
+        e.setDuration(Utils.getStringFromCursor(cursor, COLUMN_DURATION));
         return e;
     }
 
@@ -71,6 +75,7 @@ public class EpisodeDao2 {
         cv.put(COLUMN_URL, episode.getUrl());
         cv.put(COLUMN_PUBDATE, episode.getPubDate());
         cv.put(COLUMN_MP3, episode.getMp3());
+        cv.put(COLUMN_DURATION, episode.getDuration());
         id = db.update(TABLE_NAME, cv, COLUMN_ID + " = " + episode.get_id(), null);
         db.close();
         return id;
@@ -87,6 +92,7 @@ public class EpisodeDao2 {
         cv.put(COLUMN_URL, e.getUrl());
         cv.put(COLUMN_PUBDATE, e.getPubDate());
         cv.put(COLUMN_MP3, e.getMp3());
+        cv.put(COLUMN_DURATION, e.getDuration());
         
         id = db.insert(TABLE_NAME, null,
                 cv);
@@ -200,14 +206,14 @@ public class EpisodeDao2 {
                     + " integer primary key autoincrement," + COLUMN_PODCAST_ID
                     + " integer not null, " + COLUMN_TITLE + " text not null, "
                     + COLUMN_DESCRIP + " text, " + COLUMN_URL + " text, "
-                    + COLUMN_PUBDATE + " integer, " + COLUMN_MP3 + " text);");
+                    + COLUMN_PUBDATE + " integer, " + COLUMN_MP3 + " text, " + COLUMN_DURATION + " text);");
 
         }
 
         @Override
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-            db.execSQL("DROP TABLE IF EXISTS episodes");
-            onCreate(db);
+                db.execSQL("DROP TABLE IF EXSITS " + TABLE_NAME);
+                onCreate(db);
         }
 
     }

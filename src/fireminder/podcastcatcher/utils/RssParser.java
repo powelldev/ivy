@@ -327,6 +327,12 @@ public class RssParser {
                     Log.d("pubDate", "" + LazyAdapter.getDate(pubDate.getTime(), "EEE, dd MMM yyyy HH:mm:ss zzzz"));
                     episode.setPubDate(pubDate.getTime());
                 }
+                else if(name.contains("duration") && xpp.getDepth()==ITEM_DEPTH){
+                    content = xpp.nextText();
+                    encl = true;
+                    test += content + "\n";
+                    episode.setDuration(content);
+                }
                 else if(name.matches("enclosure") && xpp.getDepth()==ITEM_DEPTH){
                     content = xpp.getAttributeValue(null, "url");
                     encl = true;
@@ -415,7 +421,12 @@ public class RssParser {
                         }
                         episode.setPubDate(pubDate.getTime());
                     }
-
+                else if(name.contains("duration") && xpp.getDepth()==ITEM_DEPTH){
+                    content = xpp.nextText();
+                    encl = true;
+                    test += content + "\n";
+                    episode.setDuration(content);
+                }
                     else if(name.matches("enclosure") && xpp.getDepth() == ITEM_DEPTH){
                         content = xpp.getAttributeValue(null, "url");
                         encl = true;

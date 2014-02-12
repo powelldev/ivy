@@ -47,7 +47,9 @@ public class EpisodeAdapter extends CursorAdapter {
         Date date = calendar.getTime();
         SimpleDateFormat sdf = new SimpleDateFormat("dd MMM");
 
+        String duration = Utils.getStringFromCursor(cursor, EpisodeDao2.COLUMN_DURATION);
         episodeDate.setText(sdf.format(date));
+        episodeDate.setText(duration);
         episodeTitle.setText(Utils.getStringFromCursor(cursor, EpisodeDao2.COLUMN_TITLE));
 
         String file_mp3 = Utils.getStringFromCursor(cursor, EpisodeDao2.COLUMN_MP3);
