@@ -9,7 +9,6 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +19,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import fireminder.podcastcatcher.PodcastCatcher;
 import fireminder.podcastcatcher.R;
+import fireminder.podcastcatcher.activities.MainActivity;
 import fireminder.podcastcatcher.db.EpisodeDao2;
 import fireminder.podcastcatcher.db.PodcastDao2;
 import fireminder.podcastcatcher.ui.EpisodeAdapter;
@@ -107,11 +107,14 @@ public class ChannelFragment extends ListFragment implements
 
 		Episode episode = mEdao.get(episode_id);
 		
+		
 		if (episode.getMp3().matches("")) {
 			Helper.downloadEpisodeMp3(episode);
 		} else {
 			File mp3 = new File(episode.getMp3());
 			if (mp3.exists()){
+				MainActivity activity = (MainActivity) getActivity();
+				activity.startPlayingEpisode(episode, mPdao.get(episode.getPodcast_id()));
 				Toast.makeText(getActivity(), "Playing", Toast.LENGTH_SHORT).show();
 			}
 		}

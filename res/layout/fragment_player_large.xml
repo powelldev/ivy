@@ -6,8 +6,9 @@
     <!-- Header -->
 
     <RelativeLayout
+        android:id="@+id/fragment_player_header"
         android:layout_width="match_parent"
-        android:layout_height="?android:attr/actionBarSize"
+        android:layout_height="53dp"
         android:padding="5dp" >
 
         <ImageView
@@ -41,35 +42,56 @@
     <!-- Footer -->
 
     <RelativeLayout
-        android:layout_alignParentBottom="true"
-        android:background="#eee"
+        android:id="@+id/fragment_player_footer"
         android:layout_width="match_parent"
-        android:layout_height="68dp" >
+        android:layout_height="68dp"
+        android:layout_alignParentBottom="true"
+        android:background="#eee" >
 
-        <ImageView
+        <ImageButton
             android:id="@+id/fragment_player_playpause_icon"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
+            android:background="@null"
             android:src="#000" />
 
-        <ImageView
+        <ImageButton
             android:id="@+id/fragment_player_rewind_icon"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             android:layout_centerVertical="true"
             android:layout_toLeftOf="@id/fragment_player_playpause_icon"
+            android:background="@null"
+            android:src="#000" />
+
+        <ImageButton
+            android:id="@+id/fragment_player_ff_icon"
             android:layout_width="48dp"
             android:layout_height="48dp"
-            android:src="#000" />
-        <ImageView
-            android:id="@+id/fragment_player_ff_icon"
             android:layout_centerVertical="true"
             android:layout_toRightOf="@id/fragment_player_playpause_icon"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
+            android:background="@null"
             android:src="#000" />
     </RelativeLayout>
+
+    <ImageView
+        android:id="@+id/fragment_player_large_album"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@id/fragment_player_footer"
+        android:layout_below="@id/fragment_player_header"
+        android:src="#93f" />
+
+    <SeekBar
+        android:id="@+id/fragment_player_seek_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_marginBottom="53dp" />
 
 </RelativeLayout>

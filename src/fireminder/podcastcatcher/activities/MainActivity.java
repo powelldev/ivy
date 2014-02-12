@@ -25,6 +25,8 @@ import fireminder.podcastcatcher.OnTaskCompleted;
 import fireminder.podcastcatcher.PodcastCatcher;
 import fireminder.podcastcatcher.R;
 import fireminder.podcastcatcher.boot.BootService;
+import fireminder.podcastcatcher.db.EpisodeDao2;
+import fireminder.podcastcatcher.db.PodcastDao2;
 import fireminder.podcastcatcher.downloads.ADownloadService;
 import fireminder.podcastcatcher.downloads.BackgroundThread;
 import fireminder.podcastcatcher.fragments.ChannelFragment;
@@ -32,17 +34,23 @@ import fireminder.podcastcatcher.fragments.PlayerFragment;
 import fireminder.podcastcatcher.fragments.PlayerLargeFragment;
 import fireminder.podcastcatcher.fragments.PodcastFragment;
 import fireminder.podcastcatcher.fragments.SettingsFragment;
+import fireminder.podcastcatcher.services.PlaybackService;
+import fireminder.podcastcatcher.valueobjects.Episode;
+import fireminder.podcastcatcher.valueobjects.Podcast;
 
 public class MainActivity extends Activity implements OnTaskCompleted {
 
 	private Uri data = null;
 
 	private static final String ACTION_BAR_STATE_HIDDEN = "saved_state_action_bar";
+	private static final String EPISODE_PLAYING = "episode_playing";
 
 	static PodcastFragment podcastFragment;
 	static PlayerFragment playerFragment;
 	static PlayerLargeFragment playerLargeFragment;
 	ChannelFragment mChannelFragment;
+
+	private int mEpisodeId = -1;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -69,13 +77,13 @@ public class MainActivity extends Activity implements OnTaskCompleted {
 
 		FragmentTransaction trans = getFragmentManager().beginTransaction();
 		trans.add(R.id.fragment_container, podcastFragment);
-		trans.add(R.id.lower_container, playerFragment);
+		trans.add(R.id.lower_container, playerLargeFragment);
 		trans.commit();
 
 		PodcastCatcher.getInstance().setContext(this);
 		PodcastCatcher.getInstance().setActivity(this);
 
-		SlidingUpPanelLayout layout = (SlidingUpPanelLayout) findViewById(R.id.sliding_layout);
+		final SlidingUpPanelLayout layout = (SlidingUpPanelLayout) findViewById(R.id.sliding_layout);
 		layout.setPanelSlideListener(new PanelSlideListener() {
 
 			@Override
@@ -94,17 +102,12 @@ public class MainActivity extends Activity implements OnTaskCompleted {
 
 			@Override
 			public void onPanelCollapsed(View panel) {
-				getFragmentManager().beginTransaction().replace(
-						R.id.lower_container, playerFragment).commit();
-				showToast("Panel Collapsed");
 
 			}
 
 			@Override
 			public void onPanelExpanded(View panel) {
-				getFragmentManager().beginTransaction().replace(
-						R.id.lower_container, playerLargeFragment).commit();
-				showToast("Panel Expanded");
+				layout.setDragView(playerLargeFragment.header);
 			}
 
 			@Override
@@ -131,15 +134,25 @@ public class MainActivity extends Activity implements OnTaskCompleted {
 		boolean actionBarHidden = savedInstanceState != null ? savedInstanceState
 				.getBoolean(ACTION_BAR_STATE_HIDDEN, false) : false;
 
+		mEpisodeId = savedInstanceState != null ? savedInstanceState.getInt(
+				EPISODE_PLAYING, -1) : -1;
+
 		if (actionBarHidden) {
 			getActionBar().hide();
 		}
+
+		if (mEpisodeId != -1) {
+			resumeEpisode(mEpisodeId);
+		}
+		
+		this.startService(new Intent(this, PlaybackService.class));
 	}
 
 	@Override
 	protected void onSaveInstanceState(Bundle state) {
 		super.onSaveInstanceState(state);
 		state.putBoolean(ACTION_BAR_STATE_HIDDEN, !getActionBar().isShowing());
+		state.putInt(EPISODE_PLAYING, mEpisodeId);
 
 	}
 
@@ -222,5 +235,19 @@ public class MainActivity extends Activity implements OnTaskCompleted {
 
 	public void showToast(String msg) {
 		Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+	}
+
+	private void resumeEpisode(int episodeId) {
+		try {
+			Episode episode = new EpisodeDao2().get(episodeId);
+			Podcast podcast = new PodcastDao2().get(episode.getPodcast_id());
+			startPlayingEpisode(episode, podcast);
+		} catch (Exception e) {
+			mEpisodeId = -1;
+		}
+	}
+
+	public void startPlayingEpisode(Episode episode, Podcast podcast) {
+		playerLargeFragment.setEpisode(episode, podcast);
 	}
 }

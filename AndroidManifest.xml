@@ -101,6 +101,17 @@
                 <action android:name="fireminder.podcastcatcher.downloads.ADownloadService"/>
             </intent-filter>
         </service>
+        <service android:name="fireminder.podcastcatcher.services.PlaybackService" 
+            android:enabled="true">
+            <intent-filter >
+                <action android:name="fireminder.podcastcatcher.services.PlaybackService" />
+                <action android:name="fireminder.PlaybackService.START" />
+                <action android:name="fireminder.PlaybackService.STOP" />
+                <action android:name="fireminder.PlaybackService.PAUSE" />
+                <action android:name="fireminder.PlaybackService.REWIND" />
+                <action android:name="fireminder.PlaybackService.FORWARD" />
+            </intent-filter>
+        </service>
         <service android:name="fireminder.podcastcatcher.boot.BootService" >
         </service>
 
