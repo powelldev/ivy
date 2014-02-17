@@ -1,6 +1,7 @@
 package fireminder.podcastcatcher.utils;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,55 +21,86 @@ import fireminder.podcastcatcher.valueobjects.Episode;
 
 public class Helper {
 
-
+    public static boolean isDownloaded(Episode e) {
+        String fileName = e.getUrl();
+        fileName = fileName.substring(fileName.lastIndexOf("/"));
+        fileName = fileName.replaceAll("\\.", "_");
+        fileName = fileName.replaceAll("%20", "_");
+        fileName = fileName.replaceAll("_mp3", ".mp3");
+        File file = new File(Environment.getExternalStorageDirectory()
+                .getPath() + "/" + Environment.DIRECTORY_PODCASTS + fileName);
+        if (file.exists()) {
+            e.setMp3(file.getAbsolutePath());
+            new EpisodeDao2().update(e);
+            return true;
+        } else {
+            return false;
+        }
+    }
     public static void downloadEpisodeMp3(Episode e) {
         String fileName = e.getUrl();
         fileName = fileName.substring(fileName.lastIndexOf("/"));
         fileName = fileName.replaceAll("\\.", "_");
         fileName = fileName.replaceAll("%20", "_");
         fileName = fileName.replaceAll("_mp3", ".mp3");
-        Log.e("Downloading...", fileName);
-        // TODO Make download notification point back at app - or allow
-        // cessation of download
-        final DownloadManager dm = (DownloadManager) PodcastCatcher.getInstance().getContext()
-                .getSystemService(Context.DOWNLOAD_SERVICE);
-        
-        Request request = new Request(Uri.parse(e.getUrl()));
-        request.setTitle(e.getTitle())
-                .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE)
-                .setDescription("Touch to cancel")
-                .setDestinationInExternalPublicDir(
-                        Environment.DIRECTORY_PODCASTS, fileName);
-        long enqueue = dm.enqueue(request);
-        e.setMp3(Environment.getExternalStorageDirectory().getPath() + "/" + Environment.DIRECTORY_PODCASTS + fileName);
+        File file = new File(Environment.getExternalStorageDirectory()
+                .getPath() + "/" + Environment.DIRECTORY_PODCASTS + fileName);
+        if (file.exists()) {
+            e.setMp3(file.getAbsolutePath());
+        } else {
+            Log.e("Downloading...", fileName);
+            // TODO Make download notification point back at app - or allow
+            // cessation of download
+            final DownloadManager dm = (DownloadManager) PodcastCatcher
+                    .getInstance().getContext()
+                    .getSystemService(Context.DOWNLOAD_SERVICE);
+
+            Request request = new Request(Uri.parse(e.getUrl()));
+            request.setTitle(e.getTitle())
+                    .setNotificationVisibility(
+                            DownloadManager.Request.VISIBILITY_VISIBLE)
+                    .setDescription("Touch to cancel")
+                    .setDestinationInExternalPublicDir(
+                            Environment.DIRECTORY_PODCASTS, fileName);
+            long enqueue = dm.enqueue(request);
+            e.setMp3(Environment.getExternalStorageDirectory().getPath() + "/"
+                    + Environment.DIRECTORY_PODCASTS + fileName);
+        }
         new EpisodeDao2().update(e);
     }
-    public static void searchForPodcasts(Context context, String term){
-        String searchURL = String.format("https://itunes.apple.com/search?media=podcast&term=%s&attribute=titleTerm", term);
+
+    public static void searchForPodcasts(Context context, String term) {
+        String searchURL = String
+                .format("https://itunes.apple.com/search?media=podcast&term=%s&attribute=titleTerm",
+                        term);
         Log.d("SearchURL: ", searchURL);
         BackgroundThread bt = new BackgroundThread(context);
         bt.searchItunesForPodcasts(searchURL);
     }
 
-    public static JSONObject getJsonObject(BufferedReader reader){
+    public static JSONObject getJsonObject(BufferedReader reader) {
         StringBuilder sb = new StringBuilder();
         String line = null;
         JSONObject jsonObj = null;
         String json = "";
-        try{
-        while ( (line = reader.readLine()) != null){
-            sb.append(line + "\n");
+        try {
+            while ((line = reader.readLine()) != null) {
+                sb.append(line + "\n");
+            }
+            json = sb.toString();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        json = sb.toString();
-        } catch (Exception e) { e.printStackTrace(); }
-        
+
         try {
             jsonObj = new JSONObject(json);
-        } catch(Exception e) { e.printStackTrace(); }
-        
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         return jsonObj;
     }
-    
+
     private class PodcastResult {
         static final String NAME = "collectionName";
         static final String ARTIST = "artistName";
@@ -77,20 +109,20 @@ public class Helper {
         static final String IMAGE_URL_60 = "artworkUrl60";
         static final String IMAGE_URL_100 = "artworkUrl100";
     }
+
     public static List<String> parseJSONforPodcasts(BufferedReader reader) {
 
         List<String> messages = new ArrayList<String>();
-        
-        
+
         JSONObject jObj = getJsonObject(reader);
         // TODO: Encapsulate NAME, ARTIST and URL into an object
 
         final String NAME = "collectionName";
         final String ARTIST = "artistName";
         final String FEED_URL = "feedUrl";
-        
+
         JSONArray podcast = null;
-        
+
         try {
             podcast = jObj.getJSONArray("results");
             for (int i = 0; i < podcast.length(); i++) {
@@ -106,55 +138,40 @@ public class Helper {
             // TODO: handle exception
         }
 
-        /*JsonReader jsonReader = new JsonReader(reader);
-        try {
-            jsonReader.beginObject();
-            Log.d("JSON: ", jsonReader.nextName());
-            Log.d("JSON: ", jsonReader.nextString());
-            Log.d("JSON: ", jsonReader.nextName());
-            jsonReader.beginArray();
-            jsonReader.beginObject();
-            JsonToken jtok = null;
-            while(jsonReader.hasNext() || found == ITEMS_FOUND){
-                jtok = jsonReader.peek();
-                Log.d("jtok: ", jtok.name());
-                if(jtok.equals(JsonToken.NAME)){
-                    Log.d("jsonReader: ", jsonReader.nextName());
-                } else if (jtok.equals(JsonToken.STRING)) {
-                    Log.d("jsonReader: ", jsonReader.nextString());
-                } else if (jtok.equals(JsonToken.NUMBER)) {
-                    Log.d("jsonReader: ", "" + jsonReader.nextInt());
-                }
-                else {
-                    Log.d("jsonReader: ", jsonReader.nextName());
-                }
-                
-                if(jsonReader.nextName().contains("trackName")){
-                    
-                    messages.add(jsonReader.nextString());
-                    
-                    found++;
-                }
-                else if(jsonReader.nextName().matches("feedUrl")){
-                    messages.add(jsonReader.nextString());
-                    found++;
-                }
-                else{
-                    jsonReader.nextName();
-                    
-                }
-                
-            }
-
-            jsonReader.close();
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }*/
+        /*
+         * JsonReader jsonReader = new JsonReader(reader); try {
+         * jsonReader.beginObject(); Log.d("JSON: ", jsonReader.nextName());
+         * Log.d("JSON: ", jsonReader.nextString()); Log.d("JSON: ",
+         * jsonReader.nextName()); jsonReader.beginArray();
+         * jsonReader.beginObject(); JsonToken jtok = null;
+         * while(jsonReader.hasNext() || found == ITEMS_FOUND){ jtok =
+         * jsonReader.peek(); Log.d("jtok: ", jtok.name());
+         * if(jtok.equals(JsonToken.NAME)){ Log.d("jsonReader: ",
+         * jsonReader.nextName()); } else if (jtok.equals(JsonToken.STRING)) {
+         * Log.d("jsonReader: ", jsonReader.nextString()); } else if
+         * (jtok.equals(JsonToken.NUMBER)) { Log.d("jsonReader: ", "" +
+         * jsonReader.nextInt()); } else { Log.d("jsonReader: ",
+         * jsonReader.nextName()); }
+         * 
+         * if(jsonReader.nextName().contains("trackName")){
+         * 
+         * messages.add(jsonReader.nextString());
+         * 
+         * found++; } else if(jsonReader.nextName().matches("feedUrl")){
+         * messages.add(jsonReader.nextString()); found++; } else{
+         * jsonReader.nextName();
+         * 
+         * }
+         * 
+         * }
+         * 
+         * jsonReader.close(); } catch (IOException e) { // TODO Auto-generated
+         * catch block e.printStackTrace(); }
+         */
         return messages;
     }
 
-    public static void getNewEpisodesFromPodcast(Context context , long itemId) {
+    public static void getNewEpisodesFromPodcast(Context context, long itemId) {
 
         BackgroundThread bt = new BackgroundThread(context);
         bt.getNewEpisodesForPodcast((int) itemId);

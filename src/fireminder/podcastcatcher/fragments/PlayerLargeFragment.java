@@ -55,8 +55,9 @@ public class PlayerLargeFragment extends Fragment implements OnClickListener {
 
         return rootView;
     }
-
+    private long mEpisodeId = -1; 
     public void setEpisode(Episode episode, Podcast podcast) {
+        mEpisodeId = episode.get_id();
         ViewHolder.episodeTitleTv.setText(episode.getTitle());
         ViewHolder.authorTitleTv.setText(episode.getDescription());
         Bitmap image = PodcastAdapter.getBitmapFromPodcast(podcast);
@@ -65,13 +66,17 @@ public class PlayerLargeFragment extends Fragment implements OnClickListener {
         else
             ViewHolder.albumCoverIv.setImageResource(R.drawable.ic_launcher);
     }
+    
+    public long getCurrentEpisode() {
+        return mEpisodeId;
+    }
 
     @Override
     public void onClick(View v) {
         Intent intent = new Intent(getActivity(), PlaybackService.class);
         switch (v.getId()) {
         case R.id.fragment_player_playpause_icon:
-            intent.setAction("fireminder.PlaybackService.START");
+            intent.setAction("fireminder.PlaybackService.PLAY");
             getActivity().startService(intent);
             break;
         case R.id.fragment_player_rewind_icon:

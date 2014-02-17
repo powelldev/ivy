@@ -287,6 +287,7 @@ public class BackgroundThread {
                 for (Episode episode : episodes) {
                     Log.d("Inserting: ", episode.getTitle());
                     edao.insert(episode);
+                    Helper.isDownloaded(episode);
                 }
 
                 return null;

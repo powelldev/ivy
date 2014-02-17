@@ -19,6 +19,7 @@ import fireminder.podcastcatcher.db.EpisodeDao2;
 import fireminder.podcastcatcher.db.PodcastDao2;
 import fireminder.podcastcatcher.utils.Helper;
 import fireminder.podcastcatcher.utils.RssParser;
+import fireminder.podcastcatcher.utils.Utils;
 import fireminder.podcastcatcher.valueobjects.Episode;
 
 public class ADownloadService extends IntentService {
@@ -33,7 +34,7 @@ public class ADownloadService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
 
-        Log.e("HAPT", "DownloadService started at " + System.currentTimeMillis() + "");
+        Utils.log("HAPT", "DownloadService started at " + System.currentTimeMillis() + "");
         BackgroundThread bt = new BackgroundThread(this);
         bt.getNewEpisodes();
 //        
@@ -96,6 +97,7 @@ public class ADownloadService extends IntentService {
                     episode = edao.get(edao.insert(e));
                     episodes.add(episode);
                     Log.d("IntentService", episode.getTitle() + " " + episode.getPubDate());
+                    Utils.log("IntentService:" + episode.getTitle() + " " + episode.getPubDate());
                 }
             }
 

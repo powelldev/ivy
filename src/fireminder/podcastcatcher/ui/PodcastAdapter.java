@@ -116,11 +116,6 @@ public class PodcastAdapter extends CursorAdapter {
             // requested height and width.
             inSampleSize = heightRatio < widthRatio ? heightRatio : widthRatio;
         }
-        // According to Android Dev Bytes, Bitmap.decodeStream is
-        // 1) faster when dealing with powers of 2
-        // 2) has no difference in scaling for non-powers of 2
-        // This returns the closest power of 2: 2 ^ (log2 inSampleSize)
-        // @author: powelldev
         return (int) Math.pow(2,
                 Math.ceil(Math.log10(inSampleSize) / Math.log10(2)));
 

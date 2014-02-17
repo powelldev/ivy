@@ -26,15 +26,16 @@ public class EpisodeDao2 {
     public static final String COLUMN_PUBDATE = "pubdate";
     public static final String COLUMN_MP3 = "mp3";
     public static final String COLUMN_DURATION = "duration";
+    public static final String COLUMN_ELAPSED = "elapsed";
 
-    //TODO rename db
+    // TODO rename db
     public static final String DATABASE_NAME = "episode.db";
-    public static final int DATABASE_VER = 1;
+    public static final int DATABASE_VER = 4;
 
     /*** A list of all the columns in the episode db, useful for queries */
     public static final String[] allColumns = { COLUMN_ID, COLUMN_PODCAST_ID,
             COLUMN_TITLE, COLUMN_DESCRIP, COLUMN_URL, COLUMN_PUBDATE,
-            COLUMN_MP3, COLUMN_DURATION };
+            COLUMN_MP3, COLUMN_DURATION, COLUMN_ELAPSED };
     public static String TAG = EpisodeDao2.class.getSimpleName();
 
     public EpisodeDao2() {
@@ -50,6 +51,7 @@ public class EpisodeDao2 {
         e.setPubDate(cursor.getLong(cursor.getColumnIndex(COLUMN_PUBDATE)));
         e.setMp3(cursor.getString(cursor.getColumnIndex(COLUMN_MP3)));
         e.setDuration(Utils.getStringFromCursor(cursor, COLUMN_DURATION));
+        e.setElapsed(Utils.getIntFromCursor(cursor, COLUMN_ELAPSED));
         return e;
     }
 
@@ -76,7 +78,9 @@ public class EpisodeDao2 {
         cv.put(COLUMN_PUBDATE, episode.getPubDate());
         cv.put(COLUMN_MP3, episode.getMp3());
         cv.put(COLUMN_DURATION, episode.getDuration());
-        id = db.update(TABLE_NAME, cv, COLUMN_ID + " = " + episode.get_id(), null);
+        cv.put(COLUMN_ELAPSED, episode.getElapsed());
+        id = db.update(TABLE_NAME, cv, COLUMN_ID + " = " + episode.get_id(),
+                null);
         db.close();
         return id;
     }
@@ -93,41 +97,37 @@ public class EpisodeDao2 {
         cv.put(COLUMN_PUBDATE, e.getPubDate());
         cv.put(COLUMN_MP3, e.getMp3());
         cv.put(COLUMN_DURATION, e.getDuration());
-        
-        id = db.insert(TABLE_NAME, null,
-                cv);
+        cv.put(COLUMN_ELAPSED, e.getElapsed());
+
+        id = db.insert(TABLE_NAME, null, cv);
 
         db.close();
         return id;
 
     }
 
-
     public Cursor getAllEpisodesAsCursor(long id) {
         SQLiteDatabase db = new SqlHelper(PodcastCatcher.getInstance()
                 .getContext()).getWritableDatabase();
-        Cursor cursor =  db.query(TABLE_NAME,
-                allColumns, COLUMN_PODCAST_ID
-                        + "=" + id, null, null, null, null);
+        Cursor cursor = db.query(TABLE_NAME, allColumns, COLUMN_PODCAST_ID
+                + "=" + id, null, null, null, null);
         return cursor;
     }
 
     public void deleteAllEpisodes(long id) {
         SQLiteDatabase db = new SqlHelper(PodcastCatcher.getInstance()
                 .getContext()).getWritableDatabase();
-        db.delete(TABLE_NAME,
-                COLUMN_PODCAST_ID + " = ?", new String[] { ""
-                        + id });
+        db.delete(TABLE_NAME, COLUMN_PODCAST_ID + " = ?", new String[] { ""
+                + id });
         db.close();
     }
 
-    public void delete(Episode episode){
+    public void delete(Episode episode) {
         SQLiteDatabase db = new SqlHelper(PodcastCatcher.getInstance()
                 .getContext()).getWritableDatabase();
         db.delete(TABLE_NAME, COLUMN_ID + " = " + episode.get_id(), null);
         db.close();
     }
-
 
     public Episode getLatestEpisode(long id) {
         SQLiteDatabase db = new SqlHelper(PodcastCatcher.getInstance()
@@ -136,10 +136,9 @@ public class EpisodeDao2 {
         /*
          * SELECT * FROM episodes WHERE podcast_id = id ORDER BY pubDate DESC
          */
-        Cursor c = db.query(TABLE_NAME,
-                allColumns, COLUMN_PODCAST_ID
-                        + " = ?", new String[] { "" + id }, null, null,
-                COLUMN_PUBDATE + " DESC", "" + 1);
+        Cursor c = db.query(TABLE_NAME, allColumns, COLUMN_PODCAST_ID + " = ?",
+                new String[] { "" + id }, null, null, COLUMN_PUBDATE + " DESC",
+                "" + 1);
         if (c.getCount() == 0) {
             return null;
         }
@@ -152,10 +151,9 @@ public class EpisodeDao2 {
     public Cursor getAllEpisodesAsCursorByDate(long id) {
         SQLiteDatabase db = new SqlHelper(PodcastCatcher.getInstance()
                 .getContext()).getWritableDatabase();
-        Cursor cursor =  db.query(TABLE_NAME,
-                allColumns, COLUMN_PODCAST_ID
-                        + " = " + id, null, null, null,
-                COLUMN_PUBDATE + " DESC ", null);
+        Cursor cursor = db
+                .query(TABLE_NAME, allColumns, COLUMN_PODCAST_ID + " = " + id,
+                        null, null, null, COLUMN_PUBDATE + " DESC ", null);
         return cursor;
     }
 
@@ -163,10 +161,9 @@ public class EpisodeDao2 {
         SQLiteDatabase db = new SqlHelper(PodcastCatcher.getInstance()
                 .getContext()).getWritableDatabase();
         List<Episode> episodes = new ArrayList<Episode>();
-        Cursor cursor = db.query(TABLE_NAME,
-                allColumns, COLUMN_PODCAST_ID
-                        + " = " + id, null, null, null,
-                COLUMN_PUBDATE + " DESC ", null);
+        Cursor cursor = db
+                .query(TABLE_NAME, allColumns, COLUMN_PODCAST_ID + " = " + id,
+                        null, null, null, COLUMN_PUBDATE + " DESC ", null);
         cursor.moveToFirst();
         do {
             episodes.add(cursorToEpisode(cursor));
@@ -175,18 +172,17 @@ public class EpisodeDao2 {
 
         return episodes;
     }
-    
-    public Cursor getAllRecentEpisodes(){
+
+    public Cursor getAllRecentEpisodes() {
         SQLiteDatabase db = new SqlHelper(PodcastCatcher.getInstance()
                 .getContext()).getWritableDatabase();
         List<Episode> episodes = new ArrayList<Episode>();
-        long lastWeekInMillis = Calendar.getInstance().getTimeInMillis() - (7 * 24 * 60 * 60 * 1000);
-        Cursor cursor = db.rawQuery(
-                "SELECT * FROM " + TABLE_NAME +  
-                " WHERE " + COLUMN_PUBDATE + " >= " + lastWeekInMillis + 
-                " ORDER BY " + COLUMN_PUBDATE + " DESC "
-                , null);
-        
+        long lastWeekInMillis = Calendar.getInstance().getTimeInMillis()
+                - (7 * 24 * 60 * 60 * 1000);
+        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE "
+                + COLUMN_PUBDATE + " >= " + lastWeekInMillis + " ORDER BY "
+                + COLUMN_PUBDATE + " DESC ", null);
+
         return cursor;
     }
 
@@ -202,18 +198,23 @@ public class EpisodeDao2 {
 
         @Override
         public void onCreate(SQLiteDatabase db) {
-            db.execSQL("CREATE TABLE " + TABLE_NAME + " (" + COLUMN_ID
-                    + " integer primary key autoincrement," + COLUMN_PODCAST_ID
-                    + " integer not null, " + COLUMN_TITLE + " text not null, "
-                    + COLUMN_DESCRIP + " text, " + COLUMN_URL + " text, "
-                    + COLUMN_PUBDATE + " integer, " + COLUMN_MP3 + " text, " + COLUMN_DURATION + " text);");
+            db.execSQL("CREATE TABLE " + TABLE_NAME + 
+                    " (" + COLUMN_ID + " integer primary key autoincrement,"
+                    + COLUMN_PODCAST_ID + " integer not null, " 
+                    + COLUMN_TITLE + " text not null, "
+                    + COLUMN_DESCRIP + " text, " 
+                    + COLUMN_URL + " text, "
+                    + COLUMN_PUBDATE + " integer, " 
+                    + COLUMN_MP3 + " text, "
+                    + COLUMN_DURATION + " text, " 
+                    + COLUMN_ELAPSED + " integer);");
 
         }
 
         @Override
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-                db.execSQL("DROP TABLE IF EXSITS " + TABLE_NAME);
-                onCreate(db);
+            db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
+            onCreate(db);
         }
 
     }

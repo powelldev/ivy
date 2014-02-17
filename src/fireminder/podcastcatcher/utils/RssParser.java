@@ -349,6 +349,7 @@ public class RssParser {
                 if(encl == true){
                     testStringList.add(test);
                     episode.setPodcast_id(id);
+                    episode.setElapsed(0);
                     episodes.add(episode);
                     episode = new Episode();
                     test = ""; encl = false;
@@ -440,6 +441,7 @@ public class RssParser {
                         if(encl==true && oldEpisodeFound == false){
                             testStringList.add(test);
                             episode.setPodcast_id(id);
+                            episode.setElapsed(0);
                             episodes.add(episode);
                             episode = new Episode();
                             test = ""; encl = false;

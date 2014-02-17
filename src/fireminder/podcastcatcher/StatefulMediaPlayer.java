@@ -4,11 +4,14 @@ import java.io.File;
 
 import android.media.MediaPlayer;
 import android.util.Log;
+import fireminder.podcastcatcher.valueobjects.Episode;
 
 public class StatefulMediaPlayer extends MediaPlayer {
 
     public State mState;
+    private long mEpisodeId;
 
+    private static final String TAG = StatefulMediaPlayer.class.getSimpleName();
     private String mCurrentTrack = "";
     public enum State {
         STARTED, STOPPED, PAUSED, PREPARED, CREATED;
@@ -23,21 +26,26 @@ public class StatefulMediaPlayer extends MediaPlayer {
         return mState;
     }
 
-    public void setDataSource(File file) {
-        this.stop();
-        mState = State.STOPPED;
-            Log.e("TAG", "STOPPED");
+    public void setDataSource(Episode episode) {
+        this.reset();
         try {
-            Log.e("TAG", file.getAbsolutePath());
+            mEpisodeId = episode.get_id();
+            File file = new File(episode.getMp3());
+            Log.e(TAG, file.getAbsolutePath());
             super.setDataSource(file.getAbsolutePath());
             super.prepare();
             mState = State.PREPARED;
         } catch (Exception e) {
-            Log.e("TAG", e.getMessage());
+            Log.e(TAG, e.getMessage());
             mState = State.CREATED;
         }
         
         
+    }
+    
+    public void reset() {
+        super.reset();
+        mState = State.CREATED;
     }
     public void stop() {
         if (mState == State.STARTED) {
@@ -77,6 +85,11 @@ public class StatefulMediaPlayer extends MediaPlayer {
 
         }
     }
+    
+    public void startAt(int elapsed) {
+        super.seekTo(elapsed);
+        this.start();
+    }
 
     public void start() {
         if (mState == State.STARTED) {
@@ -103,6 +116,10 @@ public class StatefulMediaPlayer extends MediaPlayer {
     public String getCurrentTrack() {
 
         return mCurrentTrack;
+    }
+
+    public long getPlayingEpisodeId() {
+        return mEpisodeId;
     }
     
     

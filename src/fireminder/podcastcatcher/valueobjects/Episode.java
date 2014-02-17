@@ -34,6 +34,7 @@ public class Episode {
     //mp3 location on disk of downloaded episode
     private String mp3;
     private String mDuration;
+    private int mElapsed;
     
     @Override
     public String toString(){
@@ -120,5 +121,13 @@ public class Episode {
 
     public void setPodcast_id(Long podcast_id) {
         this.podcast_id = podcast_id;
+    }
+
+    public void setElapsed(int elapsed) {
+        mElapsed = elapsed;
+    }
+
+    public int getElapsed() {
+        return mElapsed;
     }
 }

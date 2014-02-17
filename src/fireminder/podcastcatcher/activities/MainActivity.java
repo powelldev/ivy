@@ -10,6 +10,7 @@ import android.app.FragmentTransaction;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.Menu;
@@ -35,6 +36,7 @@ import fireminder.podcastcatcher.fragments.PlayerLargeFragment;
 import fireminder.podcastcatcher.fragments.PodcastFragment;
 import fireminder.podcastcatcher.fragments.SettingsFragment;
 import fireminder.podcastcatcher.services.PlaybackService;
+import fireminder.podcastcatcher.utils.Utils;
 import fireminder.podcastcatcher.valueobjects.Episode;
 import fireminder.podcastcatcher.valueobjects.Podcast;
 
@@ -50,7 +52,7 @@ public class MainActivity extends Activity implements OnTaskCompleted {
     static PlayerLargeFragment playerLargeFragment;
     ChannelFragment mChannelFragment;
 
-    private int mEpisodeId = -1;
+    private long mEpisodeId = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,10 +61,10 @@ public class MainActivity extends Activity implements OnTaskCompleted {
         getWindow().requestFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
 
         setContentView(R.layout.activity_main);
-
+        
         Intent intent = getIntent();
         data = intent.getData();
-
+        
         if (data != null) {
             Bundle bundle = new Bundle();
             bundle.putString("uri", data.toString());
@@ -127,24 +129,18 @@ public class MainActivity extends Activity implements OnTaskCompleted {
         PendingIntent pi = PendingIntent.getActivity(this, 0, i, 0);
         alarmManager.cancel(pi);
         alarmManager.set(AlarmManager.ELAPSED_REALTIME, 10000, pi);
+        // TODO
         alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, Calendar
-                .getInstance().getTimeInMillis(), AlarmManager.INTERVAL_HOUR,
+                .getInstance().getTimeInMillis(), Utils.UPDATE_TIMING,
                 pi);
 
         boolean actionBarHidden = savedInstanceState != null ? savedInstanceState
                 .getBoolean(ACTION_BAR_STATE_HIDDEN, false) : false;
 
-        mEpisodeId = savedInstanceState != null ? savedInstanceState.getInt(
-                EPISODE_PLAYING, -1) : -1;
-
         if (actionBarHidden) {
             getActionBar().hide();
         }
 
-        if (mEpisodeId != -1) {
-            resumeEpisode(mEpisodeId);
-        }
-        
         this.startService(new Intent(this, PlaybackService.class));
     }
 
@@ -152,17 +148,25 @@ public class MainActivity extends Activity implements OnTaskCompleted {
     protected void onSaveInstanceState(Bundle state) {
         super.onSaveInstanceState(state);
         state.putBoolean(ACTION_BAR_STATE_HIDDEN, !getActionBar().isShowing());
-        state.putInt(EPISODE_PLAYING, mEpisodeId);
 
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        SharedPreferences settings = getPreferences(MODE_PRIVATE);
+        mEpisodeId = settings.getLong(EPISODE_PLAYING, -1);
+        if (mEpisodeId != -1) {
+            resumeEpisode(mEpisodeId);
+        }
     }
 
     @Override
     protected void onPause() {
+        SharedPreferences settings = getPreferences(MODE_PRIVATE);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putLong(EPISODE_PLAYING, playerLargeFragment.getCurrentEpisode());
+        editor.commit();
         super.onPause();
     }
 
@@ -237,7 +241,7 @@ public class MainActivity extends Activity implements OnTaskCompleted {
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
     }
 
-    private void resumeEpisode(int episodeId) {
+    private void resumeEpisode(long episodeId) {
         try {
             Episode episode = new EpisodeDao2().get(episodeId);
             Podcast podcast = new PodcastDao2().get(episode.getPodcast_id());
@@ -249,5 +253,9 @@ public class MainActivity extends Activity implements OnTaskCompleted {
 
     public void startPlayingEpisode(Episode episode, Podcast podcast) {
         playerLargeFragment.setEpisode(episode, podcast);
+        Intent intent = new Intent(this, PlaybackService.class);
+        intent.setAction("START");
+        intent.putExtra(PlaybackService.EPISODE_EXTRA, episode.get_id());
+        startService(intent);
     }
 }

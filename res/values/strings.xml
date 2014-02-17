@@ -9,4 +9,20 @@
     <string name="title_player">Player</string>
     <string name="paste">Paste</string>
     <string name="Subscribe">Enter the URL of the podcast you wish to subscribe to.</string>
+    
+    <string-array name="sync_frequency">
+        <item name="1">Every hour</item>
+        <item name="8">Every 8 hours</item>
+        <item name="24">Every day</item>
+        <item name="168">Every week</item>
+        <item name="0">Never</item>
+    </string-array>
+    <string-array name="sync_frequency_values">
+        <item name="1">1</item>
+        <item name="8">8</item>
+        <item name="24">24</item>
+        <item name="168">168</item>
+        <item name="0">Never</item>
+    </string-array>
+    
 </resources>

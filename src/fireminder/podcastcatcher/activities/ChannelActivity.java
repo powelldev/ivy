@@ -133,15 +133,12 @@ public class ChannelActivity extends ListActivity {
             public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
                     long episode_id) {
                 Episode _episode;
-                BackgroundThread bt;
 
                 _episode = edao.get(episode_id);
 
                 if (_episode.getMp3() == null) {
                     Toast.makeText(getApplicationContext(), "Downloading ...",
                             Toast.LENGTH_SHORT).show();
-                    bt = new BackgroundThread(getApplicationContext());
-                    //bt.downloadEpisodeMp3(_episode);
                     Helper.downloadEpisodeMp3(_episode);
                 } else {
                     Intent intent = new Intent();
@@ -150,8 +147,6 @@ public class ChannelActivity extends ListActivity {
                     if (!file.exists()) {
                         Toast.makeText(getApplicationContext(),
                                 "Downloading ...", Toast.LENGTH_SHORT).show();
-                        bt = new BackgroundThread(getApplicationContext());
-                        //bt.downloadEpisodeMp3(_episode);
                     Helper.downloadEpisodeMp3(_episode);
                     } else {
                         intent.setDataAndType(Uri.fromFile(file), "audio/*");
