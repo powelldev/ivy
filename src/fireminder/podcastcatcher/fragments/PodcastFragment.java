@@ -37,6 +37,7 @@ import fireminder.podcastcatcher.db.PodcastDao2;
 import fireminder.podcastcatcher.downloads.BackgroundThread;
 import fireminder.podcastcatcher.ui.PodcastAdapter;
 import fireminder.podcastcatcher.utils.RssParser;
+import fireminder.podcastcatcher.utils.Utils;
 import fireminder.podcastcatcher.valueobjects.Podcast;
 
 public class PodcastFragment extends ListFragment {
@@ -148,7 +149,7 @@ public class PodcastFragment extends ListFragment {
                     String userString = userInput.getText().toString();
                     //BackgroundThread bt = new BackgroundThread(getActivity());
                     //bt.getPodcastInfoFromBackgroundThread(userString);
-                    if(BackgroundThread.isHTTPAvailable()) {    
+                    if(Utils.isHTTPAvailable()) {    
                         new HttpDownloadTask().execute(userString);
                     }
                     else {
@@ -254,4 +255,5 @@ public class PodcastFragment extends ListFragment {
         listView.setOnItemClickListener(channelListViewOnClickListener);
         listView.setOnItemLongClickListener(channelListViewOnItemLongClickListener);
     }
+    
 }

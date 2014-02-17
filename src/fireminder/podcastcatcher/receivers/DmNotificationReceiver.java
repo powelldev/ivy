@@ -1,4 +1,4 @@
-package fireminder.podcastcatcher.downloads;
+package fireminder.podcastcatcher.receivers;
 
 import java.io.File;
 

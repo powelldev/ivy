@@ -1,8 +1,7 @@
-package fireminder.podcastcatcher.boot;
+package fireminder.podcastcatcher.services;
 
 import java.util.Calendar;
 
-import fireminder.podcastcatcher.downloads.ADownloadService;
 import fireminder.podcastcatcher.utils.Utils;
 
 import android.app.AlarmManager;

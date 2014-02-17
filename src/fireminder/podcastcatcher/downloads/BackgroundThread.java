@@ -43,28 +43,15 @@ import fireminder.podcastcatcher.valueobjects.Podcast;
 public class BackgroundThread {
 
     final static String TAG = BackgroundThread.class.getSimpleName();
+
     private Context context;
-    PodcastDao2 pdao = new PodcastDao2();
-    EpisodeDao2 edao = new EpisodeDao2();
+
+    private PodcastDao2 pdao = new PodcastDao2();
+
+    private EpisodeDao2 edao = new EpisodeDao2();
 
     public BackgroundThread(Context context) {
         this.context = context;
-    }
-
-    /***
-     * Checks if internet connection is available by querying google.com
-     */
-    public static boolean isHTTPAvailable() {
-        try {
-            URL url = new URL("http://www.google.com");
-            HttpURLConnection urlConn = (HttpURLConnection) url
-                    .openConnection();
-            urlConn.setConnectTimeout(1000);
-            urlConn.getContent();
-        } catch (Exception e) {
-            return false;
-        }
-        return true;
     }
 
     /***
@@ -76,7 +63,6 @@ public class BackgroundThread {
     public void getEpisodesFromBackgroundThread(String url, long id) {
         new ParseXmlForEpisodes().executeOnExecutor(
                 AsyncTask.THREAD_POOL_EXECUTOR, new String[] { url, "" + id });
-        // new ParseXmlForEpisodes().execute(new String[] { url, "" + id });
     }
 
     /***
@@ -86,33 +72,9 @@ public class BackgroundThread {
      * @param id
      */
     public void getPodcastImageFromBackgroundThread(String url, long id) {
-        // new ParseXmlForImage().executeOnExecutor(
-        // AsyncTask.THREAD_POOL_EXECUTOR, new String[] { url, filePath,
-        // "" + id });
         new ParseXmlForImage().execute(new String[] { url, "" + id });
     }
 
-    /***
-     * Downloads the given episodes enclosure file to
-     * Environment.DIRECTORY_PODCASTS.
-     * 
-     * public void downloadEpisodeMp3(Episode episode) { boolean exists = false;
-     * String fileName = episode.getUrl(); fileName =
-     * fileName.substring(fileName.lastIndexOf("/")); try { File testFile = new
-     * File(fileName); if (testFile.exists()) exists = true; } catch
-     * (NullPointerException npe) { // Only thrown if file hasn't been created
-     * yet } Log.d(TAG, fileName);
-     * 
-     * if (!exists) { DownloadManager dm = (DownloadManager) context
-     * .getSystemService(Context.DOWNLOAD_SERVICE); Request request = new
-     * Request(Uri.parse(episode.getUrl()));
-     * request.setTitle(episode.getTitle()) .setDescription("Touch to Cancel")
-     * .setNotificationVisibility( Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
-     * .setDestinationInExternalPublicDir( Environment.DIRECTORY_PODCASTS,
-     * fileName); long enqueue = dm.enqueue(request); }
-     * episode.setMp3(Environment.getExternalStorageDirectory().getPath() + "/"
-     * + Environment.DIRECTORY_PODCASTS + fileName); edao.update(episode); }
-     */
     /***
      * AsyncTask responsible for downlaoding an MP3.
      */
@@ -151,10 +113,6 @@ public class BackgroundThread {
     }
 
     /***
-     * AsyncTask responsible for downloading a webpage
-     */
-
-    /***
      * AsyncTask responsible for parsing xml page for image
      */
     private class ParseXmlForImage extends
@@ -174,9 +132,7 @@ public class BackgroundThread {
                         .openConnection();
                 InputStream is = con.getInputStream();
                 reader = new BufferedReader(new InputStreamReader(is));
-                // imagelink = RssParser.parsePodcastImageFromXml(reader);
                 imagelink = RssParser.parsePodcastImageFromXml(is);
-                // Download image
                 URL imageurl = new URL(imagelink);
                 HttpURLConnection conn = (HttpURLConnection) imageurl
                         .openConnection();
@@ -206,11 +162,6 @@ public class BackgroundThread {
                 Podcast podcast = pdao.get(Long.parseLong(idForQuery));
                 podcast.setImagePath(result.toByteArray());
                 pdao.update(podcast);
-                // BackgroundThread bt = new BackgroundThread(getActivity());
-                // bt.getEpisodesFromBackgroundThread(podcast.getLink(),
-                // podcast.get_id());
-                // new ParseXmlForEpisodes().execute(new String[]
-                // {podcast.getLink(), String.valueOf(podcast.get_id())});
             } else {
                 Podcast podcast = pdao.get(Long.parseLong(idForQuery));
                 Bitmap bmp = BitmapFactory.decodeResource(
@@ -218,7 +169,6 @@ public class BackgroundThread {
                 ByteArrayOutputStream stream = new ByteArrayOutputStream();
                 bmp.compress(Bitmap.CompressFormat.PNG, 100, stream);
                 byte[] byteArray = stream.toByteArray();
-                // podcast.setImagelink(byteArray);
                 pdao.update(podcast);
             }
             PodcastCatcher.getInstance().getMainActivity()
@@ -227,40 +177,6 @@ public class BackgroundThread {
 
     }
 
-    /*
-     * private class ParseXmlForImageFile extends AsyncTask<String, Void, Void>
-     * {
-     * 
-     * @Override protected void onPostExecute(Void result) {
-     * 
-     * }
-     * 
-     * @Override protected Void doInBackground(String... params) {
-     * ByteArrayOutputStream bytes = null; Bitmap myBitmap; try {
-     * HttpURLConnection input = (HttpURLConnection) new URL(
-     * params[0]).openConnection(); input.setDoInput(true); input.connect();
-     * myBitmap = BitmapFactory.decodeStream(input.getInputStream());
-     * 
-     * bytes = new ByteArrayOutputStream(); } catch (Exception e) { }
-     * 
-     * try { Log.e("***********TAG*********", params[0] + "File name: " +
-     * params[1]); URL url = new URL(params[0]); InputStream is =
-     * url.openStream(); OutputStream os = new FileOutputStream(params[1]);
-     * 
-     * byte[] b = new byte[2048]; int length;
-     * 
-     * while((length = is.read(b)) != -1) { os.write(b, 0, length); }
-     * 
-     * is.close(); os.close();
-     * 
-     * } catch (Exception e){
-     * 
-     * }
-     * 
-     * return null;
-     * 
-     * } }
-     */
     /***
      * AsyncTask responsible for grabbing individual episodes from a podcast's
      * RSS.
@@ -304,8 +220,6 @@ public class BackgroundThread {
     public void getNewEpisodesForPodcast(int podcast_id) {
         new CheckXmlForNewEpisodesForPodcast().executeOnExecutor(
                 AsyncTask.THREAD_POOL_EXECUTOR, new Integer[] { podcast_id });
-        // new CheckXmlForNewEpisodesForPodcast()
-        // .execute(new Integer[] { podcast_id });
     }
 
     /***
@@ -410,9 +324,6 @@ public class BackgroundThread {
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
-            // Open Podcast's URL
-            // Parse Podcast's url for episodes until an episodes pubDate is <=
-            // current latest pubDate
             Episode[] array;
             if (episodes != null || episodes.size() > 0) {
                 array = episodes.toArray(new Episode[episodes.size()]);

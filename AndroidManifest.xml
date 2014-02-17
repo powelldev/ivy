@@ -95,10 +95,10 @@
             </intent-filter>
         </activity>
 
-        <service android:name="fireminder.podcastcatcher.downloads.ADownloadService" 
+        <service android:name="fireminder.podcastcatcher.services.ADownloadService" 
             android:enabled="true" android:exported="true">
             <intent-filter >
-                <action android:name="fireminder.podcastcatcher.downloads.ADownloadService"/>
+                <action android:name="fireminder.podcastcatcher.services.ADownloadService"/>
             </intent-filter>
         </service>
         <service android:name="fireminder.podcastcatcher.services.PlaybackService" 
@@ -112,7 +112,7 @@
                 <action android:name="fireminder.PlaybackService.FORWARD" />
             </intent-filter>
         </service>
-        <service android:name="fireminder.podcastcatcher.boot.BootService" >
+        <service android:name="fireminder.podcastcatcher.services.BootService" >
         </service>
 
         <activity
@@ -134,12 +134,12 @@
             </intent-filter>
         </activity>
 
-        <receiver android:name="fireminder.podcastcatcher.downloads.DmNotificationReceiver" >
+        <receiver android:name="fireminder.podcastcatcher.receivers.DmNotificationReceiver" >
             <intent-filter>
                 <action android:name="android.intent.action.DOWNLOAD_NOTIFICATION_CLICKED" />
             </intent-filter>
         </receiver>
-        <receiver android:name="fireminder.podcastcatcher.boot.BootBroadcastReciever" 
+        <receiver android:name="fireminder.podcastcatcher.receivers.BootBroadcastReciever" 
             android:enabled="true" android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETETD" />

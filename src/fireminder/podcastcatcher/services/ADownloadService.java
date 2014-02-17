@@ -1,4 +1,4 @@
-package fireminder.podcastcatcher.downloads;
+package fireminder.podcastcatcher.services;
 
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -17,6 +17,7 @@ import android.os.PowerManager;
 import android.util.Log;
 import fireminder.podcastcatcher.db.EpisodeDao2;
 import fireminder.podcastcatcher.db.PodcastDao2;
+import fireminder.podcastcatcher.downloads.BackgroundThread;
 import fireminder.podcastcatcher.utils.Helper;
 import fireminder.podcastcatcher.utils.RssParser;
 import fireminder.podcastcatcher.utils.Utils;
