@@ -3,14 +3,12 @@ package fireminder.podcastcatcher.db;
 import java.util.ArrayList;
 
 import android.content.ContentValues;
-import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
 import fireminder.podcastcatcher.PodcastCatcher;
 import fireminder.podcastcatcher.valueobjects.Podcast;
 
-public class PodcastDao2 {
+public class PodcastDao {
 
     public static final String TABLE_NAME = "podcasts";
     public static final String COLUMN_ID = "_id";
@@ -19,13 +17,10 @@ public class PodcastDao2 {
     public static final String COLUMN_LINK = "link";
     public static final String COLUMN_IMAGELINK = "imagelink";
 
-    public static final String DATABASE_NAME = "podcast.db";
-    public static final int DATABASE_VER = 5;
-
     public static final String[] allColumns = { COLUMN_ID, COLUMN_TITLE,
             COLUMN_DESCRIP, COLUMN_LINK, COLUMN_IMAGELINK };
 
-    public PodcastDao2() {
+    public PodcastDao() {
     }
 
     public ArrayList<Podcast> getAll() {
@@ -101,26 +96,4 @@ public class PodcastDao2 {
         return cursor;
     }
     
-    public class SqlHelper extends SQLiteOpenHelper {
-
-        public SqlHelper(Context context) {
-            super(context, DATABASE_NAME, null, DATABASE_VER);
-        }
-
-        @Override
-        public void onCreate(SQLiteDatabase db) {
-            db.execSQL("CREATE TABLE " + TABLE_NAME + " (" + COLUMN_ID
-                    + " integer primary key autoincrement," + COLUMN_TITLE
-                    + " text not null, " + COLUMN_DESCRIP + " text, "
-                    + COLUMN_LINK + " text, " + COLUMN_IMAGELINK + " text);");
-
-        }
-
-        @Override
-        public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-            db.execSQL("DROP TABLE IF EXISTS podcasts");
-            onCreate(db);
-        }
-
-    }
 }

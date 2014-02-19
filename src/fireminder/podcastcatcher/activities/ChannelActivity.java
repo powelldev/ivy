@@ -24,8 +24,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import fireminder.podcastcatcher.R;
-import fireminder.podcastcatcher.db.EpisodeDao2;
-import fireminder.podcastcatcher.db.PodcastDao2;
+import fireminder.podcastcatcher.db.EpisodeDao;
+import fireminder.podcastcatcher.db.PodcastDao;
 import fireminder.podcastcatcher.downloads.BackgroundThread;
 import fireminder.podcastcatcher.ui.EpisodeAdapter;
 import fireminder.podcastcatcher.utils.Helper;
@@ -49,9 +49,9 @@ public class ChannelActivity extends ListActivity {
     
     Cursor mCursor;
     
-    EpisodeDao2 edao = new EpisodeDao2();
+    EpisodeDao edao = new EpisodeDao();
     
-    PodcastDao2 pdao = new PodcastDao2();
+    PodcastDao pdao = new PodcastDao();
 
     @Override
     protected void onCreate(Bundle bundle) {

@@ -20,8 +20,8 @@ import android.widget.Toast;
 import fireminder.podcastcatcher.PodcastCatcher;
 import fireminder.podcastcatcher.R;
 import fireminder.podcastcatcher.activities.MainActivity;
-import fireminder.podcastcatcher.db.EpisodeDao2;
-import fireminder.podcastcatcher.db.PodcastDao2;
+import fireminder.podcastcatcher.db.EpisodeDao;
+import fireminder.podcastcatcher.db.PodcastDao;
 import fireminder.podcastcatcher.ui.EpisodeAdapter;
 import fireminder.podcastcatcher.utils.Helper;
 import fireminder.podcastcatcher.valueobjects.Episode;
@@ -32,8 +32,8 @@ public class ChannelFragment extends ListFragment implements
 
     private final static String TAG = ChannelFragment.class.getSimpleName();
 
-    EpisodeDao2 mEdao = new EpisodeDao2();
-    PodcastDao2 mPdao = new PodcastDao2();
+    EpisodeDao mEdao = new EpisodeDao();
+    PodcastDao mPdao = new PodcastDao();
 
     public static ChannelFragment newInstance(long channelId) {
         ChannelFragment channelFragment = new ChannelFragment();

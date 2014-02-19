@@ -15,7 +15,7 @@ import android.net.Uri;
 import android.os.Environment;
 import android.util.Log;
 import fireminder.podcastcatcher.PodcastCatcher;
-import fireminder.podcastcatcher.db.EpisodeDao2;
+import fireminder.podcastcatcher.db.EpisodeDao;
 import fireminder.podcastcatcher.downloads.BackgroundThread;
 import fireminder.podcastcatcher.valueobjects.Episode;
 
@@ -31,7 +31,7 @@ public class Helper {
                 .getPath() + "/" + Environment.DIRECTORY_PODCASTS + fileName);
         if (file.exists()) {
             e.setMp3(file.getAbsolutePath());
-            new EpisodeDao2().update(e);
+            new EpisodeDao().update(e);
             return true;
         } else {
             return false;
@@ -66,7 +66,7 @@ public class Helper {
             e.setMp3(Environment.getExternalStorageDirectory().getPath() + "/"
                     + Environment.DIRECTORY_PODCASTS + fileName);
         }
-        new EpisodeDao2().update(e);
+        new EpisodeDao().update(e);
     }
 
     public static void searchForPodcasts(Context context, String term) {

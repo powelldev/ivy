@@ -25,8 +25,8 @@ import com.sothree.slidinguppanel.SlidingUpPanelLayout.PanelSlideListener;
 import fireminder.podcastcatcher.OnTaskCompleted;
 import fireminder.podcastcatcher.PodcastCatcher;
 import fireminder.podcastcatcher.R;
-import fireminder.podcastcatcher.db.EpisodeDao2;
-import fireminder.podcastcatcher.db.PodcastDao2;
+import fireminder.podcastcatcher.db.EpisodeDao;
+import fireminder.podcastcatcher.db.PodcastDao;
 import fireminder.podcastcatcher.downloads.BackgroundThread;
 import fireminder.podcastcatcher.fragments.ChannelFragment;
 import fireminder.podcastcatcher.fragments.PlayerFragment;
@@ -243,8 +243,8 @@ public class MainActivity extends Activity implements OnTaskCompleted {
 
     private void resumeEpisode(long episodeId) {
         try {
-            Episode episode = new EpisodeDao2().get(episodeId);
-            Podcast podcast = new PodcastDao2().get(episode.getPodcast_id());
+            Episode episode = new EpisodeDao().get(episodeId);
+            Podcast podcast = new PodcastDao().get(episode.getPodcast_id());
             startPlayingEpisode(episode, podcast);
         } catch (Exception e) {
             mEpisodeId = -1;

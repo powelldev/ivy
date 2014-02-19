@@ -8,7 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import fireminder.podcastcatcher.PodcastCatcher;
 import fireminder.podcastcatcher.R;
-import fireminder.podcastcatcher.db.EpisodeDao2;
+import fireminder.podcastcatcher.db.EpisodeDao;
 import fireminder.podcastcatcher.ui.EpisodeAdapter;
 
 
@@ -25,7 +25,7 @@ public class RecentFragment extends ListFragment {
     }
     
     private void updateListAdapter(){
-        Cursor cursor = new EpisodeDao2().getAllRecentEpisodes();
+        Cursor cursor = new EpisodeDao().getAllRecentEpisodes();
         EpisodeAdapter cursorAdapter = new EpisodeAdapter(PodcastCatcher.getInstance().getContext(),
                 cursor, 0);
         setListAdapter(cursorAdapter);

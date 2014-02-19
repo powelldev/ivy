@@ -14,7 +14,7 @@ import android.widget.CursorAdapter;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import fireminder.podcastcatcher.R;
-import fireminder.podcastcatcher.db.EpisodeDao2;
+import fireminder.podcastcatcher.db.EpisodeDao;
 import fireminder.podcastcatcher.utils.Utils;
 
 public class EpisodeAdapter extends CursorAdapter {
@@ -41,20 +41,20 @@ public class EpisodeAdapter extends CursorAdapter {
                 .findViewById(R.id.list_item_date_tv);
 
 
-        long milliseconds = cursor.getLong(cursor.getColumnIndex(EpisodeDao2.COLUMN_PUBDATE));
+        long milliseconds = cursor.getLong(cursor.getColumnIndex(EpisodeDao.COLUMN_PUBDATE));
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(milliseconds);
         Date date = calendar.getTime();
         SimpleDateFormat sdf = new SimpleDateFormat("dd MMM");
 
-        String duration = Utils.getStringFromCursor(cursor, EpisodeDao2.COLUMN_DURATION);
+        String duration = Utils.getStringFromCursor(cursor, EpisodeDao.COLUMN_DURATION);
         episodeDate.setText(sdf.format(date));
         episodeDate.setText(duration);
-        episodeTitle.setText(Utils.getStringFromCursor(cursor, EpisodeDao2.COLUMN_TITLE));
+        episodeTitle.setText(Utils.getStringFromCursor(cursor, EpisodeDao.COLUMN_TITLE));
 
-        String file_mp3 = Utils.getStringFromCursor(cursor, EpisodeDao2.COLUMN_MP3);
+        String file_mp3 = Utils.getStringFromCursor(cursor, EpisodeDao.COLUMN_MP3);
         if (file_mp3 != null) {
-            File mp3 = new File(Utils.getStringFromCursor(cursor, EpisodeDao2.COLUMN_MP3));
+            File mp3 = new File(Utils.getStringFromCursor(cursor, EpisodeDao.COLUMN_MP3));
             if (mp3.exists()) {
                 playIcon.setVisibility(View.VISIBLE);
                 playIcon.setFocusable(false);

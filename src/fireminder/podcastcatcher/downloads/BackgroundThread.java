@@ -30,8 +30,8 @@ import android.widget.Toast;
 import fireminder.podcastcatcher.OnTaskCompleted;
 import fireminder.podcastcatcher.PodcastCatcher;
 import fireminder.podcastcatcher.R;
-import fireminder.podcastcatcher.db.EpisodeDao2;
-import fireminder.podcastcatcher.db.PodcastDao2;
+import fireminder.podcastcatcher.db.EpisodeDao;
+import fireminder.podcastcatcher.db.PodcastDao;
 import fireminder.podcastcatcher.utils.Helper;
 import fireminder.podcastcatcher.utils.RssParser;
 import fireminder.podcastcatcher.valueobjects.Episode;
@@ -46,9 +46,9 @@ public class BackgroundThread {
 
     private Context context;
 
-    private PodcastDao2 pdao = new PodcastDao2();
+    private PodcastDao pdao = new PodcastDao();
 
-    private EpisodeDao2 edao = new EpisodeDao2();
+    private EpisodeDao edao = new EpisodeDao();
 
     public BackgroundThread(Context context) {
         this.context = context;
@@ -290,21 +290,21 @@ public class BackgroundThread {
                 do {
                     Episode e = null;
                     e = edao.getLatestEpisode(cursor.getLong(cursor
-                            .getColumnIndex(PodcastDao2.COLUMN_ID)));
+                            .getColumnIndex(PodcastDao.COLUMN_ID)));
                     Log.e(TAG,
                             ""
                                     + cursor.getString(cursor
-                                            .getColumnIndex(PodcastDao2.COLUMN_LINK)));
+                                            .getColumnIndex(PodcastDao.COLUMN_LINK)));
 
                     URL url = new URL(cursor.getString(cursor
-                            .getColumnIndex(PodcastDao2.COLUMN_LINK)));
+                            .getColumnIndex(PodcastDao.COLUMN_LINK)));
                     HttpURLConnection urlConn = (HttpURLConnection) url
                             .openConnection();
                     InputStream is = urlConn.getInputStream();
 
                     indivEpisodes = RssParser.parseNewEpisodesFromXml(is,
                             cursor.getInt(cursor
-                                    .getColumnIndex(PodcastDao2.COLUMN_ID)), e
+                                    .getColumnIndex(PodcastDao.COLUMN_ID)), e
                                     .getPubDate());
 
                     if (indivEpisodes.size() != 0) {

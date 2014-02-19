@@ -11,7 +11,7 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 import fireminder.podcastcatcher.R;
-import fireminder.podcastcatcher.db.EpisodeDao2;
+import fireminder.podcastcatcher.db.EpisodeDao;
 /*
  * Adapter for episodes
  *     manipulates custom listviews
@@ -43,7 +43,7 @@ public class LazyAdapter extends BaseAdapter{
     @Override
     public long getItemId(int arg0) {
         data.move(arg0-1);
-        return data.getLong(data.getColumnIndex(EpisodeDao2.COLUMN_ID));
+        return data.getLong(data.getColumnIndex(EpisodeDao.COLUMN_ID));
     }
 
     @Override
@@ -57,9 +57,9 @@ public class LazyAdapter extends BaseAdapter{
         TextView downloaded = (TextView) vi.findViewById(R.id.download);
         data.moveToPosition(position);
 
-        title.setText(data.getString(data.getColumnIndex(EpisodeDao2.COLUMN_TITLE)));
-        pubdate.setText(getDate(data.getLong(data.getColumnIndex(EpisodeDao2.COLUMN_PUBDATE)), "dd MMM"));
-        byte[] size = data.getBlob(data.getColumnIndex(EpisodeDao2.COLUMN_MP3));
+        title.setText(data.getString(data.getColumnIndex(EpisodeDao.COLUMN_TITLE)));
+        pubdate.setText(getDate(data.getLong(data.getColumnIndex(EpisodeDao.COLUMN_PUBDATE)), "dd MMM"));
+        byte[] size = data.getBlob(data.getColumnIndex(EpisodeDao.COLUMN_MP3));
         if(size != null){
             downloaded.setText("" + size.length);
         }

@@ -17,7 +17,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import fireminder.podcastcatcher.PodcastCatcher;
 import fireminder.podcastcatcher.R;
-import fireminder.podcastcatcher.db.PodcastDao2;
+import fireminder.podcastcatcher.db.PodcastDao;
 import fireminder.podcastcatcher.valueobjects.Podcast;
 
 public class PodcastAdapter extends CursorAdapter {
@@ -45,14 +45,14 @@ public class PodcastAdapter extends CursorAdapter {
 
             ByteArrayInputStream is = new ByteArrayInputStream(
                     cursor.getBlob(cursor
-                            .getColumnIndex(PodcastDao2.COLUMN_IMAGELINK)));
+                            .getColumnIndex(PodcastDao.COLUMN_IMAGELINK)));
             BitmapFactory.Options options = new BitmapFactory.Options();
             options.inJustDecodeBounds = true;
             Bitmap image = BitmapFactory.decodeStream(is, null, options);
 
             ByteArrayInputStream is2 = new ByteArrayInputStream(
                     cursor.getBlob(cursor
-                            .getColumnIndex(PodcastDao2.COLUMN_IMAGELINK)));
+                            .getColumnIndex(PodcastDao.COLUMN_IMAGELINK)));
             BitmapFactory.Options options2 = new BitmapFactory.Options();
             options2.inSampleSize = calculateInSampleSize(options,
                     display.getWidth(), 96);
@@ -67,7 +67,7 @@ public class PodcastAdapter extends CursorAdapter {
 
         TextView tv = (TextView) arg0.findViewById(R.id.podcast_tv);
         tv.setText(cursor.getString(cursor
-                .getColumnIndex(PodcastDao2.COLUMN_TITLE)));
+                .getColumnIndex(PodcastDao.COLUMN_TITLE)));
     }
 
     @Override

@@ -14,7 +14,7 @@ import android.util.Log;
 import fireminder.podcastcatcher.R;
 import fireminder.podcastcatcher.StatefulMediaPlayer;
 import fireminder.podcastcatcher.activities.MainActivity;
-import fireminder.podcastcatcher.db.EpisodeDao2;
+import fireminder.podcastcatcher.db.EpisodeDao;
 import fireminder.podcastcatcher.valueobjects.Episode;
 
 public class PlaybackService extends Service {
@@ -22,7 +22,7 @@ public class PlaybackService extends Service {
     private StatefulMediaPlayer mPlayer;
     public static final String EPISODE_EXTRA = "episode_extra";
     private static final String TAG = PlaybackService.class.getSimpleName();
-    private EpisodeDao2 mEdao = new EpisodeDao2();;
+    private EpisodeDao mEdao = new EpisodeDao();;
     private long mEpisodeId;
     private int mElapsed;
 

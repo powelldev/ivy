@@ -12,8 +12,10 @@ import org.xmlpull.v1.XmlPullParserException;
 
 import android.app.AlertDialog;
 import android.app.ListFragment;
+import android.app.LoaderManager;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Loader;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -32,21 +34,23 @@ import android.widget.ListView;
 import android.widget.Toast;
 import fireminder.podcastcatcher.R;
 import fireminder.podcastcatcher.activities.MainActivity;
-import fireminder.podcastcatcher.db.EpisodeDao2;
-import fireminder.podcastcatcher.db.PodcastDao2;
+import fireminder.podcastcatcher.db.EpisodeDao;
+import fireminder.podcastcatcher.db.PodcastDao;
 import fireminder.podcastcatcher.downloads.BackgroundThread;
 import fireminder.podcastcatcher.ui.PodcastAdapter;
 import fireminder.podcastcatcher.utils.RssParser;
 import fireminder.podcastcatcher.utils.Utils;
 import fireminder.podcastcatcher.valueobjects.Podcast;
 
-public class PodcastFragment extends ListFragment {
+public class PodcastFragment extends ListFragment implements LoaderManager.LoaderCallbacks<Cursor>{
+    
+    private static final int mLoaderId = 0;
 
     final static String TAG = PodcastFragment.class.getSimpleName();
 
     public PodcastAdapter cursorAdapter;
-    PodcastDao2 pdao = new PodcastDao2();
-    EpisodeDao2 edao = new EpisodeDao2();
+    PodcastDao pdao = new PodcastDao();
+    EpisodeDao edao = new EpisodeDao();
     public BackgroundThread bt = new BackgroundThread(getActivity());
     
     @Override
@@ -63,6 +67,7 @@ public class PodcastFragment extends ListFragment {
         updateListAdapter();
         
         subscribeIfIntent();
+
         return rootView;
     }
 
@@ -254,6 +259,24 @@ public class PodcastFragment extends ListFragment {
         ListView listView = getListView();
         listView.setOnItemClickListener(channelListViewOnClickListener);
         listView.setOnItemLongClickListener(channelListViewOnItemLongClickListener);
+    }
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> arg0, Cursor arg1) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> arg0) {
+        // TODO Auto-generated method stub
+        
     }
     
 }

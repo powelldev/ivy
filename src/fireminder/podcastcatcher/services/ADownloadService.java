@@ -15,8 +15,8 @@ import android.content.IntentFilter;
 import android.database.Cursor;
 import android.os.PowerManager;
 import android.util.Log;
-import fireminder.podcastcatcher.db.EpisodeDao2;
-import fireminder.podcastcatcher.db.PodcastDao2;
+import fireminder.podcastcatcher.db.EpisodeDao;
+import fireminder.podcastcatcher.db.PodcastDao;
 import fireminder.podcastcatcher.downloads.BackgroundThread;
 import fireminder.podcastcatcher.utils.Helper;
 import fireminder.podcastcatcher.utils.RssParser;
@@ -25,8 +25,8 @@ import fireminder.podcastcatcher.valueobjects.Episode;
 
 public class ADownloadService extends IntentService {
     
-    PodcastDao2 pdao = new PodcastDao2();
-    EpisodeDao2 edao = new EpisodeDao2();
+    PodcastDao pdao = new PodcastDao();
+    EpisodeDao edao = new EpisodeDao();
 
     public ADownloadService() {
         super("DownloadService");
@@ -73,22 +73,22 @@ public class ADownloadService extends IntentService {
         do {
             Episode e = null;
             e = edao.getLatestEpisode(cursor.getLong(cursor
-                    .getColumnIndex(PodcastDao2.COLUMN_ID)));
+                    .getColumnIndex(PodcastDao.COLUMN_ID)));
             Log.e("IntentService",
                     ""
                             + cursor.getString(cursor
-                                    .getColumnIndex(PodcastDao2.COLUMN_LINK)));
+                                    .getColumnIndex(PodcastDao.COLUMN_LINK)));
 
             try {
                 URL url = new URL(cursor.getString(cursor
-                        .getColumnIndex(PodcastDao2.COLUMN_LINK)));
+                        .getColumnIndex(PodcastDao.COLUMN_LINK)));
                 HttpURLConnection urlConn = (HttpURLConnection) url
                         .openConnection();
                 InputStream is = urlConn.getInputStream();
 
                 indivEpisodes = RssParser.parseNewEpisodesFromXml(is, cursor
                         .getInt(cursor
-                                .getColumnIndex(PodcastDao2.COLUMN_ID)), e
+                                .getColumnIndex(PodcastDao.COLUMN_ID)), e
                         .getPubDate());
             } catch (Exception ex) {
                 ex.printStackTrace();

@@ -4,18 +4,14 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import android.content.ContentValues;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import fireminder.podcastcatcher.PodcastCatcher;
 import fireminder.podcastcatcher.utils.Utils;
 import fireminder.podcastcatcher.valueobjects.Episode;
 
-import android.content.ContentValues;
-import android.content.Context;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
-
-public class EpisodeDao2 {
+public class EpisodeDao {
 
     public static final String TABLE_NAME = "episodes";
     public static final String COLUMN_ID = "_id";
@@ -28,17 +24,13 @@ public class EpisodeDao2 {
     public static final String COLUMN_DURATION = "duration";
     public static final String COLUMN_ELAPSED = "elapsed";
 
-    // TODO rename db
-    public static final String DATABASE_NAME = "episode.db";
-    public static final int DATABASE_VER = 4;
-
     /*** A list of all the columns in the episode db, useful for queries */
     public static final String[] allColumns = { COLUMN_ID, COLUMN_PODCAST_ID,
             COLUMN_TITLE, COLUMN_DESCRIP, COLUMN_URL, COLUMN_PUBDATE,
             COLUMN_MP3, COLUMN_DURATION, COLUMN_ELAPSED };
-    public static String TAG = EpisodeDao2.class.getSimpleName();
+    public static String TAG = EpisodeDao.class.getSimpleName();
 
-    public EpisodeDao2() {
+    public EpisodeDao() {
     }
 
     public static Episode cursorToEpisode(Cursor cursor) {
@@ -176,7 +168,6 @@ public class EpisodeDao2 {
     public Cursor getAllRecentEpisodes() {
         SQLiteDatabase db = new SqlHelper(PodcastCatcher.getInstance()
                 .getContext()).getWritableDatabase();
-        List<Episode> episodes = new ArrayList<Episode>();
         long lastWeekInMillis = Calendar.getInstance().getTimeInMillis()
                 - (7 * 24 * 60 * 60 * 1000);
         Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE "
@@ -186,37 +177,5 @@ public class EpisodeDao2 {
         return cursor;
     }
 
-    /***
-     * Class containing commonly referenced strings and variables for
-     * interacting with the database.
-     */
-    public static class SqlHelper extends SQLiteOpenHelper {
-
-        public SqlHelper(Context context) {
-            super(context, DATABASE_NAME, null, DATABASE_VER);
-        }
-
-        @Override
-        public void onCreate(SQLiteDatabase db) {
-            db.execSQL("CREATE TABLE " + TABLE_NAME + 
-                    " (" + COLUMN_ID + " integer primary key autoincrement,"
-                    + COLUMN_PODCAST_ID + " integer not null, " 
-                    + COLUMN_TITLE + " text not null, "
-                    + COLUMN_DESCRIP + " text, " 
-                    + COLUMN_URL + " text, "
-                    + COLUMN_PUBDATE + " integer, " 
-                    + COLUMN_MP3 + " text, "
-                    + COLUMN_DURATION + " text, " 
-                    + COLUMN_ELAPSED + " integer);");
-
-        }
-
-        @Override
-        public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-            db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
-            onCreate(db);
-        }
-
-    }
 
 }
