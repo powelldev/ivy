@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="84dp"
+    android:orientation="horizontal"
+    android:padding="8dp" >
+
+    <ImageView
+        android:id="@+id/podcast_iv"
+        android:layout_width="68dp"
+        android:layout_height="68dp"
+        android:src="#72CD73" />
+
+    <TextView
+        android:id="@+id/podcast_tv"
+        android:layout_width="wrap_content"
+        android:paddingLeft="8dp"
+        android:textStyle="bold"
+        android:textSize="14sp"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@id/podcast_iv"
+        />
+
+    <TextView
+        android:id="@+id/descrip"
+        android:layout_width="wrap_content"
+        android:paddingLeft="8dp"
+        android:textSize="12sp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/podcast_tv"
+        android:layout_toRightOf="@id/podcast_iv"
+        />
+        
+
+    <TextView
+        android:id="@+id/date_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        />
+
+    <ImageView
+        android:id="@+id/star_iv"
+        android:src="@drawable/circle"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:layout_alignParentBottom="true"
+        android:visibility="invisible"
+        android:layout_alignParentRight="true"
+        />
+
+</RelativeLayout>

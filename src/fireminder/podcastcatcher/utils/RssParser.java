@@ -66,6 +66,7 @@ public class RssParser {
                     else if(podcastItem.matches("description")){
                         podcastItem = xpp.nextText();
                         Log.d("DESCRIP: ", podcastItem);
+                        podcastItem = android.text.Html.fromHtml(podcastItem).toString();
                         podcast.setDescription(podcastItem);
                         itemsCounter++;
                     }
@@ -109,6 +110,7 @@ public class RssParser {
                     else if(podcastItem.matches("description")){
                         podcastItem = xpp.nextText();
                         Log.d("DESCRIP: ", podcastItem);
+                        podcastItem = android.text.Html.fromHtml(podcastItem).toString();
                         podcast.setDescription(podcastItem);
                         itemsCounter++;
                     }
@@ -317,6 +319,7 @@ public class RssParser {
                 else if(name.matches("description") && xpp.getDepth()==ITEM_DEPTH){
                     content = xpp.nextText();
                     test += content + "\n";
+                    content = android.text.Html.fromHtml(content).toString();
                     episode.setDescription(content);
                 }
                 else if(name.matches("pubDate") && xpp.getDepth()==ITEM_DEPTH){
@@ -408,6 +411,7 @@ public class RssParser {
                             ITEM_DEPTH){
                         content = xpp.nextText();
                         test += content + "\n";
+                        content = android.text.Html.fromHtml(content).toString();
                         episode.setDescription(content);
                     }
                     else if(name.matches("pubDate") && xpp.getDepth() ==

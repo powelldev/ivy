@@ -6,10 +6,10 @@ import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
-import android.os.Bundle;
-import android.os.Environment;
+import android.media.MediaMetadataRetriever;
 import android.os.Handler;
 import android.os.IBinder;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import fireminder.podcastcatcher.R;
 import fireminder.podcastcatcher.StatefulMediaPlayer;
@@ -21,34 +21,46 @@ public class PlaybackService extends Service {
 
     private StatefulMediaPlayer mPlayer;
     public static final String EPISODE_EXTRA = "episode_extra";
+    public static final String TIME = "timing_update";
+    public static final String TIME_INTENT = "fireminder.podcastcatcher.services.PlaybackService.TIME_UPDATE";
     private static final String TAG = PlaybackService.class.getSimpleName();
+    public static final String MAX_INTENT = "fireminder.podcastcatcher.services.PlaybackService.TIME_MAX";
+    public static final String MAX = "max_time";
+    public static final String SEEK_EXTRA = "seek_extra";
     private EpisodeDao mEdao = new EpisodeDao();;
     private long mEpisodeId;
     private int mElapsed;
+    private LocalBroadcastManager mBroadcaster;
 
     @Override
     public void onCreate() {
         mPlayer = new StatefulMediaPlayer();
+        mBroadcaster = LocalBroadcastManager
+                .getInstance(getApplicationContext());
         super.onCreate();
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        try { 
-        if (intent.getAction().contains("START")) {
-            start(intent);
-        } else if (intent.getAction().contains("PLAY")) {
-            play();
-        } else if (intent.getAction().contains("REWIND")) {
-            this.setForeground(false);
-            mPlayer.pause();
-            //mHandler.removeCallbacks(updateProgressRunnable);
-            mHandler.removeCallbacksAndMessages(null);
-            Episode episode = mEdao.get(mEpisodeId);
-            episode.setElapsed(mElapsed);
-            mEdao.update(episode);
-            Log.e(TAG, "Elapsed update: " + episode.getElapsed());
-        }
+        try {
+            if (intent.getAction().contains("START")) {
+                start(intent);
+            } else if (intent.getAction().contains("PLAY")) {
+                play();
+            } else if (intent.getAction().contains("REWIND")) {
+                this.setForeground(false);
+                mPlayer.pause();
+                // mHandler.removeCallbacks(updateProgressRunnable);
+                mHandler.removeCallbacksAndMessages(null);
+                Episode episode = mEdao.get(mEpisodeId);
+                episode.setElapsed(mElapsed);
+                mEdao.update(episode);
+                Log.e(TAG, "Elapsed update: " + episode.getElapsed());
+            } else if (intent.getAction().contains("SEEK")) {
+                int time = intent.getIntExtra(SEEK_EXTRA, 0);
+                Log.e("HAPT", "SEEKING PROGRESS INTENT: " + time);
+                mPlayer.seekTo(time);
+            }
         } catch (Exception e) {
             Log.e(TAG, "Err in onStartCommand: " + e.getMessage());
         }
@@ -58,10 +70,13 @@ public class PlaybackService extends Service {
     private void play() {
         setForeground(true);
         mHandler.post(updateProgressRunnable);
+        Episode episode = mEdao.get(mEpisodeId);
+        sentEpisodeMax(episode);
         mPlayer.start();
     }
+
     private void start(Intent intent) {
-            mEpisodeId = intent.getExtras().getLong(EPISODE_EXTRA);
+        mEpisodeId = intent.getExtras().getLong(EPISODE_EXTRA);
         if (mPlayer.getPlayingEpisodeId() != mEpisodeId) {
             Episode episode = mEdao.get(mEpisodeId);
             setForeground(true);
@@ -72,8 +87,9 @@ public class PlaybackService extends Service {
                 mPlayer.setDataSource(episode);
                 mPlayer.startAt(episode.getElapsed());
                 mHandler.post(updateProgressRunnable);
+                sentEpisodeMax(episode);
             }
-        } 
+        }
     }
 
     private void setForeground(boolean on) {
@@ -105,8 +121,25 @@ public class PlaybackService extends Service {
             Log.e(TAG, mPlayer.getCurrentTrack());
             Log.e(TAG, "" + mPlayer.getCurrentPosition());
             mElapsed = mPlayer.getCurrentPosition();
+            Intent intent = new Intent(TIME_INTENT);
+            intent.putExtra(TIME, mPlayer.getCurrentPosition());
+            mBroadcaster.sendBroadcast(intent);
             mHandler.postDelayed(this, 1000);
         }
 
     };
+
+    private void sentEpisodeMax(Episode episode) {
+        Log.e("HAPT", "sentEpisodeMax");
+        MediaMetadataRetriever mmr = new MediaMetadataRetriever();
+        mmr.setDataSource(episode.getMp3());
+        String duration = mmr
+                .extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
+        Log.e("HAPT", "sentEpisodeMax" + duration);
+        Intent intent = new Intent(MAX_INTENT);
+        intent.putExtra(MAX, Integer.parseInt(duration));
+        mBroadcaster.sendBroadcast(intent);
+        mmr.release();
+
+    }
 }

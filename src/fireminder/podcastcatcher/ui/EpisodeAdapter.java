@@ -30,6 +30,16 @@ public class EpisodeAdapter extends CursorAdapter {
         this.context = context;
         this.cursor = c;
     }
+    
+    
+
+    @Override
+    public void notifyDataSetChanged() {
+        cursor.requery();
+        super.notifyDataSetChanged();
+    }
+
+
 
     @Override
     public void bindView(View arg0, Context arg1, Cursor cursor) {
