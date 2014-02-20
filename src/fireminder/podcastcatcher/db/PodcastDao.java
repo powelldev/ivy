@@ -92,7 +92,7 @@ public class PodcastDao {
     public Cursor getAllPodcastsAsCursor(){
         SQLiteDatabase db = new SqlHelper(PodcastCatcher.getInstance().getContext()).getWritableDatabase();
         Cursor cursor = db.query(TABLE_NAME, allColumns,
-                null, null, null, null, null);
+                null, null, null, null, COLUMN_TITLE + " ASC");
         return cursor;
     }
     

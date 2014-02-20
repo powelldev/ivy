@@ -1,6 +1,10 @@
 package fireminder.podcastcatcher.ui;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -17,7 +21,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import fireminder.podcastcatcher.PodcastCatcher;
 import fireminder.podcastcatcher.R;
+import fireminder.podcastcatcher.db.EpisodeDao;
 import fireminder.podcastcatcher.db.PodcastDao;
+import fireminder.podcastcatcher.utils.Utils;
+import fireminder.podcastcatcher.valueobjects.Episode;
 import fireminder.podcastcatcher.valueobjects.Podcast;
 
 public class PodcastAdapter extends CursorAdapter {
@@ -31,7 +38,12 @@ public class PodcastAdapter extends CursorAdapter {
         this.context = context;
         this.mInflater = LayoutInflater.from(context);
         this.cursor = c;
+    }
 
+    @Override
+    public void notifyDataSetChanged() {
+        cursor.requery();
+        super.notifyDataSetChanged();
     }
 
     @Override
@@ -65,14 +77,51 @@ public class PodcastAdapter extends CursorAdapter {
             e.printStackTrace();
         }
 
+        try {
+            TextView descripTv = (TextView) arg0.findViewById(R.id.descrip);
+            long id = cursor.getLong(cursor
+                    .getColumnIndex(PodcastDao.COLUMN_ID));
+            Episode e = new EpisodeDao().getLatestEpisode(id);
+            String descrip = e.getDescription();
+            descrip = android.text.Html.fromHtml(descrip).toString();
+            int descripSize = 125;
+            if (descrip.length() > descripSize) {
+                descrip = descrip.substring(0, descripSize - 3) + "...";
+            }
+            descripTv.setText(descrip);
+
+            TextView dateTv = (TextView) arg0.findViewById(R.id.date_tv);
+            long milliseconds = e.getPubDate();
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTimeInMillis(milliseconds);
+            Date date = calendar.getTime();
+            SimpleDateFormat sdf = new SimpleDateFormat("dd MMM");
+            dateTv.setText(sdf.format(date));
+
+            ImageView starIv = (ImageView) arg0.findViewById(R.id.star_iv);
+            if (e.getElapsed()<= 0 && new File(e.getMp3()).exists()) {
+                starIv.setVisibility(View.VISIBLE);
+            } else if (e.getElapsed() > 30000) {
+                starIv.setVisibility(View.INVISIBLE);
+            } else {
+                starIv.setVisibility(View.INVISIBLE);
+            }
+        } catch (Exception xe) {
+            Log.e("Err", "Unable to load episode: " + xe.getMessage());
+        }
         TextView tv = (TextView) arg0.findViewById(R.id.podcast_tv);
-        tv.setText(cursor.getString(cursor
-                .getColumnIndex(PodcastDao.COLUMN_TITLE)));
+        String title = Utils.getStringFromCursor(cursor,
+                PodcastDao.COLUMN_TITLE);
+        int textViewSize = 32;
+        if (title.length() > textViewSize) {
+            title = title.substring(0, textViewSize - 3) + "...";
+        }
+        tv.setText(title);
     }
 
     @Override
     public View newView(Context arg0, Cursor arg1, ViewGroup arg2) {
-        View view = mInflater.inflate(R.layout.podcast_adapter, arg2, false);
+        View view = mInflater.inflate(R.layout.fragment_podcast, arg2, false);
         return view;
     }
 

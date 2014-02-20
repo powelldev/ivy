@@ -35,6 +35,8 @@ public class ChannelFragment extends ListFragment implements
     EpisodeDao mEdao = new EpisodeDao();
     PodcastDao mPdao = new PodcastDao();
 
+    EpisodeAdapter cursorAdapter;
+
     public static ChannelFragment newInstance(long channelId) {
         ChannelFragment channelFragment = new ChannelFragment();
         Bundle args = new Bundle();
@@ -90,15 +92,11 @@ public class ChannelFragment extends ListFragment implements
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
-        updateListAdapter(PodcastCatcher.getInstance().getContext());
-        super.onViewCreated(view, savedInstanceState);
-    }
-
-    private void updateListAdapter(Context context) {
-        Cursor cursor = mEdao.getAllEpisodesAsCursor(getArguments().getLong(
+        Cursor cursor = mEdao.getAllEpisodesAsCursorByDate(getArguments().getLong(
                 "channel_id"));
-        EpisodeAdapter cursorAdapter = new EpisodeAdapter(context, cursor, 0);
+        cursorAdapter = new EpisodeAdapter(getActivity(), cursor, 0);
         setListAdapter(cursorAdapter);
+        super.onViewCreated(view, savedInstanceState);
     }
 
     @Override

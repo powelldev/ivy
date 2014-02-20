@@ -94,4 +94,19 @@
         android:layout_alignParentLeft="true"
         android:layout_marginBottom="53dp" />
 
+    <TextView
+        android:id="@+id/fragment_player_text_elapsed"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/fragment_player_seek_bar"
+        android:layout_alignParentLeft="true"
+        />
+    <TextView
+        android:id="@+id/fragment_player_text_max"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/fragment_player_seek_bar"
+        android:layout_alignParentRight="true"
+        />
+
 </RelativeLayout>

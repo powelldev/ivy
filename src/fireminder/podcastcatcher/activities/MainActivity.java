@@ -8,11 +8,15 @@ import android.app.AlarmManager;
 import android.app.DownloadManager;
 import android.app.FragmentTransaction;
 import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -52,6 +56,7 @@ public class MainActivity extends Activity implements OnTaskCompleted {
     static PlayerLargeFragment playerLargeFragment;
     ChannelFragment mChannelFragment;
 
+    BroadcastReceiver mReceiver;
     private long mEpisodeId = -1;
 
     @Override
@@ -65,6 +70,19 @@ public class MainActivity extends Activity implements OnTaskCompleted {
         Intent intent = getIntent();
         data = intent.getData();
         
+        mReceiver = new BroadcastReceiver() {
+
+            @Override
+            public void onReceive(Context arg0, Intent arg1) {
+                if (arg1.getAction().matches(PlaybackService.TIME_INTENT)){
+                    playerLargeFragment.updateTime(arg1.getIntExtra(PlaybackService.TIME, 0));
+                } else if (arg1.getAction().matches(PlaybackService.MAX_INTENT)) {
+                    playerLargeFragment.setMaxTime(arg1.getIntExtra(PlaybackService.MAX, 0));
+                    Log.e("HAPT", "sentEpisodeMax ACTIVITY " + arg1.getIntExtra(PlaybackService.MAX, 0));
+                }
+            }
+            
+        };
         if (data != null) {
             Bundle bundle = new Bundle();
             bundle.putString("uri", data.toString());
@@ -144,6 +162,19 @@ public class MainActivity extends Activity implements OnTaskCompleted {
         this.startService(new Intent(this, PlaybackService.class));
     }
 
+    @Override
+    protected void onStart() {
+       super.onStart(); 
+       IntentFilter ifi = new IntentFilter();
+       ifi.addAction(PlaybackService.TIME_INTENT);
+       ifi.addAction(PlaybackService.MAX_INTENT);
+       LocalBroadcastManager.getInstance(this).registerReceiver(mReceiver, ifi);
+    }
+    @Override
+    protected void onStop() {
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mReceiver);
+        super.onStop();
+    }
     @Override
     protected void onSaveInstanceState(Bundle state) {
         super.onSaveInstanceState(state);

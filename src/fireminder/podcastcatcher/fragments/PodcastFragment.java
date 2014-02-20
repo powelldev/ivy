@@ -64,8 +64,10 @@ public class PodcastFragment extends ListFragment implements LoaderManager.Loade
         
         View rootView = inflater.inflate(R.layout.listfragment1, container, false);
         
-        updateListAdapter();
-        
+        Cursor podcastCursor = pdao.getAllPodcastsAsCursor();
+        cursorAdapter = new PodcastAdapter(getActivity(), podcastCursor, 0);
+        setListAdapter(cursorAdapter);
+
         subscribeIfIntent();
 
         return rootView;
@@ -174,9 +176,7 @@ public class PodcastFragment extends ListFragment implements LoaderManager.Loade
     };
     
     public void updateListAdapter(){
-        Cursor podcastCursor = pdao.getAllPodcastsAsCursor();
-        cursorAdapter = new PodcastAdapter(getActivity(), podcastCursor, 0);
-        setListAdapter(cursorAdapter);
+        cursorAdapter.notifyDataSetChanged();
     }
     
 

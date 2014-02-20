@@ -4,16 +4,8 @@
     android:layout_height="match_parent"
     android:paddingTop="?android:attr/actionBarSize"
     android:orientation="vertical" 
-    android:paddingLeft="8dp"
-    android:paddingRight="8dp"
     >
     
-   <!--  <ImageButton  -->
-       <!-- android:src="@drawable/content_new"  -->
-        <!--android:id="@+id/subscribe_btn"  -->
-        <!--android:layout_width="48dp"  -->
-        <!--android:layout_height="48dp"  -->
-        <!--/>  -->
     <ListView android:id="@id/android:list"
         android:layout_width="match_parent"
         android:layout_height="0dip"
@@ -22,10 +14,8 @@
         
         android:fadingEdgeLength="0dp"
         android:scrollbars="none"
-        android:divider="@null"
-        android:dividerHeight="4dp"
-        android:paddingLeft="8dp"
-        android:paddingRight="8dp"
+        android:divider="#444"
+        android:dividerHeight="1dp"
         />
     <TextView
         android:layout_width="match_parent"
