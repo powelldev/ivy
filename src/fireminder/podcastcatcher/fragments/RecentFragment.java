@@ -19,16 +19,8 @@ public class RecentFragment extends ListFragment {
             Bundle savedInstanceState) {
 
         View rootView = inflater.inflate(R.layout.channel, container, false);
-        updateListAdapter();
 
         return rootView;
     }
     
-    private void updateListAdapter(){
-        Cursor cursor = new EpisodeDao().getAllRecentEpisodes();
-        EpisodeAdapter cursorAdapter = new EpisodeAdapter(PodcastCatcher.getInstance().getContext(),
-                cursor, 0);
-        setListAdapter(cursorAdapter);
-    }
-
 }

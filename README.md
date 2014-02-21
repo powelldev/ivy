@@ -10,9 +10,6 @@ Context menu for Podcasts:
 Episode context menu
     * Download all
     * Delete
-Image loader for podcast Fragment - smoother scrolling
-    * Picasso integration
-    * Playback - album cover
 Notification 
     * play/pause (might need graphics)
 Navigation drawer
@@ -29,6 +26,9 @@ Playback
 
 DONE:
 
+Image loader for podcast Fragment - smoother scrolling
+    * Picasso integration
+    * Playback - album cover
 SlidingUp Layout graphical update
 Notification 
     * opens on app onPause

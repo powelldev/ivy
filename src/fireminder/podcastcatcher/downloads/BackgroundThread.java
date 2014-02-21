@@ -115,65 +115,36 @@ public class BackgroundThread {
     /***
      * AsyncTask responsible for parsing xml page for image
      */
-    private class ParseXmlForImage extends
-            AsyncTask<String, Void, ByteArrayBuffer> {
+    private class ParseXmlForImage extends AsyncTask<String, Void, Void> {
         String idForQuery;
 
         @Override
-        protected ByteArrayBuffer doInBackground(String... urls) {
+        protected Void doInBackground(String... urls) {
             URL url;
             idForQuery = urls[1];
-            BufferedReader reader = null;
-            ByteArrayBuffer baf = null;
             String imagelink = null;
             try {
                 url = new URL(urls[0]);
                 HttpURLConnection con = (HttpURLConnection) url
                         .openConnection();
                 InputStream is = con.getInputStream();
-                reader = new BufferedReader(new InputStreamReader(is));
                 imagelink = RssParser.parsePodcastImageFromXml(is);
-                URL imageurl = new URL(imagelink);
-                HttpURLConnection conn = (HttpURLConnection) imageurl
-                        .openConnection();
-                InputStream istream = conn.getInputStream();
-                BufferedInputStream bis = new BufferedInputStream(istream, 128);
-                baf = new ByteArrayBuffer(128);
-                int current = 0;
-                while ((current = bis.read()) != -1) {
-                    baf.append((byte) current);
-                }
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
             } catch (Exception e) {
                 e.printStackTrace();
             }
 
-            return baf;
-        }
-
-        @Override
-        protected void onPostExecute(ByteArrayBuffer result) {
-
-            if (result != null) {
-                Log.d("Add this to db: ", result + " AT " + idForQuery);
-                Podcast podcast = pdao.get(Long.parseLong(idForQuery));
-                podcast.setImagePath(result.toByteArray());
-                pdao.update(podcast);
+            Podcast podcast = pdao.get(Long.parseLong(idForQuery));
+            if (imagelink != null) {
+            podcast.setImagePath(imagelink);
             } else {
-                Podcast podcast = pdao.get(Long.parseLong(idForQuery));
-                Bitmap bmp = BitmapFactory.decodeResource(
-                        context.getResources(), R.drawable.ic_launcher);
-                ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                bmp.compress(Bitmap.CompressFormat.PNG, 100, stream);
-                byte[] byteArray = stream.toByteArray();
-                pdao.update(podcast);
+                podcast.setImagePath("http://static.tvtropes.org/lampshade_logo_blue.png");
             }
+            pdao.update(podcast);
             PodcastCatcher.getInstance().getMainActivity()
                     .onTaskCompleted(null);
+            return null;
         }
+
 
     }
 

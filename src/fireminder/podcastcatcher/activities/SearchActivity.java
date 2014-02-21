@@ -105,8 +105,7 @@ public class SearchActivity extends ListActivity implements OnTaskCompleted {
 
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            BackgroundThread bt = new BackgroundThread(
-                                    PodcastCatcher.getInstance().getContext());
+                            BackgroundThread bt = new BackgroundThread(PodcastCatcher.getInstance().getContext());
                             for (String podcast : mSelectedPodcasts) {
                                 bt.subscribeToPodcast(podcast);
                             }

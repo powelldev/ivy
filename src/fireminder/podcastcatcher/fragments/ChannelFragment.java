@@ -1,15 +1,12 @@
 package fireminder.podcastcatcher.fragments;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 
 import android.app.ListFragment;
-import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,7 +15,9 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-import fireminder.podcastcatcher.PodcastCatcher;
+
+import com.squareup.picasso.Picasso;
+
 import fireminder.podcastcatcher.R;
 import fireminder.podcastcatcher.activities.MainActivity;
 import fireminder.podcastcatcher.db.EpisodeDao;
@@ -61,21 +60,15 @@ public class ChannelFragment extends ListFragment implements
         podcast = mPdao.get(channelId);
 
         try {
-            ByteArrayInputStream is = new ByteArrayInputStream(
-                    podcast.getImagePath());
-            image = BitmapFactory.decodeStream(is);
+            image = BitmapFactory.decodeFile(podcast.getImagePath());
         } catch (Exception e) {
             image = null;
         }
 
         ((TextView) rootView.findViewById(R.id.title_tv)).setText(podcast
                 .getTitle());
-        if (image != null)
-            ((ImageView) rootView.findViewById(R.id.podcast_image))
-                    .setImageBitmap(image);
-        else
-            ((ImageView) rootView.findViewById(R.id.podcast_image))
-                    .setImageResource(R.drawable.ic_launcher);
+        ImageView iv = (ImageView) rootView.findViewById(R.id.podcast_image);
+        Picasso.with(getActivity()).load(podcast.getImagePath()).fit().centerCrop().placeholder(R.drawable.ic_launcher).noFade().into(iv);
 
         return rootView;
     }
@@ -93,8 +86,8 @@ public class ChannelFragment extends ListFragment implements
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
-        Cursor cursor = mEdao.getAllEpisodesAsCursorByDate(getArguments().getLong(
-                "channel_id"));
+        Cursor cursor = mEdao.getAllEpisodesAsCursorByDate(getArguments()
+                .getLong("channel_id"));
         cursorAdapter = new EpisodeAdapter(getActivity(), cursor, 0);
         setListAdapter(cursorAdapter);
         super.onViewCreated(view, savedInstanceState);
@@ -105,16 +98,17 @@ public class ChannelFragment extends ListFragment implements
             long episode_id) {
 
         Episode episode = mEdao.get(episode_id);
-        
-        
+
         if (episode.getMp3().matches("")) {
             Helper.downloadEpisodeMp3(episode);
         } else {
             File mp3 = new File(episode.getMp3());
-            if (mp3.exists()){
+            if (mp3.exists()) {
                 MainActivity activity = (MainActivity) getActivity();
-                activity.startPlayingEpisode(episode, mPdao.get(episode.getPodcast_id()));
-                Toast.makeText(getActivity(), "Playing", Toast.LENGTH_SHORT).show();
+                activity.startPlayingEpisode(episode,
+                        mPdao.get(episode.getPodcast_id()));
+                Toast.makeText(getActivity(), "Playing", Toast.LENGTH_SHORT)
+                        .show();
             } else {
                 Helper.downloadEpisodeMp3(episode);
             }
@@ -123,7 +117,9 @@ public class ChannelFragment extends ListFragment implements
     }
 
     public void notifyDataSetChanged() {
+        try { 
         ((EpisodeAdapter) getListAdapter()).notifyDataSetChanged();
+        } catch (Exception e) {}
     }
 
 }

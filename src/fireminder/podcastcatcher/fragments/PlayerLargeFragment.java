@@ -2,6 +2,8 @@ package fireminder.podcastcatcher.fragments;
 
 import java.util.concurrent.TimeUnit;
 
+import com.squareup.picasso.Picasso;
+
 import android.app.Fragment;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -35,6 +37,7 @@ public class PlayerLargeFragment extends Fragment implements OnClickListener,
         static TextView episodeTitleTv;
         static TextView authorTitleTv;
         static ImageView albumCoverIv;
+        static ImageView largeAlbumIv;
     }
 
     @Override
@@ -73,7 +76,8 @@ public class PlayerLargeFragment extends Fragment implements OnClickListener,
                 .findViewById(R.id.fragment_player_small_author);
         ViewHolder.albumCoverIv = (ImageView) rootView
                 .findViewById(R.id.fragment_player_small_album_cover);
-
+        ViewHolder.largeAlbumIv = (ImageView) rootView
+                .findViewById(R.id.fragment_player_large_album);
         return rootView;
     }
 
@@ -87,11 +91,13 @@ public class PlayerLargeFragment extends Fragment implements OnClickListener,
         }
         ViewHolder.episodeTitleTv.setText(title);
         ViewHolder.authorTitleTv.setText("");
-        Bitmap image = PodcastAdapter.getBitmapFromPodcast(podcast);
-        if (image != null)
-            ViewHolder.albumCoverIv.setImageBitmap(image);
-        else
-            ViewHolder.albumCoverIv.setImageResource(R.drawable.ic_launcher);
+        Picasso.with(getActivity()).load(podcast.getImagePath()).fit()
+                .centerCrop().noFade().placeholder(R.drawable.ic_launcher)
+                .into(ViewHolder.albumCoverIv);
+
+        Picasso.with(getActivity()).load(podcast.getImagePath()).fit()
+                .centerCrop().noFade().placeholder(R.drawable.ic_launcher)
+                .into(ViewHolder.largeAlbumIv);
     }
 
     public long getCurrentEpisode() {
@@ -122,22 +128,30 @@ public class PlayerLargeFragment extends Fragment implements OnClickListener,
         mSeekBar.setMax(time);
         mMaxTv.setText(convertMillisToHhmmss(time));
     }
-    
+
     public String convertMillisToHhmmss(int time) {
         String hhmmss;
         if (time > 3600000) {
-        hhmmss = String.format("%02d:%02d:%02d", 
-                TimeUnit.MILLISECONDS.toHours(time),
-                TimeUnit.MILLISECONDS.toMinutes(time) -  
-                TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(time)), // The change is in this line
-                TimeUnit.MILLISECONDS.toSeconds(time) - 
-                TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(time)));   
+            hhmmss = String.format(
+                    "%02d:%02d:%02d",
+                    TimeUnit.MILLISECONDS.toHours(time),
+                    TimeUnit.MILLISECONDS.toMinutes(time)
+                            - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS
+                                    .toHours(time)), // The change is in this
+                                                     // line
+                    TimeUnit.MILLISECONDS.toSeconds(time)
+                            - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS
+                                    .toMinutes(time)));
         } else {
-            hhmmss = String.format("%02d:%02d", 
-                TimeUnit.MILLISECONDS.toMinutes(time) -  
-                TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(time)), // The change is in this line
-                TimeUnit.MILLISECONDS.toSeconds(time) - 
-                TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS.toMinutes(time)));   
+            hhmmss = String.format(
+                    "%02d:%02d",
+                    TimeUnit.MILLISECONDS.toMinutes(time)
+                            - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS
+                                    .toHours(time)), // The change is in this
+                                                     // line
+                    TimeUnit.MILLISECONDS.toSeconds(time)
+                            - TimeUnit.MINUTES.toSeconds(TimeUnit.MILLISECONDS
+                                    .toMinutes(time)));
         }
         return hhmmss;
     }
@@ -145,6 +159,16 @@ public class PlayerLargeFragment extends Fragment implements OnClickListener,
     public void updateTime(int time) {
         mSeekBar.setProgress(time);
         mElapsedTv.setText(convertMillisToHhmmss(time));
+    }
+
+    public void setHeaderVisible(boolean visible) {
+        if (visible) {
+            getView().findViewById(R.id.fragment_player_header_playpause_icon)
+                    .setVisibility(View.VISIBLE);
+        } else {
+            getView().findViewById(R.id.fragment_player_header_playpause_icon)
+                    .setVisibility(View.GONE);
+        }
     }
 
     @Override

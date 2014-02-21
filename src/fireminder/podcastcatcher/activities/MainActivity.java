@@ -124,12 +124,14 @@ public class MainActivity extends Activity implements OnTaskCompleted {
 
             @Override
             public void onPanelCollapsed(View panel) {
+                playerLargeFragment.setHeaderVisible(true);
 
             }
 
             @Override
             public void onPanelExpanded(View panel) {
                 layout.setDragView(playerLargeFragment.header);
+                playerLargeFragment.setHeaderVisible(false);
             }
 
             @Override
@@ -175,6 +177,9 @@ public class MainActivity extends Activity implements OnTaskCompleted {
     }
     @Override
     protected void onStop() {
+        Intent intent = new Intent(this, PlaybackService.class);
+        intent.setAction("fireminder.playbackService.OFF");
+        stopService(intent);
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mReceiver);
         super.onStop();
     }
@@ -291,7 +296,12 @@ public class MainActivity extends Activity implements OnTaskCompleted {
         try {
             Episode episode = new EpisodeDao().get(episodeId);
             Podcast podcast = new PodcastDao().get(episode.getPodcast_id());
-            startPlayingEpisode(episode, podcast);
+            //startPlayingEpisode(episode, podcast);
+            playerLargeFragment.setEpisode(episode, podcast);
+        Intent intent = new Intent(this, PlaybackService.class);
+        intent.setAction("SET");
+        intent.putExtra(PlaybackService.EPISODE_EXTRA, episode.get_id());
+        startService(intent);
         } catch (Exception e) {
             mEpisodeId = -1;
         }

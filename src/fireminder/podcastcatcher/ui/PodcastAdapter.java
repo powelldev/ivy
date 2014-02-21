@@ -1,6 +1,5 @@
 package fireminder.podcastcatcher.ui;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -8,8 +7,6 @@ import java.util.Date;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
@@ -19,13 +16,14 @@ import android.view.WindowManager;
 import android.widget.CursorAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
-import fireminder.podcastcatcher.PodcastCatcher;
+
+import com.squareup.picasso.Picasso;
+
 import fireminder.podcastcatcher.R;
 import fireminder.podcastcatcher.db.EpisodeDao;
 import fireminder.podcastcatcher.db.PodcastDao;
 import fireminder.podcastcatcher.utils.Utils;
 import fireminder.podcastcatcher.valueobjects.Episode;
-import fireminder.podcastcatcher.valueobjects.Podcast;
 
 public class PodcastAdapter extends CursorAdapter {
 
@@ -55,22 +53,13 @@ public class PodcastAdapter extends CursorAdapter {
                     .getSystemService(Context.WINDOW_SERVICE);
             Display display = wm.getDefaultDisplay();
 
-            ByteArrayInputStream is = new ByteArrayInputStream(
-                    cursor.getBlob(cursor
-                            .getColumnIndex(PodcastDao.COLUMN_IMAGELINK)));
-            BitmapFactory.Options options = new BitmapFactory.Options();
-            options.inJustDecodeBounds = true;
-            Bitmap image = BitmapFactory.decodeStream(is, null, options);
-
-            ByteArrayInputStream is2 = new ByteArrayInputStream(
-                    cursor.getBlob(cursor
-                            .getColumnIndex(PodcastDao.COLUMN_IMAGELINK)));
-            BitmapFactory.Options options2 = new BitmapFactory.Options();
-            options2.inSampleSize = calculateInSampleSize(options,
-                    display.getWidth(), 96);
-            Bitmap image2 = BitmapFactory.decodeStream(is2, null, options2);
-
-            iv.setImageBitmap(image2);
+            Picasso.with(arg1)
+            .load(Utils.getStringFromCursor(arg2, PodcastDao.COLUMN_IMAGELINK))
+            .noFade()
+            .fit()
+            .centerCrop()
+            .placeholder(R.drawable.ic_launcher)
+            .into(iv);
 
         } catch (NullPointerException e) {
             iv.setImageResource(R.drawable.ic_launcher);
@@ -125,24 +114,24 @@ public class PodcastAdapter extends CursorAdapter {
         return view;
     }
 
+    /*
     public static Bitmap getBitmapFromPodcast(Podcast podcast) {
         WindowManager wm = (WindowManager) PodcastCatcher.getInstance()
                 .getContext().getSystemService(Context.WINDOW_SERVICE);
         Display display = wm.getDefaultDisplay();
+        
 
-        ByteArrayInputStream is = new ByteArrayInputStream(
-                podcast.getImagePath());
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inJustDecodeBounds = true;
-        Bitmap image = BitmapFactory.decodeStream(is, null, options);
+        BitmapFactory.decodeFile(podcast.getImagePath(), options);
 
-        ByteArrayInputStream is2 = new ByteArrayInputStream(
-                podcast.getImagePath());
         BitmapFactory.Options options2 = new BitmapFactory.Options();
         options2.inSampleSize = calculateInSampleSize(options, R.dimen.header_height, R.dimen.header_height);
-        Bitmap image2 = BitmapFactory.decodeStream(is2, null, options2);
+        Bitmap image2 = BitmapFactory.decodeFile(podcast.getImagePath(), options2);
         return image2;
     }
+    */
+    /*
 
     public static int calculateInSampleSize(BitmapFactory.Options options,
             int reqWidth, int reqHeight) {
@@ -169,5 +158,6 @@ public class PodcastAdapter extends CursorAdapter {
                 Math.ceil(Math.log10(inSampleSize) / Math.log10(2)));
 
     }
+    */
 
 }

@@ -15,6 +15,7 @@ import android.content.IntentFilter;
 import android.database.Cursor;
 import android.os.PowerManager;
 import android.util.Log;
+import fireminder.podcastcatcher.OnTaskCompleted;
 import fireminder.podcastcatcher.PodcastCatcher;
 import fireminder.podcastcatcher.db.EpisodeDao;
 import fireminder.podcastcatcher.db.PodcastDao;
@@ -32,6 +33,7 @@ public class ADownloadService extends IntentService {
     public ADownloadService() {
         super("DownloadService");
     }
+    
 
     @Override
     protected void onHandleIntent(Intent intent) {
@@ -116,7 +118,10 @@ public class ADownloadService extends IntentService {
         for (Episode e : result) {
             Helper.downloadEpisodeMp3(e);
         }
+        this.stopSelf();
     }
+
+
     
     /*public void downloadEpisodeMp3(Episode e) {
         String fileName = e.getUrl();

@@ -176,7 +176,9 @@ public class PodcastFragment extends ListFragment implements LoaderManager.Loade
     };
     
     public void updateListAdapter(){
+        try {
         cursorAdapter.notifyDataSetChanged();
+        } catch (Exception e) {}
     }
     
 

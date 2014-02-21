@@ -21,7 +21,7 @@ public class Podcast {
     private String title;
     private String description;
     private String link;
-    private byte[] imagePath;
+    private String imagePath;
     
     
     public String toString() { return title; }
@@ -49,10 +49,10 @@ public class Podcast {
     public void setLink(String link) {
         this.link = link;
     }
-    public byte[] getImagePath() {
+    public String getImagePath() {
         return imagePath;
     }
-    public void setImagePath(byte[] imagePath) {
+    public void setImagePath(String imagePath) {
         this.imagePath = imagePath;
     }
     

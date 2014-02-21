@@ -29,6 +29,8 @@ public class BootService extends IntentService {
         alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, Calendar
                 .getInstance().getTimeInMillis(), Utils.UPDATE_TIMING,
                 pi);
+        
+        this.stopSelf();
     }
 
 }

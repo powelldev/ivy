@@ -3,6 +3,8 @@ package fireminder.podcastcatcher.activities;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 
+import com.squareup.picasso.Picasso;
+
 import android.annotation.SuppressLint;
 import android.app.ListActivity;
 import android.content.Context;
@@ -117,9 +119,7 @@ public class ChannelActivity extends ListActivity {
         title_tv.setText(podcast.getTitle());
 
         try {
-            ByteArrayInputStream is = new ByteArrayInputStream(
-            podcast.getImagePath());
-            Bitmap image = BitmapFactory.decodeStream(is);
+            Bitmap image = BitmapFactory.decodeFile(podcast.getImagePath());
             image_iv.setImageBitmap(image);
         } catch (Exception e) {
             image_iv.setImageResource(R.drawable.ic_launcher);

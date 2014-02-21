@@ -6,6 +6,7 @@ import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import fireminder.podcastcatcher.PodcastCatcher;
+import fireminder.podcastcatcher.utils.Utils;
 import fireminder.podcastcatcher.valueobjects.Podcast;
 
 public class PodcastDao {
@@ -53,7 +54,7 @@ public class PodcastDao {
         podcast.setTitle(cursor.getString(cursor.getColumnIndex(COLUMN_TITLE)));
         podcast.setDescription(cursor.getString(cursor.getColumnIndex(COLUMN_DESCRIP)));
         podcast.setLink(cursor.getString(cursor.getColumnIndex(COLUMN_LINK)));
-        podcast.setImagePath(cursor.getBlob(cursor.getColumnIndex(COLUMN_IMAGELINK)));
+        podcast.setImagePath(Utils.getStringFromCursor(cursor, COLUMN_IMAGELINK));
         return podcast;
     }
 

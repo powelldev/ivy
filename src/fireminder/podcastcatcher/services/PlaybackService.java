@@ -66,6 +66,8 @@ public class PlaybackService extends Service implements
         try {
             if (intent.getAction().contains("START")) {
                 start(intent);
+            } else if (intent.getAction().contains("SET")) {
+                set(intent);
             } else if (intent.getAction().contains("PLAY")) {
                 if (mPlayer.isPlaying()){
                     pause();
@@ -81,6 +83,8 @@ public class PlaybackService extends Service implements
             } else if (intent.getAction().contains("FOREGROUND_ON")) {
                 if (mPlayer.isPlaying()) {
                     setForeground(true);
+                } else {
+                    this.stopSelf();
                 }
             } else if (intent.getAction().contains("FOREGROUND_OFF")) {
                 setForeground(false);
@@ -123,6 +127,21 @@ public class PlaybackService extends Service implements
                 mPlayer.setDataSource(episode);
                 mPlayer.startAt(episode.getElapsed());
                 mHandler.post(updateProgressRunnable);
+                sentEpisodeMax(episode);
+            }
+        }
+    }
+
+    private void set(Intent intent) {
+        mEpisodeId = intent.getExtras().getLong(EPISODE_EXTRA);
+        if (mPlayer.getPlayingEpisodeId() != mEpisodeId) {
+            Episode episode = mEdao.get(mEpisodeId);
+            Log.e(TAG, episode.getMp3());
+            File file = new File(episode.getMp3());
+            Log.e(TAG, file.getAbsolutePath());
+            if (file.exists()) {
+                mPlayer.setDataSource(episode);
+                mPlayer.seekTo(episode.getElapsed());
                 sentEpisodeMax(episode);
             }
         }
@@ -206,7 +225,6 @@ public class PlaybackService extends Service implements
 
     @Override
     public void onAudioFocusChange(int focusChange) {
-        Log.e("++++*****++++++", "FOCUS CHANGE: " + focusChange);
         switch (focusChange) {
         case AudioManager.AUDIOFOCUS_GAIN:
             break;
