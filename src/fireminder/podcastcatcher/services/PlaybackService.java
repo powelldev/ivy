@@ -2,11 +2,15 @@ package fireminder.podcastcatcher.services;
 
 import java.io.File;
 
-import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.media.AudioManager;
+import android.media.AudioManager.OnAudioFocusChangeListener;
 import android.media.MediaMetadataRetriever;
 import android.os.Handler;
 import android.os.IBinder;
@@ -19,7 +23,8 @@ import fireminder.podcastcatcher.activities.MainActivity;
 import fireminder.podcastcatcher.db.EpisodeDao;
 import fireminder.podcastcatcher.valueobjects.Episode;
 
-public class PlaybackService extends Service {
+public class PlaybackService extends Service implements
+        OnAudioFocusChangeListener {
 
     private StatefulMediaPlayer mPlayer;
     public static final String EPISODE_EXTRA = "episode_extra";
@@ -39,7 +44,21 @@ public class PlaybackService extends Service {
         mPlayer = new StatefulMediaPlayer();
         mBroadcaster = LocalBroadcastManager
                 .getInstance(getApplicationContext());
+
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
+        this.registerReceiver(mReceiver, intentFilter);
         super.onCreate();
+    }
+
+    @Override
+    public void onDestroy() {
+        AudioManager am = (AudioManager) getSystemService(AUDIO_SERVICE);
+        am.abandonAudioFocus(this);
+        mPlayer.release();
+        mPlayer = null;
+        this.unregisterReceiver(mReceiver);
+        super.onDestroy();
     }
 
     @Override
@@ -50,13 +69,7 @@ public class PlaybackService extends Service {
             } else if (intent.getAction().contains("PLAY")) {
                 play();
             } else if (intent.getAction().contains("REWIND")) {
-                mPlayer.pause();
-                // mHandler.removeCallbacks(updateProgressRunnable);
-                mHandler.removeCallbacksAndMessages(null);
-                Episode episode = mEdao.get(mEpisodeId);
-                episode.setElapsed(mElapsed);
-                mEdao.update(episode);
-                Log.e(TAG, "Elapsed update: " + episode.getElapsed());
+                pause();
             } else if (intent.getAction().contains("SEEK")) {
                 int time = intent.getIntExtra(SEEK_EXTRA, 0);
                 Log.e("HAPT", "SEEKING PROGRESS INTENT: " + time);
@@ -72,6 +85,20 @@ public class PlaybackService extends Service {
             Log.e(TAG, "Err in onStartCommand: " + e.getMessage());
         }
         return Service.START_STICKY;
+    }
+
+    private void stop() {
+        this.stopSelf();
+    }
+
+    private void pause() {
+        mPlayer.pause();
+        // mHandler.removeCallbacks(updateProgressRunnable);
+        mHandler.removeCallbacksAndMessages(null);
+        Episode episode = mEdao.get(mEpisodeId);
+        episode.setElapsed(mElapsed);
+        mEdao.update(episode);
+        Log.e(TAG, "Elapsed update: " + episode.getElapsed());
     }
 
     private void play() {
@@ -154,6 +181,37 @@ public class PlaybackService extends Service {
         intent.putExtra(MAX, Integer.parseInt(duration));
         mBroadcaster.sendBroadcast(intent);
         mmr.release();
+
+    }
+
+    BroadcastReceiver mReceiver = new BroadcastReceiver() {
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent.getAction().matches(
+                    AudioManager.ACTION_AUDIO_BECOMING_NOISY)) {
+                pause();
+                Intent pauseIntent = new Intent(context, PlaybackService.class);
+                pauseIntent
+                        .setAction("fireminder.playbackService.FOREGROUND_OFF");
+                startService(pauseIntent);
+            }
+        }
+
+    };
+
+    @Override
+    public void onAudioFocusChange(int focusChange) {
+        Log.e("++++*****++++++", "FOCUS CHANGE: " + focusChange);
+        switch (focusChange) {
+        case AudioManager.AUDIOFOCUS_GAIN:
+            break;
+        case AudioManager.AUDIOFOCUS_LOSS:
+            break;
+        case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
+        case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
+            break;
+        }
 
     }
 }

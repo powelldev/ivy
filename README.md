@@ -1,7 +1,6 @@
 Features:
 
 CURRENT:
-Audio ducking
 
 PIPELINE:
 
@@ -40,3 +39,5 @@ Playback
     * TextViews
 Episode list view update
     * Play button update
+AUDIO_BECOMING_NOISY
+Audio ducking
