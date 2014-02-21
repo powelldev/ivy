@@ -9,6 +9,7 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -114,9 +115,15 @@ public class ChannelFragment extends ListFragment implements
                 MainActivity activity = (MainActivity) getActivity();
                 activity.startPlayingEpisode(episode, mPdao.get(episode.getPodcast_id()));
                 Toast.makeText(getActivity(), "Playing", Toast.LENGTH_SHORT).show();
+            } else {
+                Helper.downloadEpisodeMp3(episode);
             }
         }
 
+    }
+
+    public void notifyDataSetChanged() {
+        ((EpisodeAdapter) getListAdapter()).notifyDataSetChanged();
     }
 
 }

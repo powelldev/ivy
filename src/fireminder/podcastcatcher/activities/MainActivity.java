@@ -79,6 +79,8 @@ public class MainActivity extends Activity implements OnTaskCompleted {
                 } else if (arg1.getAction().matches(PlaybackService.MAX_INTENT)) {
                     playerLargeFragment.setMaxTime(arg1.getIntExtra(PlaybackService.MAX, 0));
                     Log.e("HAPT", "sentEpisodeMax ACTIVITY " + arg1.getIntExtra(PlaybackService.MAX, 0));
+                } else if (arg1.getAction().matches(DownloadManager.ACTION_DOWNLOAD_COMPLETE)) {
+                    mChannelFragment.notifyDataSetChanged();
                 }
             }
             
@@ -169,6 +171,7 @@ public class MainActivity extends Activity implements OnTaskCompleted {
        ifi.addAction(PlaybackService.TIME_INTENT);
        ifi.addAction(PlaybackService.MAX_INTENT);
        LocalBroadcastManager.getInstance(this).registerReceiver(mReceiver, ifi);
+       registerReceiver(mReceiver, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
     }
     @Override
     protected void onStop() {

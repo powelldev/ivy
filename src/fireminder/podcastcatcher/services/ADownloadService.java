@@ -15,6 +15,7 @@ import android.content.IntentFilter;
 import android.database.Cursor;
 import android.os.PowerManager;
 import android.util.Log;
+import fireminder.podcastcatcher.PodcastCatcher;
 import fireminder.podcastcatcher.db.EpisodeDao;
 import fireminder.podcastcatcher.db.PodcastDao;
 import fireminder.podcastcatcher.downloads.BackgroundThread;
@@ -36,6 +37,7 @@ public class ADownloadService extends IntentService {
     protected void onHandleIntent(Intent intent) {
 
         Utils.log("HAPT", "DownloadService started at " + System.currentTimeMillis() + "");
+        PodcastCatcher.getInstance().setContext(getApplicationContext());
         BackgroundThread bt = new BackgroundThread(this);
         bt.getNewEpisodes();
 //        

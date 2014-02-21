@@ -2,14 +2,14 @@ package fireminder.podcastcatcher.services;
 
 import java.util.Calendar;
 
-import fireminder.podcastcatcher.utils.Utils;
-
 import android.app.AlarmManager;
 import android.app.IntentService;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
+import fireminder.podcastcatcher.PodcastCatcher;
+import fireminder.podcastcatcher.utils.Utils;
 
 public class BootService extends IntentService {
 
@@ -20,6 +20,7 @@ public class BootService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
         Log.e("HAPT", "Starting service");
+        PodcastCatcher.getInstance().setContext(getApplicationContext());
         AlarmManager alarmManager = (AlarmManager) this
                 .getSystemService(Context.ALARM_SERVICE);
         Intent i = new Intent(this, ADownloadService.class);
