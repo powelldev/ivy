@@ -2,6 +2,7 @@ package fireminder.podcastcatcher.services;
 
 import java.io.File;
 
+import android.annotation.SuppressLint;
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -9,6 +10,7 @@ import android.content.Intent;
 import android.media.MediaMetadataRetriever;
 import android.os.Handler;
 import android.os.IBinder;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import fireminder.podcastcatcher.R;
@@ -48,7 +50,6 @@ public class PlaybackService extends Service {
             } else if (intent.getAction().contains("PLAY")) {
                 play();
             } else if (intent.getAction().contains("REWIND")) {
-                this.setForeground(false);
                 mPlayer.pause();
                 // mHandler.removeCallbacks(updateProgressRunnable);
                 mHandler.removeCallbacksAndMessages(null);
@@ -60,6 +61,12 @@ public class PlaybackService extends Service {
                 int time = intent.getIntExtra(SEEK_EXTRA, 0);
                 Log.e("HAPT", "SEEKING PROGRESS INTENT: " + time);
                 mPlayer.seekTo(time);
+            } else if (intent.getAction().contains("FOREGROUND_ON")) {
+                if (mPlayer.isPlaying()) {
+                    setForeground(true);
+                }
+            } else if (intent.getAction().contains("FOREGROUND_OFF")) {
+                setForeground(false);
             }
         } catch (Exception e) {
             Log.e(TAG, "Err in onStartCommand: " + e.getMessage());
@@ -68,7 +75,6 @@ public class PlaybackService extends Service {
     }
 
     private void play() {
-        setForeground(true);
         mHandler.post(updateProgressRunnable);
         Episode episode = mEdao.get(mEpisodeId);
         sentEpisodeMax(episode);
@@ -79,7 +85,6 @@ public class PlaybackService extends Service {
         mEpisodeId = intent.getExtras().getLong(EPISODE_EXTRA);
         if (mPlayer.getPlayingEpisodeId() != mEpisodeId) {
             Episode episode = mEdao.get(mEpisodeId);
-            setForeground(true);
             Log.e(TAG, episode.getMp3());
             File file = new File(episode.getMp3());
             Log.e(TAG, file.getAbsolutePath());
@@ -94,18 +99,27 @@ public class PlaybackService extends Service {
 
     private void setForeground(boolean on) {
         if (on) {
-            Notification notification = new Notification(
-                    R.drawable.ic_launcher, getText(R.string.app_name),
-                    System.currentTimeMillis());
             Intent notificationIntent = new Intent(this, MainActivity.class);
-            PendingIntent pendingIntent = PendingIntent.getActivity(this, 0,
-                    notificationIntent, 0);
-            notification.setLatestEventInfo(this, "Title", "Text",
-                    pendingIntent);
-            startForeground(42, notification);
+            Episode episode = mEdao.get(mEpisodeId);
+            NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(
+                    this)
+                    .setSmallIcon(R.drawable.ic_launcher)
+                    .setContentTitle(episode.getTitle())
+                    .setContentText(episode.getDescription())
+                    .setContentIntent(
+                            PendingIntent.getActivity(this, 0,
+                                    notificationIntent, 0));
+
+            if (android.os.Build.VERSION.SDK_INT >= 16) {
+                // mBuilder.addAction(R.drawable.ic_launcher, "Play",
+                // PendingIntent.getActivity(this, 0, notificationIntent, 0));
+            }
+            Notification noti = mBuilder.build();
+            startForeground(42, noti);
         } else {
             stopForeground(true);
         }
+
     }
 
     @Override

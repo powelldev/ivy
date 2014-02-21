@@ -11,7 +11,7 @@ import android.util.Log;
 
 public class Utils {
 
-    public static final long UPDATE_TIMING = 60000;
+    public static final long UPDATE_TIMING = 60 * 60 * 1000;
     private static final String LOGFILE = Environment
             .getExternalStorageDirectory() + File.separator + "creek.txt";
 

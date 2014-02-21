@@ -193,6 +193,12 @@ public class MainActivity extends Activity implements OnTaskCompleted {
         if (mEpisodeId != -1) {
             resumeEpisode(mEpisodeId);
         }
+
+        // Stop notification
+        Intent intent = new Intent(this, PlaybackService.class);
+        intent.setAction("fireminder.playbackService.FOREGROUND_OFF");
+        startService(intent);
+
     }
 
     @Override
@@ -201,6 +207,12 @@ public class MainActivity extends Activity implements OnTaskCompleted {
         SharedPreferences.Editor editor = settings.edit();
         editor.putLong(EPISODE_PLAYING, playerLargeFragment.getCurrentEpisode());
         editor.commit();
+
+        // Launch notification
+        Intent intent = new Intent(this, PlaybackService.class);
+        intent.setAction("fireminder.playbackService.FOREGROUND_ON");
+        startService(intent);
+
         super.onPause();
     }
 

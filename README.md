@@ -1,25 +1,22 @@
 Features:
 
 CURRENT:
+Audio ducking
 
 PIPELINE:
 
-Audio ducking
-Notification 
-    * reflects title
-    * play/pause (might need graphics)
 Context menu for Podcasts:
     * Delete All downloaded
     * Refresh
 Episode context menu
     * Download all
     * Delete
-Episode list view update
-    * Play button update
 Image loader for podcast Fragment - smoother scrolling
     * Picasso integration
     * Playback - album cover
 SlidingUp Layout graphical update
+Notification 
+    * play/pause (might need graphics)
 Navigation drawer
 Recent fragment w/ most recently downloaded episodes
 Search fragment update to stand-alone
@@ -32,8 +29,14 @@ Playback
 
 DONE:
 
+Notification 
+    * opens on app onPause
+    * closes on app onResume
+    * reflects title
 Newest podcast has an image indicator in PodcastFragment
     * Circle
 Playback
     * Seekbar
     * TextViews
+Episode list view update
+    * Play button update
