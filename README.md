@@ -13,12 +13,13 @@ Episode context menu
 Image loader for podcast Fragment - smoother scrolling
     * Picasso integration
     * Playback - album cover
-SlidingUp Layout graphical update
 Notification 
     * play/pause (might need graphics)
 Navigation drawer
 Recent fragment w/ most recently downloaded episodes
 Search fragment update to stand-alone
+Settings fragment
+    * Keep X most recent episodes
 Playlist fragment
 Custom download manager
 Playback
@@ -28,6 +29,7 @@ Playback
 
 DONE:
 
+SlidingUp Layout graphical update
 Notification 
     * opens on app onPause
     * closes on app onResume

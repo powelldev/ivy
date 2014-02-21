@@ -48,6 +48,9 @@ public class PlayerLargeFragment extends Fragment implements OnClickListener,
                 .findViewById(R.id.fragment_player_header);
 
         ((ImageButton) rootView
+                .findViewById(R.id.fragment_player_header_playpause_icon))
+                .setOnClickListener(this);
+        ((ImageButton) rootView
                 .findViewById(R.id.fragment_player_playpause_icon))
                 .setOnClickListener(this);
         ((ImageButton) rootView.findViewById(R.id.fragment_player_rewind_icon))
@@ -78,8 +81,12 @@ public class PlayerLargeFragment extends Fragment implements OnClickListener,
 
     public void setEpisode(Episode episode, Podcast podcast) {
         mEpisodeId = episode.get_id();
-        ViewHolder.episodeTitleTv.setText(episode.getTitle());
-        ViewHolder.authorTitleTv.setText(episode.getDescription());
+        String title = episode.getTitle();
+        if (title.length() > 40) {
+            title = title.subSequence(0, 40 - 3) + "...";
+        }
+        ViewHolder.episodeTitleTv.setText(title);
+        ViewHolder.authorTitleTv.setText("");
         Bitmap image = PodcastAdapter.getBitmapFromPodcast(podcast);
         if (image != null)
             ViewHolder.albumCoverIv.setImageBitmap(image);
@@ -95,6 +102,7 @@ public class PlayerLargeFragment extends Fragment implements OnClickListener,
     public void onClick(View v) {
         Intent intent = new Intent(getActivity(), PlaybackService.class);
         switch (v.getId()) {
+        case R.id.fragment_player_header_playpause_icon:
         case R.id.fragment_player_playpause_icon:
             intent.setAction("fireminder.PlaybackService.PLAY");
             getActivity().startService(intent);
@@ -135,10 +143,8 @@ public class PlayerLargeFragment extends Fragment implements OnClickListener,
     }
 
     public void updateTime(int time) {
-        String hhmmss;
         mSeekBar.setProgress(time);
         mElapsedTv.setText(convertMillisToHhmmss(time));
-        mMaxTv.setText("" + time);
     }
 
     @Override

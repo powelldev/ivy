@@ -67,7 +67,11 @@ public class PlaybackService extends Service implements
             if (intent.getAction().contains("START")) {
                 start(intent);
             } else if (intent.getAction().contains("PLAY")) {
-                play();
+                if (mPlayer.isPlaying()){
+                    pause();
+                } else {
+                    play();
+                }
             } else if (intent.getAction().contains("REWIND")) {
                 pause();
             } else if (intent.getAction().contains("SEEK")) {

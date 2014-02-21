@@ -139,7 +139,7 @@ public class PodcastAdapter extends CursorAdapter {
         ByteArrayInputStream is2 = new ByteArrayInputStream(
                 podcast.getImagePath());
         BitmapFactory.Options options2 = new BitmapFactory.Options();
-        options2.inSampleSize = calculateInSampleSize(options, 48, 48);
+        options2.inSampleSize = calculateInSampleSize(options, R.dimen.header_height, R.dimen.header_height);
         Bitmap image2 = BitmapFactory.decodeStream(is2, null, options2);
         return image2;
     }
