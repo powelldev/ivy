@@ -1,5 +1,10 @@
 package fireminder.podcastcatcher.ui;
 
+import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+
 import android.content.Context;
 import android.database.Cursor;
 import android.view.LayoutInflater;
@@ -8,23 +13,17 @@ import android.view.ViewGroup;
 import android.widget.CursorAdapter;
 import android.widget.ImageButton;
 import android.widget.TextView;
-
-import java.io.File;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-
 import fireminder.podcastcatcher.R;
 import fireminder.podcastcatcher.db.EpisodeDao;
 import fireminder.podcastcatcher.utils.Utils;
 
-public class EpisodeAdapter extends CursorAdapter {
+public class RecentAdapter extends CursorAdapter{
 
     private Context context;
     private Cursor cursor;
     private final LayoutInflater mLayoutInflater;
 
-    public EpisodeAdapter(Context context, Cursor c, int flags) {
+    public RecentAdapter(Context context, Cursor c, int flags) {
 
         super(context, c, flags);
         mLayoutInflater = LayoutInflater.from(context);
@@ -44,12 +43,10 @@ public class EpisodeAdapter extends CursorAdapter {
 
     @Override
     public void bindView(View arg0, Context arg1, Cursor cursor) {
-        ImageButton playIcon = (ImageButton) arg0
-                .findViewById(R.id.play_icon_iv);
         TextView episodeTitle = (TextView) arg0
-                .findViewById(R.id.list_item_episode_tv);
+                .findViewById(R.id.list_item_recent_tv);
         TextView episodeDate = (TextView) arg0
-                .findViewById(R.id.list_item_date_tv);
+                .findViewById(R.id.list_item_recent_date_tv);
 
 
         long milliseconds = cursor.getLong(cursor.getColumnIndex(EpisodeDao.COLUMN_PUBDATE));
@@ -67,22 +64,18 @@ public class EpisodeAdapter extends CursorAdapter {
         if (file_mp3 != null) {
             File mp3 = new File(Utils.getStringFromCursor(cursor, EpisodeDao.COLUMN_MP3));
             if (mp3.exists()) {
-                playIcon.setVisibility(View.VISIBLE);
-                playIcon.setFocusable(false);
             } else {
-                playIcon.setVisibility(View.GONE);
             }
 
         } else {
-            playIcon.setVisibility(View.GONE);
         }
     }
 
     @Override
     public View newView(Context context, Cursor arg1, ViewGroup arg2) {
-        View view = mLayoutInflater.inflate(R.layout.episode_list_item, arg2,
+        View view = mLayoutInflater.inflate(R.layout.list_item_recent, arg2,
                 false);
         return view;
     }
-
 }
+

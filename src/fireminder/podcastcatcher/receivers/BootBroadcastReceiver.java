@@ -1,10 +1,11 @@
 package fireminder.podcastcatcher.receivers;
 
-import fireminder.podcastcatcher.services.BootService;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
+
+import fireminder.podcastcatcher.services.BootService;
 
 public class BootBroadcastReceiver extends BroadcastReceiver{
 

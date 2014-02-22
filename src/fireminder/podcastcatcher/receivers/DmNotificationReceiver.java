@@ -1,7 +1,5 @@
 package fireminder.podcastcatcher.receivers;
 
-import java.io.File;
-
 import android.app.DownloadManager;
 import android.app.DownloadManager.Query;
 import android.content.BroadcastReceiver;
@@ -9,6 +7,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.util.Log;
+
+import java.io.File;
 
 public class DmNotificationReceiver extends BroadcastReceiver {
 

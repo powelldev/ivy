@@ -1,19 +1,20 @@
 package fireminder.podcastcatcher.utils;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
-
 import android.app.DownloadManager;
 import android.app.DownloadManager.Request;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Environment;
 import android.util.Log;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
 import fireminder.podcastcatcher.PodcastCatcher;
 import fireminder.podcastcatcher.db.EpisodeDao;
 import fireminder.podcastcatcher.downloads.BackgroundThread;
@@ -63,6 +64,7 @@ public class Helper {
                     .setDestinationInExternalPublicDir(
                             Environment.DIRECTORY_PODCASTS, fileName);
             long enqueue = dm.enqueue(request);
+            Utils.log("Downloading id " + enqueue + " : " + e.getTitle());
             e.setMp3(Environment.getExternalStorageDirectory().getPath() + "/"
                     + Environment.DIRECTORY_PODCASTS + fileName);
         }

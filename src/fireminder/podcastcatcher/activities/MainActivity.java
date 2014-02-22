@@ -16,11 +16,17 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
@@ -36,6 +42,7 @@ import fireminder.podcastcatcher.fragments.ChannelFragment;
 import fireminder.podcastcatcher.fragments.PlayerFragment;
 import fireminder.podcastcatcher.fragments.PlayerLargeFragment;
 import fireminder.podcastcatcher.fragments.PodcastFragment;
+import fireminder.podcastcatcher.fragments.RecentFragment;
 import fireminder.podcastcatcher.fragments.SettingsFragment;
 import fireminder.podcastcatcher.services.ADownloadService;
 import fireminder.podcastcatcher.services.BootService;
@@ -44,16 +51,17 @@ import fireminder.podcastcatcher.utils.Utils;
 import fireminder.podcastcatcher.valueobjects.Episode;
 import fireminder.podcastcatcher.valueobjects.Podcast;
 
-public class MainActivity extends Activity implements OnTaskCompleted {
+public class MainActivity extends Activity implements OnTaskCompleted,
+        PanelSlideListener {
 
     private Uri data = null;
 
-    private static final String ACTION_BAR_STATE_HIDDEN = "saved_state_action_bar";
     private static final String EPISODE_PLAYING = "episode_playing";
 
     static PodcastFragment podcastFragment;
     static PlayerFragment playerFragment;
     static PlayerLargeFragment playerLargeFragment;
+    static RecentFragment mRecentFragment;
     ChannelFragment mChannelFragment;
 
     BroadcastReceiver mReceiver;
@@ -67,24 +75,34 @@ public class MainActivity extends Activity implements OnTaskCompleted {
 
         setContentView(R.layout.activity_main);
         
-        Intent intent = getIntent();
-        data = intent.getData();
-        
         mReceiver = new BroadcastReceiver() {
 
             @Override
             public void onReceive(Context arg0, Intent arg1) {
-                if (arg1.getAction().matches(PlaybackService.TIME_INTENT)){
-                    playerLargeFragment.updateTime(arg1.getIntExtra(PlaybackService.TIME, 0));
+                if (arg1.getAction().matches(PlaybackService.TIME_INTENT)) {
+                    playerLargeFragment.updateTime(arg1.getIntExtra(
+                            PlaybackService.TIME, 0));
                 } else if (arg1.getAction().matches(PlaybackService.MAX_INTENT)) {
-                    playerLargeFragment.setMaxTime(arg1.getIntExtra(PlaybackService.MAX, 0));
-                    Log.e("HAPT", "sentEpisodeMax ACTIVITY " + arg1.getIntExtra(PlaybackService.MAX, 0));
-                } else if (arg1.getAction().matches(DownloadManager.ACTION_DOWNLOAD_COMPLETE)) {
+                    playerLargeFragment.setMaxTime(arg1.getIntExtra(
+                            PlaybackService.MAX, 0));
+                    Log.e("HAPT",
+                            "sentEpisodeMax ACTIVITY "
+                                    + arg1.getIntExtra(PlaybackService.MAX, 0));
+                } else if (arg1.getAction().matches(
+                        DownloadManager.ACTION_DOWNLOAD_COMPLETE)) {
+                    Utils.log("Download of "
+                            + arg1.getLongExtra(
+                                    DownloadManager.EXTRA_DOWNLOAD_ID, -1)
+                            + "complete");
                     mChannelFragment.notifyDataSetChanged();
                 }
             }
-            
+
         };
+
+        // Initialize child fragments
+        Uri data = getIntent().getData();
+
         if (data != null) {
             Bundle bundle = new Bundle();
             bundle.putString("uri", data.toString());
@@ -102,45 +120,12 @@ public class MainActivity extends Activity implements OnTaskCompleted {
         trans.add(R.id.lower_container, playerLargeFragment);
         trans.commit();
 
+        // UI Listeners
+        ((SlidingUpPanelLayout) findViewById(R.id.sliding_layout)).setPanelSlideListener(this);
         PodcastCatcher.getInstance().setContext(this);
         PodcastCatcher.getInstance().setActivity(this);
+        // DrawerListener
 
-        final SlidingUpPanelLayout layout = (SlidingUpPanelLayout) findViewById(R.id.sliding_layout);
-        layout.setPanelSlideListener(new PanelSlideListener() {
-
-            @Override
-            public void onPanelSlide(View panel, float slideOffset) {
-                if (slideOffset < 0.4) {
-                    if (getActionBar().isShowing()) {
-                        getActionBar().hide();
-                    }
-                } else {
-                    if (!getActionBar().isShowing()) {
-                        getActionBar().show();
-                    }
-                }
-
-            }
-
-            @Override
-            public void onPanelCollapsed(View panel) {
-                playerLargeFragment.setHeaderVisible(true);
-
-            }
-
-            @Override
-            public void onPanelExpanded(View panel) {
-                layout.setDragView(playerLargeFragment.header);
-                playerLargeFragment.setHeaderVisible(false);
-            }
-
-            @Override
-            public void onPanelAnchored(View panel) {
-                showToast("Panel Anchored");
-
-            }
-
-        });
 
         Intent updateIntent = new Intent(MainActivity.this, BootService.class);
         startService(updateIntent);
@@ -151,42 +136,57 @@ public class MainActivity extends Activity implements OnTaskCompleted {
         PendingIntent pi = PendingIntent.getActivity(this, 0, i, 0);
         alarmManager.cancel(pi);
         alarmManager.set(AlarmManager.ELAPSED_REALTIME, 10000, pi);
-        // TODO
         alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, Calendar
-                .getInstance().getTimeInMillis(), Utils.UPDATE_TIMING,
-                pi);
-
-        boolean actionBarHidden = savedInstanceState != null ? savedInstanceState
-                .getBoolean(ACTION_BAR_STATE_HIDDEN, false) : false;
-
-        if (actionBarHidden) {
-            getActionBar().hide();
-        }
+                .getInstance().getTimeInMillis(), Utils.UPDATE_TIMING, pi);
 
         this.startService(new Intent(this, PlaybackService.class));
+        
+        final String[] navigationItems = new String[] {
+                "Listen Now",
+                "Library",
+                "Playlists",
+                "Find New",
+                "Settings"
+        };
+        ListView mDrawerList = (ListView) findViewById(R.id.left_drawer);
+        final DrawerLayout nav = (DrawerLayout) findViewById(R.id.drawer_layout);
+
+        mDrawerList.setAdapter(new ArrayAdapter<String>(this,
+                android.R.layout.simple_list_item_1, navigationItems));
+        mDrawerList.setOnItemClickListener(new OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> arg0, View view, int position,
+                    long id) {
+                setRecentFragment();
+                nav.closeDrawer(Gravity.LEFT);
+            }
+        });
+
     }
 
     @Override
     protected void onStart() {
-       super.onStart(); 
-       IntentFilter ifi = new IntentFilter();
-       ifi.addAction(PlaybackService.TIME_INTENT);
-       ifi.addAction(PlaybackService.MAX_INTENT);
-       LocalBroadcastManager.getInstance(this).registerReceiver(mReceiver, ifi);
-       registerReceiver(mReceiver, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
+        super.onStart();
+        IntentFilter ifi = new IntentFilter();
+        ifi.addAction(PlaybackService.TIME_INTENT);
+        ifi.addAction(PlaybackService.MAX_INTENT);
+        LocalBroadcastManager.getInstance(this)
+                .registerReceiver(mReceiver, ifi);
+        registerReceiver(mReceiver, new IntentFilter(
+                DownloadManager.ACTION_DOWNLOAD_COMPLETE));
     }
+
     @Override
     protected void onStop() {
         Intent intent = new Intent(this, PlaybackService.class);
         intent.setAction("fireminder.playbackService.OFF");
-        stopService(intent);
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mReceiver);
         super.onStop();
     }
+
     @Override
     protected void onSaveInstanceState(Bundle state) {
         super.onSaveInstanceState(state);
-        state.putBoolean(ACTION_BAR_STATE_HIDDEN, !getActionBar().isShowing());
 
     }
 
@@ -234,6 +234,13 @@ public class MainActivity extends Activity implements OnTaskCompleted {
         trans.commit();
     }
 
+    public void setRecentFragment() {
+        mRecentFragment = RecentFragment.newInstance();
+        FragmentTransaction trans = getFragmentManager().beginTransaction();
+        trans.replace(R.id.fragment_container, mRecentFragment);
+        trans.addToBackStack(null);
+        trans.commit();
+    }
     public void setChannelFragment(long channelId) {
         mChannelFragment = ChannelFragment.newInstance(channelId);
         FragmentTransaction trans = getFragmentManager().beginTransaction();
@@ -296,12 +303,12 @@ public class MainActivity extends Activity implements OnTaskCompleted {
         try {
             Episode episode = new EpisodeDao().get(episodeId);
             Podcast podcast = new PodcastDao().get(episode.getPodcast_id());
-            //startPlayingEpisode(episode, podcast);
+            // startPlayingEpisode(episode, podcast);
             playerLargeFragment.setEpisode(episode, podcast);
-        Intent intent = new Intent(this, PlaybackService.class);
-        intent.setAction("SET");
-        intent.putExtra(PlaybackService.EPISODE_EXTRA, episode.get_id());
-        startService(intent);
+            Intent intent = new Intent(this, PlaybackService.class);
+            intent.setAction("SET");
+            intent.putExtra(PlaybackService.EPISODE_EXTRA, episode.get_id());
+            startService(intent);
         } catch (Exception e) {
             mEpisodeId = -1;
         }
@@ -314,4 +321,37 @@ public class MainActivity extends Activity implements OnTaskCompleted {
         intent.putExtra(PlaybackService.EPISODE_EXTRA, episode.get_id());
         startService(intent);
     }
+
+    @Override
+    public void onPanelSlide(View panel, float slideOffset) {
+        if (slideOffset < 0.4) {
+            if (getActionBar().isShowing()) {
+                getActionBar().hide();
+            }
+        } else {
+            if (!getActionBar().isShowing()) {
+                getActionBar().show();
+            }
+        }
+
+    }
+
+    @Override
+    public void onPanelCollapsed(View panel) {
+        playerLargeFragment.setHeaderVisible(true);
+
+    }
+
+    @Override
+    public void onPanelExpanded(View panel) {
+        ((SlidingUpPanelLayout) findViewById(R.id.sliding_layout)).setDragView(playerLargeFragment.header);
+        playerLargeFragment.setHeaderVisible(false);
+    }
+
+    @Override
+    public void onPanelAnchored(View panel) {
+        showToast("Panel Anchored");
+
+    }
+
 }

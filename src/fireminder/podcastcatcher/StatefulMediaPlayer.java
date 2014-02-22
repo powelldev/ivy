@@ -1,9 +1,10 @@
 package fireminder.podcastcatcher;
 
-import java.io.File;
-
 import android.media.MediaPlayer;
 import android.util.Log;
+
+import java.io.File;
+
 import fireminder.podcastcatcher.valueobjects.Episode;
 
 public class StatefulMediaPlayer extends MediaPlayer {

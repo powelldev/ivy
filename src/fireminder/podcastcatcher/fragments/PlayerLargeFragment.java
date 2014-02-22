@@ -1,14 +1,8 @@
 package fireminder.podcastcatcher.fragments;
 
-import java.util.concurrent.TimeUnit;
-
-import com.squareup.picasso.Picasso;
-
 import android.app.Fragment;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -19,9 +13,13 @@ import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
+
+import com.squareup.picasso.Picasso;
+
+import java.util.concurrent.TimeUnit;
+
 import fireminder.podcastcatcher.R;
 import fireminder.podcastcatcher.services.PlaybackService;
-import fireminder.podcastcatcher.ui.PodcastAdapter;
 import fireminder.podcastcatcher.valueobjects.Episode;
 import fireminder.podcastcatcher.valueobjects.Podcast;
 
@@ -48,7 +46,7 @@ public class PlayerLargeFragment extends Fragment implements OnClickListener,
                 container, false);
 
         header = (RelativeLayout) rootView
-                .findViewById(R.id.fragment_player_header);
+                .findViewById(R.id.fragment_player_header_with_info);
 
         ((ImageButton) rootView
                 .findViewById(R.id.fragment_player_header_playpause_icon))

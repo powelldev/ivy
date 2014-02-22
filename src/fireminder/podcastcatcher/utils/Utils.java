@@ -1,13 +1,13 @@
 package fireminder.podcastcatcher.utils;
 
+import android.database.Cursor;
+import android.os.Environment;
+import android.util.Log;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
-
-import android.database.Cursor;
-import android.os.Environment;
-import android.util.Log;
 
 public class Utils {
 
@@ -40,7 +40,7 @@ public class Utils {
             File log = new File(LOGFILE);
             FileWriter out = new FileWriter(log, true);
             java.util.Date time = new java.util.Date(System.currentTimeMillis());
-            out.write("\n" + time.getDate() + ":" + time.getHours() +":" + time.getMinutes() + ":"+ time.getSeconds() + ": ");
+            out.write("\n" + time.toString());
             out.write(info);
             out.close();
         } catch (Exception e) {

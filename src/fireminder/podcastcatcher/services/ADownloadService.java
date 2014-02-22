@@ -1,21 +1,16 @@
 package fireminder.podcastcatcher.services;
 
+import android.app.IntentService;
+import android.content.Intent;
+import android.database.Cursor;
+import android.util.Log;
+
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.app.DownloadManager;
-import android.app.IntentService;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.database.Cursor;
-import android.os.PowerManager;
-import android.util.Log;
-import fireminder.podcastcatcher.OnTaskCompleted;
 import fireminder.podcastcatcher.PodcastCatcher;
 import fireminder.podcastcatcher.db.EpisodeDao;
 import fireminder.podcastcatcher.db.PodcastDao;

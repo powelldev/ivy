@@ -3,6 +3,7 @@ package fireminder.podcastcatcher.db;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+
 import fireminder.podcastcatcher.db.EpisodeDao;
 
 public class SqlHelper extends SQLiteOpenHelper {

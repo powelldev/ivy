@@ -1,7 +1,5 @@
 package fireminder.podcastcatcher.fragments;
 
-import java.io.File;
-
 import android.app.ListFragment;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -17,6 +15,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
+
+import java.io.File;
 
 import fireminder.podcastcatcher.R;
 import fireminder.podcastcatcher.activities.MainActivity;

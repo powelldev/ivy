@@ -1,7 +1,5 @@
 package fireminder.podcastcatcher.services;
 
-import java.io.File;
-
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -17,6 +15,9 @@ import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
+
+import java.io.File;
+
 import fireminder.podcastcatcher.R;
 import fireminder.podcastcatcher.StatefulMediaPlayer;
 import fireminder.podcastcatcher.activities.MainActivity;
@@ -81,11 +82,7 @@ public class PlaybackService extends Service implements
                 Log.e("HAPT", "SEEKING PROGRESS INTENT: " + time);
                 mPlayer.seekTo(time);
             } else if (intent.getAction().contains("FOREGROUND_ON")) {
-                if (mPlayer.isPlaying()) {
                     setForeground(true);
-                } else {
-                    this.stopSelf();
-                }
             } else if (intent.getAction().contains("FOREGROUND_OFF")) {
                 setForeground(false);
             }

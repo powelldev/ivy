@@ -23,6 +23,9 @@ Playback
     * Rewind, ff, play/pause icons
     * Play/Pause selector & functionality
     * FF/Rewind icon & functionality
+Placeholder for loading images
+Naming converntion
+q
 
 DONE:
 

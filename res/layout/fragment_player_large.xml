@@ -29,7 +29,7 @@
         android:orientation="horizontal" >
 
         <RelativeLayout
-            android:id="@+id/fragment_player_header"
+            android:id="@+id/fragment_player_header_with_info"
             android:layout_width="match_parent"
             android:layout_height="@dimen/header_height"
             android:layout_toLeftOf="@+id/fragment_player_header_down"

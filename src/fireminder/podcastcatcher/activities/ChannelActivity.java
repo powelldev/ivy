@@ -1,10 +1,5 @@
 package fireminder.podcastcatcher.activities;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-
-import com.squareup.picasso.Picasso;
-
 import android.annotation.SuppressLint;
 import android.app.ListActivity;
 import android.content.Context;
@@ -25,6 +20,9 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.io.File;
+
 import fireminder.podcastcatcher.R;
 import fireminder.podcastcatcher.db.EpisodeDao;
 import fireminder.podcastcatcher.db.PodcastDao;

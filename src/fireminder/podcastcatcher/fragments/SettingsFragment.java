@@ -1,7 +1,9 @@
 package fireminder.podcastcatcher.fragments;
-import fireminder.podcastcatcher.R;
+
 import android.os.Bundle;
 import android.preference.PreferenceFragment;
+
+import fireminder.podcastcatcher.R;
 
 
 public class SettingsFragment extends PreferenceFragment {
