@@ -1,27 +1,30 @@
 package fireminder.podcastcatcher.services;
 
+import java.io.File;
+
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.AudioManager;
 import android.media.AudioManager.OnAudioFocusChangeListener;
 import android.media.MediaMetadataRetriever;
+import android.media.RemoteControlClient;
 import android.os.Handler;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
-
-import java.io.File;
-
 import fireminder.podcastcatcher.R;
 import fireminder.podcastcatcher.StatefulMediaPlayer;
 import fireminder.podcastcatcher.activities.MainActivity;
 import fireminder.podcastcatcher.db.EpisodeDao;
+import fireminder.podcastcatcher.receivers.MediaButtonReceiver;
+import fireminder.podcastcatcher.utils.Utils;
 import fireminder.podcastcatcher.valueobjects.Episode;
 
 public class PlaybackService extends Service implements
@@ -52,6 +55,22 @@ public class PlaybackService extends Service implements
         super.onCreate();
     }
 
+    void test() {
+        ComponentName myEventReceiver = new ComponentName(getPackageName(), MediaButtonReceiver.class.getName());
+        AudioManager myAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+        myAudioManager.registerMediaButtonEventReceiver(myEventReceiver);
+        // build the PendingIntent for the remote control client
+        Intent mediaButtonIntent = new Intent(Intent.ACTION_MEDIA_BUTTON);
+        mediaButtonIntent.setComponent(myEventReceiver);
+        PendingIntent mediaPendingIntent = PendingIntent.getBroadcast(
+                getApplicationContext(), 0, mediaButtonIntent, 0);
+        // create and register the remote control client
+        RemoteControlClient myRemoteControlClient = new RemoteControlClient(
+                mediaPendingIntent);
+        myRemoteControlClient.setTransportControlFlags(RemoteControlClient.FLAG_KEY_MEDIA_PLAY);
+        myAudioManager.registerRemoteControlClient(myRemoteControlClient);
+    }
+
     @Override
     public void onDestroy() {
         AudioManager am = (AudioManager) getSystemService(AUDIO_SERVICE);
@@ -70,7 +89,7 @@ public class PlaybackService extends Service implements
             } else if (intent.getAction().contains("SET")) {
                 set(intent);
             } else if (intent.getAction().contains("PLAY")) {
-                if (mPlayer.isPlaying()){
+                if (mPlayer.isPlaying()) {
                     pause();
                 } else {
                     play();
@@ -82,7 +101,7 @@ public class PlaybackService extends Service implements
                 Log.e("HAPT", "SEEKING PROGRESS INTENT: " + time);
                 mPlayer.seekTo(time);
             } else if (intent.getAction().contains("FOREGROUND_ON")) {
-                    setForeground(true);
+                if (mPlayer.isPlaying())  { setForeground(true);}
             } else if (intent.getAction().contains("FOREGROUND_OFF")) {
                 setForeground(false);
             }
@@ -110,6 +129,9 @@ public class PlaybackService extends Service implements
         mHandler.post(updateProgressRunnable);
         Episode episode = mEdao.get(mEpisodeId);
         sentEpisodeMax(episode);
+        AudioManager am = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+        am.requestAudioFocus(this, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
+        Log.e(Utils.TAG, "Requesting audio focus");
         mPlayer.start();
     }
 
@@ -224,8 +246,14 @@ public class PlaybackService extends Service implements
     public void onAudioFocusChange(int focusChange) {
         switch (focusChange) {
         case AudioManager.AUDIOFOCUS_GAIN:
+            Log.e(Utils.TAG, "Audio focus gained");
+            test();
             break;
         case AudioManager.AUDIOFOCUS_LOSS:
+            Log.e(Utils.TAG, "Audio focus lossed");
+            AudioManager myAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+            ComponentName myEventReceiver = new ComponentName(getPackageName(), MediaButtonReceiver.class.getName());
+            myAudioManager.unregisterMediaButtonEventReceiver(myEventReceiver);
             break;
         case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
         case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:

@@ -1,19 +1,24 @@
 package fireminder.podcastcatcher.ui;
 
-import android.content.Context;
-import android.database.Cursor;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.CursorAdapter;
-import android.widget.ImageButton;
-import android.widget.TextView;
-
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
+import android.content.Context;
+import android.database.Cursor;
+import android.view.LayoutInflater;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.CursorAdapter;
+import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.PopupMenu;
+import android.widget.PopupMenu.OnMenuItemClickListener;
+import android.widget.TextView;
+import android.widget.Toast;
 import fireminder.podcastcatcher.R;
 import fireminder.podcastcatcher.db.EpisodeDao;
 import fireminder.podcastcatcher.utils.Utils;
@@ -44,8 +49,8 @@ public class EpisodeAdapter extends CursorAdapter {
 
     @Override
     public void bindView(View arg0, Context arg1, Cursor cursor) {
-        ImageButton playIcon = (ImageButton) arg0
-                .findViewById(R.id.play_icon_iv);
+        ImageView playIcon = (ImageView) arg0
+                .findViewById(R.id.list_item_available_iv);
         TextView episodeTitle = (TextView) arg0
                 .findViewById(R.id.list_item_episode_tv);
         TextView episodeDate = (TextView) arg0
@@ -62,6 +67,12 @@ public class EpisodeAdapter extends CursorAdapter {
         episodeDate.setText(sdf.format(date));
         episodeDate.setText(duration);
         episodeTitle.setText(Utils.getStringFromCursor(cursor, EpisodeDao.COLUMN_TITLE));
+        
+         
+        ImageButton button = (ImageButton) arg0
+                .findViewById(R.id.episode_popup_menu);
+        button.setOnClickListener(new PopupListener(cursor.getLong(cursor
+                .getColumnIndex(EpisodeDao.COLUMN_ID))));
 
         String file_mp3 = Utils.getStringFromCursor(cursor, EpisodeDao.COLUMN_MP3);
         if (file_mp3 != null) {
@@ -83,6 +94,33 @@ public class EpisodeAdapter extends CursorAdapter {
         View view = mLayoutInflater.inflate(R.layout.episode_list_item, arg2,
                 false);
         return view;
+    }
+
+    private class PopupListener implements View.OnClickListener,
+            OnMenuItemClickListener {
+
+        private long mId;
+
+        public PopupListener(long itemId) {
+            mId = itemId;
+        }
+
+        @Override
+        public boolean onMenuItemClick(MenuItem arg0) {
+            Toast.makeText(context, "# Clicked: " + mId, Toast.LENGTH_SHORT)
+                    .show();
+            return false;
+        }
+
+        @Override
+        public void onClick(View v) {
+            PopupMenu menu = new PopupMenu(context, v);
+            menu.setOnMenuItemClickListener(this);
+            MenuInflater inflater = menu.getMenuInflater();
+            inflater.inflate(R.menu.menu_recent, menu.getMenu());
+            menu.show();
+        }
+
     }
 
 }

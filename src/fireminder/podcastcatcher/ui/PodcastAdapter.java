@@ -1,23 +1,29 @@
 package fireminder.podcastcatcher.ui;
 
+import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+
 import android.content.Context;
 import android.database.Cursor;
 import android.util.Log;
 import android.view.Display;
 import android.view.LayoutInflater;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.CursorAdapter;
+import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.PopupMenu;
+import android.widget.PopupMenu.OnMenuItemClickListener;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
-
-import java.io.File;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
 
 import fireminder.podcastcatcher.R;
 import fireminder.podcastcatcher.db.EpisodeDao;
@@ -54,12 +60,9 @@ public class PodcastAdapter extends CursorAdapter {
             Display display = wm.getDefaultDisplay();
 
             Picasso.with(arg1)
-            .load(Utils.getStringFromCursor(arg2, PodcastDao.COLUMN_IMAGELINK))
-            .noFade()
-            .fit()
-            .centerCrop()
-            .placeholder(R.drawable.ic_launcher)
-            .into(iv);
+                    .load(Utils.getStringFromCursor(arg2,
+                            PodcastDao.COLUMN_IMAGELINK)).noFade().fit()
+                    .centerCrop().placeholder(R.drawable.ic_launcher).into(iv);
 
         } catch (NullPointerException e) {
             iv.setImageResource(R.drawable.ic_launcher);
@@ -87,8 +90,13 @@ public class PodcastAdapter extends CursorAdapter {
             SimpleDateFormat sdf = new SimpleDateFormat("dd MMM");
             dateTv.setText(sdf.format(date));
 
+            ImageButton button = (ImageButton) arg0
+                    .findViewById(R.id.podcast_popup_menu);
+            button.setOnClickListener(new PopupListener(cursor.getLong(cursor
+                    .getColumnIndex(EpisodeDao.COLUMN_ID))));
+
             ImageView starIv = (ImageView) arg0.findViewById(R.id.star_iv);
-            if (e.getElapsed()<= 0 && new File(e.getMp3()).exists()) {
+            if (e.getElapsed() <= 0 && new File(e.getMp3()).exists()) {
                 starIv.setVisibility(View.VISIBLE);
             } else if (e.getElapsed() > 30000) {
                 starIv.setVisibility(View.INVISIBLE);
@@ -114,50 +122,70 @@ public class PodcastAdapter extends CursorAdapter {
         return view;
     }
 
-    /*
-    public static Bitmap getBitmapFromPodcast(Podcast podcast) {
-        WindowManager wm = (WindowManager) PodcastCatcher.getInstance()
-                .getContext().getSystemService(Context.WINDOW_SERVICE);
-        Display display = wm.getDefaultDisplay();
-        
+    private class PopupListener implements View.OnClickListener,
+            OnMenuItemClickListener {
 
-        BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inJustDecodeBounds = true;
-        BitmapFactory.decodeFile(podcast.getImagePath(), options);
+        private long mId;
 
-        BitmapFactory.Options options2 = new BitmapFactory.Options();
-        options2.inSampleSize = calculateInSampleSize(options, R.dimen.header_height, R.dimen.header_height);
-        Bitmap image2 = BitmapFactory.decodeFile(podcast.getImagePath(), options2);
-        return image2;
-    }
-    */
-    /*
-
-    public static int calculateInSampleSize(BitmapFactory.Options options,
-            int reqWidth, int reqHeight) {
-        // Raw height and width of image
-        final int height = options.outHeight;
-        final int width = options.outWidth;
-        int inSampleSize = 1;
-
-        if (height > reqHeight || width > reqWidth) {
-
-            // Calculate ratios of height and width to requested height and
-            // width
-            final int heightRatio = Math.round((float) height
-                    / (float) reqHeight);
-            final int widthRatio = Math.round((float) width / (float) reqWidth);
-
-            // Choose the smallest ratio as inSampleSize value, this will
-            // guarantee
-            // a final image with both dimensions larger than or equal to the
-            // requested height and width.
-            inSampleSize = heightRatio < widthRatio ? heightRatio : widthRatio;
+        public PopupListener(long itemId) {
+            mId = itemId;
         }
-        return (int) Math.pow(2,
-                Math.ceil(Math.log10(inSampleSize) / Math.log10(2)));
+
+        @Override
+        public boolean onMenuItemClick(MenuItem arg0) {
+            Toast.makeText(context, "# Clicked: " + mId, Toast.LENGTH_SHORT)
+                    .show();
+            return false;
+        }
+
+        @Override
+        public void onClick(View v) {
+            PopupMenu menu = new PopupMenu(context, v);
+            menu.setOnMenuItemClickListener(this);
+            MenuInflater inflater = menu.getMenuInflater();
+            inflater.inflate(R.menu.menu_recent, menu.getMenu());
+            menu.show();
+        }
 
     }
-    */
+
+    /*
+     * public static Bitmap getBitmapFromPodcast(Podcast podcast) {
+     * WindowManager wm = (WindowManager) PodcastCatcher.getInstance()
+     * .getContext().getSystemService(Context.WINDOW_SERVICE); Display display =
+     * wm.getDefaultDisplay();
+     * 
+     * 
+     * BitmapFactory.Options options = new BitmapFactory.Options();
+     * options.inJustDecodeBounds = true;
+     * BitmapFactory.decodeFile(podcast.getImagePath(), options);
+     * 
+     * BitmapFactory.Options options2 = new BitmapFactory.Options();
+     * options2.inSampleSize = calculateInSampleSize(options,
+     * R.dimen.header_height, R.dimen.header_height); Bitmap image2 =
+     * BitmapFactory.decodeFile(podcast.getImagePath(), options2); return
+     * image2; }
+     */
+    /*
+     * 
+     * public static int calculateInSampleSize(BitmapFactory.Options options,
+     * int reqWidth, int reqHeight) { // Raw height and width of image final int
+     * height = options.outHeight; final int width = options.outWidth; int
+     * inSampleSize = 1;
+     * 
+     * if (height > reqHeight || width > reqWidth) {
+     * 
+     * // Calculate ratios of height and width to requested height and // width
+     * final int heightRatio = Math.round((float) height / (float) reqHeight);
+     * final int widthRatio = Math.round((float) width / (float) reqWidth);
+     * 
+     * // Choose the smallest ratio as inSampleSize value, this will //
+     * guarantee // a final image with both dimensions larger than or equal to
+     * the // requested height and width. inSampleSize = heightRatio <
+     * widthRatio ? heightRatio : widthRatio; } return (int) Math.pow(2,
+     * Math.ceil(Math.log10(inSampleSize) / Math.log10(2)));
+     * 
+     * }
+     */
 
 }

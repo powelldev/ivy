@@ -140,6 +140,14 @@
                 <action android:name="android.intent.action.DOWNLOAD_NOTIFICATION_CLICKED" />
             </intent-filter>
         </receiver>
+
+        <receiver android:name="fireminder.podcastcatcher.receivers.MediaButtonReceiver" 
+            android:enabled="true" android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MEDIA_BUTTON" />
+            </intent-filter>
+        </receiver>
+
         <receiver android:name="fireminder.podcastcatcher.receivers.BootBroadcastReciever" 
             android:enabled="true" android:exported="true">
             <intent-filter>

@@ -4,13 +4,13 @@
     android:layout_height="120dp"
     android:background="#FFF"
     android:padding="3dp"
+    android:descendantFocusability="blocksDescendants"
     android:orientation="vertical" >
     <TextView
         android:typeface="serif"
         android:id="@+id/list_item_recent_tv"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Episode 393: Red Card" 
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
         />
@@ -21,14 +21,13 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
-        android:text="4 Apr"
         />
 	<ImageButton
+        android:id="@+id/list_item_recent_menu_button"
 	    android:layout_width="48dp"
 	    android:layout_height="48dp"
 	    android:layout_alignParentRight="true"
 	    android:src="@drawable/av_play"
-	    android:visibility="invisible"
 	    android:focusable="false"
 	    	    />
 </RelativeLayout>

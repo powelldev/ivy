@@ -79,7 +79,7 @@ public class RecentFragment extends ListFragment implements OnItemClickListener 
         }
 
     }
-
+    
     public void notifyDataSetChanged() {
         try { 
         ((EpisodeAdapter) getListAdapter()).notifyDataSetChanged();
