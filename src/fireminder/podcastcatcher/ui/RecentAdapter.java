@@ -14,12 +14,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CursorAdapter;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.PopupMenu;
-import android.widget.Toast;
 import android.widget.PopupMenu.OnMenuItemClickListener;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.squareup.picasso.Picasso;
+
 import fireminder.podcastcatcher.R;
 import fireminder.podcastcatcher.db.EpisodeDao;
+import fireminder.podcastcatcher.db.PodcastDao;
 import fireminder.podcastcatcher.utils.Utils;
 
 public class RecentAdapter extends CursorAdapter {
@@ -68,6 +73,19 @@ public class RecentAdapter extends CursorAdapter {
                 .findViewById(R.id.list_item_recent_menu_button);
         button.setOnClickListener(new PopupListener(cursor.getLong(cursor
                 .getColumnIndex(EpisodeDao.COLUMN_ID))));
+
+        ImageView iv = (ImageView) arg0.findViewById(R.id.list_item_recent_album_iv);
+        try {
+            long id = cursor.getLong(cursor
+                    .getColumnIndex(EpisodeDao.COLUMN_PODCAST_ID));
+            String path = new PodcastDao().get(id).getImagePath();
+            Picasso.with(arg1).load(path).noFade().fit().centerCrop()
+                    .placeholder(R.drawable.ic_launcher).into(iv);
+
+        } catch (NullPointerException e) {
+            iv.setImageResource(R.drawable.ic_launcher);
+            e.printStackTrace();
+        }
     }
 
     private class PopupListener implements View.OnClickListener,
@@ -80,9 +98,13 @@ public class RecentAdapter extends CursorAdapter {
         }
 
         @Override
-        public boolean onMenuItemClick(MenuItem arg0) {
-            Toast.makeText(context, "# Clicked: " + mId, Toast.LENGTH_SHORT)
-                    .show();
+        public boolean onMenuItemClick(MenuItem menu) {
+            switch (menu.getItemId()) {
+            case R.id.menu_podcast_delete:
+                new EpisodeDao().clearDataOn(mId);
+                notifyDataSetChanged();
+                break;
+            }
             return false;
         }
 
@@ -91,7 +113,7 @@ public class RecentAdapter extends CursorAdapter {
             PopupMenu menu = new PopupMenu(context, v);
             menu.setOnMenuItemClickListener(this);
             MenuInflater inflater = menu.getMenuInflater();
-            inflater.inflate(R.menu.menu_recent, menu.getMenu());
+            inflater.inflate(R.menu.menu_podcast, menu.getMenu());
             menu.show();
         }
 

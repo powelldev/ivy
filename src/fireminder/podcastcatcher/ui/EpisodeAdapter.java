@@ -106,9 +106,17 @@ public class EpisodeAdapter extends CursorAdapter {
         }
 
         @Override
-        public boolean onMenuItemClick(MenuItem arg0) {
-            Toast.makeText(context, "# Clicked: " + mId, Toast.LENGTH_SHORT)
-                    .show();
+        public boolean onMenuItemClick(MenuItem item) {
+            switch (item.getItemId()) {
+            case R.id.menu_episode_delete:
+                new EpisodeDao().clearDataOn(mId);
+                notifyDataSetChanged();
+                break;
+            case R.id.menu_episode_delete_all:
+                new EpisodeDao().clearDataOnAll(mId);
+                notifyDataSetChanged();
+                break;
+            }
             return false;
         }
 
@@ -117,7 +125,7 @@ public class EpisodeAdapter extends CursorAdapter {
             PopupMenu menu = new PopupMenu(context, v);
             menu.setOnMenuItemClickListener(this);
             MenuInflater inflater = menu.getMenuInflater();
-            inflater.inflate(R.menu.menu_recent, menu.getMenu());
+            inflater.inflate(R.menu.episode_menu, menu.getMenu());
             menu.show();
         }
 

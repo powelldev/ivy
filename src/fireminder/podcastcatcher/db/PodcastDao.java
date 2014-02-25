@@ -97,5 +97,11 @@ public class PodcastDao {
                 null, null, null, null, COLUMN_TITLE + " ASC");
         return cursor;
     }
+
+    public void delete(long mId) {
+       Podcast podcast = get(mId); 
+       new EpisodeDao().deleteDataOnAll(podcast);
+       delete(podcast);
+    }
     
 }

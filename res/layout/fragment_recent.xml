@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:paddingTop="53dp"
     android:layout_height="match_parent"
-    android:background="#b8b8b8"
+    android:background="@color/grey_shadow"
+    android:paddingTop="?android:attr/actionBarSize"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
     android:orientation="vertical" >
     
     <ListView 

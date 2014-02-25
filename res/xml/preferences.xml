@@ -5,6 +5,12 @@
        android:summary="Test"
        />
    <ListPreference 
+       android:key="prefAutoRemove"
+       android:title="Remove show after listening"
+       android:entries="@array/sync_frequency"
+       android:entryValues="@array/sync_frequency_values"
+       />
+   <ListPreference 
        android:key="prefSyncFrequency"
        android:title="Sync frequency"
        android:entries="@array/sync_frequency"

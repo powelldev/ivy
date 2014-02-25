@@ -2,33 +2,38 @@ package fireminder.podcastcatcher.services;
 
 import java.io.File;
 
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Picasso.LoadedFrom;
+import com.squareup.picasso.Target;
+
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
-import android.media.AudioManager.OnAudioFocusChangeListener;
 import android.media.MediaMetadataRetriever;
-import android.media.RemoteControlClient;
 import android.os.Handler;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
+import fireminder.podcastcatcher.LockscreenManager;
 import fireminder.podcastcatcher.R;
 import fireminder.podcastcatcher.StatefulMediaPlayer;
 import fireminder.podcastcatcher.activities.MainActivity;
 import fireminder.podcastcatcher.db.EpisodeDao;
-import fireminder.podcastcatcher.receivers.MediaButtonReceiver;
+import fireminder.podcastcatcher.db.PodcastDao;
 import fireminder.podcastcatcher.utils.Utils;
 import fireminder.podcastcatcher.valueobjects.Episode;
+import fireminder.podcastcatcher.valueobjects.Podcast;
 
-public class PlaybackService extends Service implements
-        OnAudioFocusChangeListener {
+public class PlaybackService extends Service implements Target {
 
     private StatefulMediaPlayer mPlayer;
     public static final String EPISODE_EXTRA = "episode_extra";
@@ -39,9 +44,11 @@ public class PlaybackService extends Service implements
     public static final String MAX = "max_time";
     public static final String SEEK_EXTRA = "seek_extra";
     private EpisodeDao mEdao = new EpisodeDao();;
+    private PodcastDao mPdao = new PodcastDao();;
     private long mEpisodeId;
     private int mElapsed;
     private LocalBroadcastManager mBroadcaster;
+    private LockscreenManager mLockscreen;
 
     @Override
     public void onCreate() {
@@ -52,29 +59,12 @@ public class PlaybackService extends Service implements
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
         this.registerReceiver(mReceiver, intentFilter);
+        mLockscreen = new LockscreenManager(getApplicationContext());
         super.onCreate();
-    }
-
-    void test() {
-        ComponentName myEventReceiver = new ComponentName(getPackageName(), MediaButtonReceiver.class.getName());
-        AudioManager myAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-        myAudioManager.registerMediaButtonEventReceiver(myEventReceiver);
-        // build the PendingIntent for the remote control client
-        Intent mediaButtonIntent = new Intent(Intent.ACTION_MEDIA_BUTTON);
-        mediaButtonIntent.setComponent(myEventReceiver);
-        PendingIntent mediaPendingIntent = PendingIntent.getBroadcast(
-                getApplicationContext(), 0, mediaButtonIntent, 0);
-        // create and register the remote control client
-        RemoteControlClient myRemoteControlClient = new RemoteControlClient(
-                mediaPendingIntent);
-        myRemoteControlClient.setTransportControlFlags(RemoteControlClient.FLAG_KEY_MEDIA_PLAY);
-        myAudioManager.registerRemoteControlClient(myRemoteControlClient);
     }
 
     @Override
     public void onDestroy() {
-        AudioManager am = (AudioManager) getSystemService(AUDIO_SERVICE);
-        am.abandonAudioFocus(this);
         mPlayer.release();
         mPlayer = null;
         this.unregisterReceiver(mReceiver);
@@ -89,9 +79,11 @@ public class PlaybackService extends Service implements
             } else if (intent.getAction().contains("SET")) {
                 set(intent);
             } else if (intent.getAction().contains("PLAY")) {
+                Log.e(TAG, intent.getAction() + mPlayer.isPlaying());
                 if (mPlayer.isPlaying()) {
                     pause();
                 } else {
+                    Log.e(TAG, "Playing...");
                     play();
                 }
             } else if (intent.getAction().contains("REWIND")) {
@@ -101,7 +93,9 @@ public class PlaybackService extends Service implements
                 Log.e("HAPT", "SEEKING PROGRESS INTENT: " + time);
                 mPlayer.seekTo(time);
             } else if (intent.getAction().contains("FOREGROUND_ON")) {
-                if (mPlayer.isPlaying())  { setForeground(true);}
+                if (mPlayer.isPlaying()) {
+                    setForeground(true);
+                }
             } else if (intent.getAction().contains("FOREGROUND_OFF")) {
                 setForeground(false);
             }
@@ -123,19 +117,24 @@ public class PlaybackService extends Service implements
         episode.setElapsed(mElapsed);
         mEdao.update(episode);
         Log.e(TAG, "Elapsed update: " + episode.getElapsed());
+        mLockscreen.setLockscreenPaused();
     }
 
     private void play() {
         mHandler.post(updateProgressRunnable);
         Episode episode = mEdao.get(mEpisodeId);
         sentEpisodeMax(episode);
-        AudioManager am = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-        am.requestAudioFocus(this, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
         Log.e(Utils.TAG, "Requesting audio focus");
+        Episode e = mEdao.get(mEpisodeId);
+        Podcast p = mPdao.get(e.getPodcast_id());
+        mLockscreen.requestAudioFocus(getApplicationContext());
+        Picasso.with(getApplicationContext()).load(p.getImagePath()).into(this);
+        mLockscreen.setLockscreenPlaying();
         mPlayer.start();
     }
 
     private void start(Intent intent) {
+        mLockscreen = new LockscreenManager(getApplicationContext());
         mEpisodeId = intent.getExtras().getLong(EPISODE_EXTRA);
         if (mPlayer.getPlayingEpisodeId() != mEpisodeId) {
             Episode episode = mEdao.get(mEpisodeId);
@@ -243,22 +242,16 @@ public class PlaybackService extends Service implements
     };
 
     @Override
-    public void onAudioFocusChange(int focusChange) {
-        switch (focusChange) {
-        case AudioManager.AUDIOFOCUS_GAIN:
-            Log.e(Utils.TAG, "Audio focus gained");
-            test();
-            break;
-        case AudioManager.AUDIOFOCUS_LOSS:
-            Log.e(Utils.TAG, "Audio focus lossed");
-            AudioManager myAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
-            ComponentName myEventReceiver = new ComponentName(getPackageName(), MediaButtonReceiver.class.getName());
-            myAudioManager.unregisterMediaButtonEventReceiver(myEventReceiver);
-            break;
-        case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
-        case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
-            break;
-        }
-
+    public void onBitmapFailed(Drawable arg0) {
     }
+
+    @Override
+    public void onBitmapLoaded(Bitmap arg0, LoadedFrom arg1) {
+        mLockscreen.setMetadata(mEpisodeId, arg0);
+    }
+
+    @Override
+    public void onPrepareLoad(Drawable arg0) {
+    }
+
 }

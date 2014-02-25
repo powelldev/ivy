@@ -1,16 +1,17 @@
 package fireminder.podcastcatcher.db;
 
-import android.content.ContentValues;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import android.content.ContentValues;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import fireminder.podcastcatcher.PodcastCatcher;
 import fireminder.podcastcatcher.utils.Utils;
 import fireminder.podcastcatcher.valueobjects.Episode;
+import fireminder.podcastcatcher.valueobjects.Podcast;
 
 public class EpisodeDao {
 
@@ -176,6 +177,30 @@ public class EpisodeDao {
                 + COLUMN_PUBDATE + " DESC ", null);
 
         return cursor;
+    }
+
+    public void clearDataOn(long mId) {
+        Episode episode = get(mId);
+        File file = new File(episode.getMp3());
+        if (file.exists()) {
+            file.delete();
+        }
+        episode.setElapsed(0);
+    }
+    
+    public void clearDataOnAll(long episodeId) {
+        List<Episode> episodes = getAllEpisodes(get(episodeId).getPodcast_id());
+        for (Episode e : episodes){
+            clearDataOn(e.get_id());
+        }
+    }
+
+    public void deleteDataOnAll(Podcast podcast) {
+        List<Episode> episodes = getAllEpisodes(podcast.getId());
+        for (Episode e : episodes){
+            clearDataOn(e.get_id());
+            this.delete(e);
+        }
     }
 
 

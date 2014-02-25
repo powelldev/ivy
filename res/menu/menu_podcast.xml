@@ -2,14 +2,9 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
 	
     <item
-        android:id="@+id/menu_episode_delete"
+        android:id="@+id/menu_podcast_delete"
         android:orderInCategory="100"
         android:title="Delete"
-        />
-    <item
-        android:id="@+id/menu_episode_delete_all"
-        android:orderInCategory="200"
-        android:title="Delete All"
         />
 
 </menu>

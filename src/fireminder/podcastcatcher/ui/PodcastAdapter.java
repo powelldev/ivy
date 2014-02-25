@@ -5,23 +5,21 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.database.Cursor;
 import android.util.Log;
-import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.CursorAdapter;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.PopupMenu.OnMenuItemClickListener;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
@@ -55,10 +53,6 @@ public class PodcastAdapter extends CursorAdapter {
         ImageView iv = (ImageView) arg0.findViewById(R.id.podcast_iv);
 
         try {
-            WindowManager wm = (WindowManager) context
-                    .getSystemService(Context.WINDOW_SERVICE);
-            Display display = wm.getDefaultDisplay();
-
             Picasso.with(arg1)
                     .load(Utils.getStringFromCursor(arg2,
                             PodcastDao.COLUMN_IMAGELINK)).noFade().fit()
@@ -132,9 +126,17 @@ public class PodcastAdapter extends CursorAdapter {
         }
 
         @Override
-        public boolean onMenuItemClick(MenuItem arg0) {
-            Toast.makeText(context, "# Clicked: " + mId, Toast.LENGTH_SHORT)
-                    .show();
+        public boolean onMenuItemClick(MenuItem item) {
+            switch (item.getItemId()) {
+            case R.id.menu_podcast_delete:
+                ProgressDialog dialog = new ProgressDialog(context);
+                dialog.setTitle("Removing");
+                dialog.show();
+                new PodcastDao().delete(mId);
+                notifyDataSetChanged();
+                dialog.dismiss();
+                break;
+            }
             return false;
         }
 
@@ -143,7 +145,7 @@ public class PodcastAdapter extends CursorAdapter {
             PopupMenu menu = new PopupMenu(context, v);
             menu.setOnMenuItemClickListener(this);
             MenuInflater inflater = menu.getMenuInflater();
-            inflater.inflate(R.menu.menu_recent, menu.getMenu());
+            inflater.inflate(R.menu.menu_podcast, menu.getMenu());
             menu.show();
         }
 
