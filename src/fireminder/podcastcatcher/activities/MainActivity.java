@@ -13,9 +13,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
@@ -42,6 +42,7 @@ import fireminder.podcastcatcher.downloads.BackgroundThread;
 import fireminder.podcastcatcher.fragments.ChannelFragment;
 import fireminder.podcastcatcher.fragments.PlayerFragment;
 import fireminder.podcastcatcher.fragments.PlayerLargeFragment;
+import fireminder.podcastcatcher.fragments.PlaylistFragment;
 import fireminder.podcastcatcher.fragments.PodcastFragment;
 import fireminder.podcastcatcher.fragments.RecentFragment;
 import fireminder.podcastcatcher.fragments.SettingsFragment;
@@ -53,7 +54,7 @@ import fireminder.podcastcatcher.valueobjects.Episode;
 import fireminder.podcastcatcher.valueobjects.Podcast;
 
 public class MainActivity extends Activity implements OnTaskCompleted,
-        PanelSlideListener{
+        PanelSlideListener {
 
     private Uri data = null;
 
@@ -63,6 +64,7 @@ public class MainActivity extends Activity implements OnTaskCompleted,
     static PlayerFragment playerFragment;
     static PlayerLargeFragment playerLargeFragment;
     static RecentFragment mRecentFragment;
+    static PlaylistFragment mPlaylistFragment;
     ChannelFragment mChannelFragment;
 
     BroadcastReceiver mReceiver;
@@ -75,7 +77,7 @@ public class MainActivity extends Activity implements OnTaskCompleted,
         getWindow().requestFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
 
         setContentView(R.layout.activity_main);
-        
+
         mReceiver = new BroadcastReceiver() {
 
             @Override
@@ -96,15 +98,18 @@ public class MainActivity extends Activity implements OnTaskCompleted,
                                     DownloadManager.EXTRA_DOWNLOAD_ID, -1)
                             + "complete");
                     try {
-                    mChannelFragment.notifyDataSetChanged();
+                        mChannelFragment.notifyDataSetChanged();
                     } catch (Exception e) { // may not be active
                     }
-                } else if (arg1.getAction().matches(DownloadManager.ACTION_NOTIFICATION_CLICKED)) {
-                    DownloadManager dm = (DownloadManager) arg0.getSystemService(DOWNLOAD_SERVICE);
+                } else if (arg1.getAction().matches(
+                        DownloadManager.ACTION_NOTIFICATION_CLICKED)) {
+                    DownloadManager dm = (DownloadManager) arg0
+                            .getSystemService(DOWNLOAD_SERVICE);
                     for (int i = 0; i < 1500; i++) {
                         try {
-                        dm.remove(i);
-                        } catch (Exception e) {}
+                            dm.remove(i);
+                        } catch (Exception e) {
+                        }
                     }
                 }
             }
@@ -131,14 +136,13 @@ public class MainActivity extends Activity implements OnTaskCompleted,
         trans.add(R.id.lower_container, playerLargeFragment);
         trans.commit();
 
-        setRecentFragment();
-
+        findViewById(R.id.lower_container).setVisibility(View.GONE);
         // UI Listeners
-        ((SlidingUpPanelLayout) findViewById(R.id.sliding_layout)).setPanelSlideListener(this);
+        ((SlidingUpPanelLayout) findViewById(R.id.sliding_layout))
+                .setPanelSlideListener(this);
         PodcastCatcher.getInstance().setContext(this);
         PodcastCatcher.getInstance().setActivity(this);
         // DrawerListener
-
 
         Intent updateIntent = new Intent(MainActivity.this, BootService.class);
         startService(updateIntent);
@@ -146,21 +150,25 @@ public class MainActivity extends Activity implements OnTaskCompleted,
         AlarmManager alarmManager = (AlarmManager) this
                 .getSystemService(Context.ALARM_SERVICE);
         Intent i = new Intent(this, ADownloadService.class);
-        PendingIntent pi = PendingIntent.getActivity(this, 0, i, PendingIntent.FLAG_CANCEL_CURRENT);
+        PendingIntent pi = PendingIntent.getActivity(this, 0, i,
+                PendingIntent.FLAG_CANCEL_CURRENT);
         alarmManager.cancel(pi);
         alarmManager.set(AlarmManager.ELAPSED_REALTIME, 10000, pi);
+
+        int hoursBetweenUpdates = Integer.parseInt(PreferenceManager
+                .getDefaultSharedPreferences(getApplicationContext())
+                .getString(
+                        getResources().getString(R.string.prefSyncFrequency),
+                        Utils.DEFUALT_UPDATE));
+
         alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, Calendar
-                .getInstance().getTimeInMillis(), Utils.UPDATE_TIMING, pi);
+                .getInstance().getTimeInMillis(),
+                hoursBetweenUpdates * 60 * 60 * 1000, pi);
 
         this.startService(new Intent(this, PlaybackService.class));
-        
-        final String[] navigationItems = new String[] {
-                "Listen Now",
-                "Library",
-                "Playlists",
-                "Find New",
-                "Settings"
-        };
+
+        final String[] navigationItems = new String[] { "Listen Now",
+                "Library", "Playlist", "Find New", "Settings" };
         ListView mDrawerList = (ListView) findViewById(R.id.left_drawer);
         final DrawerLayout nav = (DrawerLayout) findViewById(R.id.drawer_layout);
 
@@ -168,9 +176,26 @@ public class MainActivity extends Activity implements OnTaskCompleted,
                 android.R.layout.simple_list_item_1, navigationItems));
         mDrawerList.setOnItemClickListener(new OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> arg0, View view, int position,
-                    long id) {
-                setRecentFragment();
+            public void onItemClick(AdapterView<?> arg0, View view,
+                    int position, long id) {
+                switch (position) {
+                case 0:
+                    setRecentFragment();
+                    break;
+                case 1:
+                    setPodcastFragment();
+                    break;
+                case 2:
+                    setPlaylistFragment();
+                    break;
+                case 3:
+                    Intent i = new Intent(getApplicationContext(), SearchActivity.class);
+                    startActivityForResult(i, 42);
+                    break;
+                case 4:
+                    startPreferenceFragment();
+                    break;
+                }
                 nav.closeDrawer(Gravity.LEFT);
             }
         });
@@ -187,7 +212,8 @@ public class MainActivity extends Activity implements OnTaskCompleted,
                 .registerReceiver(mReceiver, ifi);
         registerReceiver(mReceiver, new IntentFilter(
                 DownloadManager.ACTION_DOWNLOAD_COMPLETE));
-        SharedPreferences preferences = getSharedPreferences(Utils.TAG, MODE_PRIVATE);
+        SharedPreferences preferences = PreferenceManager
+                .getDefaultSharedPreferences(getApplicationContext());
         String s = preferences.getString("prefSyncFrequency", "");
         Log.e(Utils.TAG, "Prerfences: " + s);
     }
@@ -210,10 +236,13 @@ public class MainActivity extends Activity implements OnTaskCompleted,
     @Override
     protected void onResume() {
         super.onResume();
-        SharedPreferences settings = getSharedPreferences(Utils.TAG, MODE_PRIVATE);
+        SharedPreferences settings = PreferenceManager
+                .getDefaultSharedPreferences(getApplicationContext());
+
         mEpisodeId = settings.getLong(EPISODE_PLAYING, -1);
         if (mEpisodeId != -1) {
             resumeEpisode(mEpisodeId);
+            findViewById(R.id.lower_container).setVisibility(View.VISIBLE);
         }
         // Stop notification
         Intent intent = new Intent(this, PlaybackService.class);
@@ -224,7 +253,8 @@ public class MainActivity extends Activity implements OnTaskCompleted,
 
     @Override
     protected void onPause() {
-        SharedPreferences settings = getSharedPreferences(Utils.TAG, MODE_PRIVATE);
+        SharedPreferences settings = PreferenceManager
+                .getDefaultSharedPreferences(getApplicationContext());
         SharedPreferences.Editor editor = settings.edit();
         editor.putLong(EPISODE_PLAYING, playerLargeFragment.getCurrentEpisode());
         editor.commit();
@@ -250,6 +280,13 @@ public class MainActivity extends Activity implements OnTaskCompleted,
         trans.commit();
     }
 
+    public void setPodcastFragment() {
+        FragmentTransaction trans = getFragmentManager().beginTransaction();
+        trans.replace(R.id.fragment_container, podcastFragment);
+        trans.addToBackStack(null);
+        trans.commit();
+    }
+
     public void setRecentFragment() {
         mRecentFragment = RecentFragment.newInstance();
         FragmentTransaction trans = getFragmentManager().beginTransaction();
@@ -257,6 +294,15 @@ public class MainActivity extends Activity implements OnTaskCompleted,
         trans.addToBackStack(null);
         trans.commit();
     }
+
+    public void setPlaylistFragment() {
+        mPlaylistFragment = PlaylistFragment.newInstance();
+        FragmentTransaction trans = getFragmentManager().beginTransaction();
+        trans.replace(R.id.fragment_container, mPlaylistFragment);
+        trans.addToBackStack(null);
+        trans.commit();
+    }
+
     public void setChannelFragment(long channelId) {
         mChannelFragment = ChannelFragment.newInstance(channelId);
         FragmentTransaction trans = getFragmentManager().beginTransaction();
@@ -321,6 +367,7 @@ public class MainActivity extends Activity implements OnTaskCompleted,
             Podcast podcast = new PodcastDao().get(episode.getPodcast_id());
             // startPlayingEpisode(episode, podcast);
             playerLargeFragment.setEpisode(episode, podcast);
+            findViewById(R.id.lower_container).setVisibility(View.VISIBLE);
             Intent intent = new Intent(this, PlaybackService.class);
             intent.setAction("SET");
             intent.putExtra(PlaybackService.EPISODE_EXTRA, episode.get_id());
@@ -332,6 +379,7 @@ public class MainActivity extends Activity implements OnTaskCompleted,
 
     public void startPlayingEpisode(Episode episode, Podcast podcast) {
         playerLargeFragment.setEpisode(episode, podcast);
+        findViewById(R.id.lower_container).setVisibility(View.VISIBLE);
         Intent intent = new Intent(this, PlaybackService.class);
         intent.setAction("START");
         intent.putExtra(PlaybackService.EPISODE_EXTRA, episode.get_id());
@@ -360,7 +408,8 @@ public class MainActivity extends Activity implements OnTaskCompleted,
 
     @Override
     public void onPanelExpanded(View panel) {
-        ((SlidingUpPanelLayout) findViewById(R.id.sliding_layout)).setDragView(playerLargeFragment.header);
+        ((SlidingUpPanelLayout) findViewById(R.id.sliding_layout))
+                .setDragView(playerLargeFragment.header);
         playerLargeFragment.setHeaderVisible(false);
     }
 
@@ -370,9 +419,51 @@ public class MainActivity extends Activity implements OnTaskCompleted,
 
     }
 
-    public void onSharedPreferenceChanged(SharedPreferences preference, String key) {
-        int l = preference.getInt(key, -1);
-        Log.e(Utils.TAG, "Preference Change: " + l);
-    }
+    public void onSharedPreferenceChanged(SharedPreferences preference,
+            String key) {
+        if (key.matches(getResources().getString(R.string.prefSyncFrequency))) {
+            int hoursBetweenUpdates;
+            try {
+                hoursBetweenUpdates = Integer.parseInt(preference.getString(
+                        getResources().getString(R.string.prefSyncFrequency),
+                        "24"));
+            } catch (Exception e) {
+                hoursBetweenUpdates = 591;
+                SharedPreferences.Editor editor = preference.edit();
+                editor.putString(
+                        getResources().getString(R.string.prefSyncFrequency),
+                        "591");
+                editor.commit();
+            }
+            AlarmManager am = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+            Intent intent = new Intent(this, ADownloadService.class);
+            PendingIntent pi = PendingIntent.getService(this, 0, intent,
+                    PendingIntent.FLAG_CANCEL_CURRENT);
+            am.setRepeating(AlarmManager.RTC_WAKEUP,
+                    System.currentTimeMillis(),
+                    hoursBetweenUpdates * 60 * 60 * 1000, pi);
+        } else if (key.matches(getResources()
+                .getString(R.string.prefAutoDelete))) {
+            Log.e(Utils.TAG,
+                    "Auto Delete: " + preference.getBoolean(key, false));
+        } else if (key.matches(getResources().getString(
+                R.string.prefDeleteXShows))) {
+            int deleteThisMany;
+            try {
+                deleteThisMany = Integer.parseInt(preference.getString(
+                        getResources().getString(R.string.prefDeleteXShows),
+                        "2147483647"));
+            } catch (Exception e) {
+                deleteThisMany = Integer.MAX_VALUE;
+                SharedPreferences.Editor editor = preference.edit();
+                editor.putString(
+                        getResources().getString(R.string.prefSyncFrequency),
+                        String.valueOf(deleteThisMany));
+                editor.commit();
+            }
+        }
 
+        Log.e(Utils.TAG, preference.getAll().toString());
+
+    }
 }

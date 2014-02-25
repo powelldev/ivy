@@ -11,10 +11,10 @@ import java.net.URL;
 
 public class Utils {
 
-    public static final long UPDATE_TIMING = 1 * 60 * 60 * 1000;
     private static final String LOGFILE = Environment
             .getExternalStorageDirectory() + File.separator + "creek.txt";
     public static final String TAG = "PodcastCatcher";
+    public static final String DEFUALT_UPDATE = "24";
 
     public static String getStringFromCursor(Cursor cursor, String index) {
         return cursor.getString(cursor.getColumnIndex(index));
@@ -56,4 +56,5 @@ public class Utils {
     public static int getIntFromCursor(Cursor cursor, String index) {
         return cursor.getInt(cursor.getColumnIndex(index));
     }
+    
 }

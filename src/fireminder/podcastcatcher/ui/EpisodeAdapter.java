@@ -7,6 +7,7 @@ import java.util.Date;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -18,10 +19,10 @@ import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.PopupMenu.OnMenuItemClickListener;
 import android.widget.TextView;
-import android.widget.Toast;
 import fireminder.podcastcatcher.R;
 import fireminder.podcastcatcher.db.EpisodeDao;
 import fireminder.podcastcatcher.utils.Utils;
+import fireminder.podcastcatcher.valueobjects.Episode;
 
 public class EpisodeAdapter extends CursorAdapter {
 
@@ -36,16 +37,12 @@ public class EpisodeAdapter extends CursorAdapter {
         this.context = context;
         this.cursor = c;
     }
-    
-    
 
     @Override
     public void notifyDataSetChanged() {
         cursor.requery();
         super.notifyDataSetChanged();
     }
-
-
 
     @Override
     public void bindView(View arg0, Context arg1, Cursor cursor) {
@@ -56,27 +53,30 @@ public class EpisodeAdapter extends CursorAdapter {
         TextView episodeDate = (TextView) arg0
                 .findViewById(R.id.list_item_date_tv);
 
-
-        long milliseconds = cursor.getLong(cursor.getColumnIndex(EpisodeDao.COLUMN_PUBDATE));
+        long milliseconds = cursor.getLong(cursor
+                .getColumnIndex(EpisodeDao.COLUMN_PUBDATE));
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(milliseconds);
         Date date = calendar.getTime();
         SimpleDateFormat sdf = new SimpleDateFormat("dd MMM");
 
-        String duration = Utils.getStringFromCursor(cursor, EpisodeDao.COLUMN_DURATION);
+        String duration = Utils.getStringFromCursor(cursor,
+                EpisodeDao.COLUMN_DURATION);
         episodeDate.setText(sdf.format(date));
         episodeDate.setText(duration);
-        episodeTitle.setText(Utils.getStringFromCursor(cursor, EpisodeDao.COLUMN_TITLE));
-        
-         
+        episodeTitle.setText(Utils.getStringFromCursor(cursor,
+                EpisodeDao.COLUMN_TITLE));
+
         ImageButton button = (ImageButton) arg0
                 .findViewById(R.id.episode_popup_menu);
         button.setOnClickListener(new PopupListener(cursor.getLong(cursor
                 .getColumnIndex(EpisodeDao.COLUMN_ID))));
 
-        String file_mp3 = Utils.getStringFromCursor(cursor, EpisodeDao.COLUMN_MP3);
+        String file_mp3 = Utils.getStringFromCursor(cursor,
+                EpisodeDao.COLUMN_MP3);
         if (file_mp3 != null) {
-            File mp3 = new File(Utils.getStringFromCursor(cursor, EpisodeDao.COLUMN_MP3));
+            File mp3 = new File(Utils.getStringFromCursor(cursor,
+                    EpisodeDao.COLUMN_MP3));
             if (mp3.exists()) {
                 playIcon.setVisibility(View.VISIBLE);
                 playIcon.setFocusable(false);
@@ -115,6 +115,14 @@ public class EpisodeAdapter extends CursorAdapter {
             case R.id.menu_episode_delete_all:
                 new EpisodeDao().clearDataOnAll(mId);
                 notifyDataSetChanged();
+                break;
+            case R.id.menu_episode_queue:
+                EpisodeDao eDao = new EpisodeDao();
+                Episode e = eDao.get(mId);
+                e.setPlaylistRank(eDao.getNumberOfEpisodesInPlaylist() + 1);
+                eDao.update(e);
+                Log.e(Utils.TAG, "Playlsit set: "
+                        + eDao.getNumberOfEpisodesInPlaylist());
                 break;
             }
             return false;

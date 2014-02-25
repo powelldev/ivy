@@ -354,6 +354,7 @@ public class RssParser {
                     testStringList.add(test);
                     episode.setPodcast_id(id);
                     episode.setElapsed(0);
+                    episode.setPlaylistRank(-1);
                     episodes.add(episode);
                     episode = new Episode();
                     test = ""; encl = false;
@@ -447,6 +448,7 @@ public class RssParser {
                             testStringList.add(test);
                             episode.setPodcast_id(id);
                             episode.setElapsed(0);
+                            episode.setPlaylistRank(-1);
                             episodes.add(episode);
                             episode = new Episode();
                             test = ""; encl = false;

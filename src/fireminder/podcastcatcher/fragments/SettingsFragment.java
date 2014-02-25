@@ -6,10 +6,11 @@ import android.os.Bundle;
 import android.preference.PreferenceFragment;
 import android.util.Log;
 import fireminder.podcastcatcher.R;
+import fireminder.podcastcatcher.activities.MainActivity;
 import fireminder.podcastcatcher.utils.Utils;
 
-
-public class SettingsFragment extends PreferenceFragment implements OnSharedPreferenceChangeListener {
+public class SettingsFragment extends PreferenceFragment implements
+        OnSharedPreferenceChangeListener {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -19,24 +20,22 @@ public class SettingsFragment extends PreferenceFragment implements OnSharedPref
     @Override
     public void onResume() {
         super.onResume();
-        getPreferenceManager().getSharedPreferences().registerOnSharedPreferenceChangeListener(this);
+        getPreferenceManager().getSharedPreferences()
+                .registerOnSharedPreferenceChangeListener(this);
 
     }
 
     @Override
     public void onPause() {
-        getPreferenceManager().getSharedPreferences().unregisterOnSharedPreferenceChangeListener(this);
+        getPreferenceManager().getSharedPreferences()
+                .unregisterOnSharedPreferenceChangeListener(this);
         super.onPause();
     }
 
     @Override
-    public void onSharedPreferenceChanged(SharedPreferences preference, String key) {
-        Log.e(Utils.TAG, "KEY CHANGED AMG");
-        /*
-        AlarmManager am = (AlarmManager) getActivity().getSystemService(Context.ALARM_SERVICE);
-        Intent intent = new Intent(getActivity(), ADownloadService.class);
-        PendingIntent pi = PendingIntent.getService(getActivity(), 0, intent, PendingIntent.FLAG_CANCEL_CURRENT);
-        am.set(AlarmManager.RTC, System.currentTimeMillis(), pi);
-        */
+    public void onSharedPreferenceChanged(SharedPreferences preference,
+            String key) {
+        ((MainActivity) getActivity()).onSharedPreferenceChanged(preference,
+                key);
     }
 }

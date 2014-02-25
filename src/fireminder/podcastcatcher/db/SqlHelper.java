@@ -9,7 +9,7 @@ import fireminder.podcastcatcher.db.EpisodeDao;
 public class SqlHelper extends SQLiteOpenHelper {
     
     public static final String DATABASE_NAME = "podcasts.db";
-    public static final int DATABASE_VER = 7;
+    public static final int DATABASE_VER = 8;
 
     public SqlHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VER);
@@ -25,7 +25,8 @@ public class SqlHelper extends SQLiteOpenHelper {
                 + " text, " + EpisodeDao.COLUMN_PUBDATE + " integer, "
                 + EpisodeDao.COLUMN_MP3 + " text, "
                 + EpisodeDao.COLUMN_DURATION + " text, "
-                + EpisodeDao.COLUMN_ELAPSED + " integer);");
+                + EpisodeDao.COLUMN_ELAPSED + " integer, "
+                + EpisodeDao.COLUMN_PLAYLIST + " integer);");
 
         db.execSQL("CREATE TABLE " + PodcastDao.TABLE_NAME + " ("
                 + PodcastDao.COLUMN_ID + " integer primary key autoincrement,"

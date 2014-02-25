@@ -4,31 +4,35 @@ CURRENT:
 
 PIPELINE:
 
-Context menu for Podcasts:
-    * Delete All downloaded
-    * Refresh
-Episode context menu
-    * Download all
-    * Delete
+Search fragment update to stand-alone
+Delete podcasts when OnCompleteListener set
+Navigation drawer
 Notification 
     * play/pause (might need graphics)
-Navigation drawer
-Recent fragment w/ most recently downloaded episodes
-Search fragment update to stand-alone
-Settings fragment
-    * Keep X most recent episodes
 Playlist fragment
-Custom download manager
 Playback
     * Rewind, ff, play/pause icons
     * Play/Pause selector & functionality
     * FF/Rewind icon & functionality
 Placeholder for loading images
-Naming converntion
-q
+Naming convention
+Custom download manager
+Settings fragment
+    * Update timings
+    * Delete after played
+    * Keep X most recent episodes
 
 DONE:
 
+Settings fragment
+    * Update timings
+Recent Fragment
+    * Has latest episodes
+Context menu for Podcasts:
+    * Delete All downloaded
+    * Refresh
+Episode context menu
+    * Delete
 Image loader for podcast Fragment - smoother scrolling
     * Picasso integration
     * Playback - album cover

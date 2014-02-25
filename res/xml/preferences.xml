@@ -5,15 +5,22 @@
        android:summary="Test"
        />
    <ListPreference 
-       android:key="prefAutoRemove"
-       android:title="Remove show after listening"
+       android:key="@string/prefSyncFrequency"
+       android:title="@string/prefSyncFrequency_summary"
        android:entries="@array/sync_frequency"
        android:entryValues="@array/sync_frequency_values"
        />
+   <CheckBoxPreference 
+       android:key="@string/prefAutoDelete"
+       android:title="@string/prefAutoDelete_summary"
+       android:defaultValue="false"
+       />
+   
    <ListPreference 
-       android:key="prefSyncFrequency"
-       android:title="Sync frequency"
-       android:entries="@array/sync_frequency"
-       android:entryValues="@array/sync_frequency_values"
+       android:key="@string/prefDeleteXShows"
+       android:title="@string/prefDeleteXShows_summary"
+       android:entries="@array/x_shows"
+       android:entryValues="@array/x_shows_values"
        />
+   
 </PreferenceScreen>

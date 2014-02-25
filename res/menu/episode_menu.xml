@@ -11,5 +11,10 @@
         android:orderInCategory="200"
         android:title="Delete All"
         />
+    <item
+        android:id="@+id/menu_episode_queue"
+        android:orderInCategory="300"
+        android:title="Queue"
+        />
 
 </menu>

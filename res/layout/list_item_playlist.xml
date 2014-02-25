@@ -3,21 +3,38 @@
     android:layout_width="match_parent"
     android:layout_height="56dp"
     android:orientation="vertical" >
+    <ImageView 
+        android:layout_width="56dp"
+        android:id="@+id/playlist_item_album_iv"
+        android:layout_height="match_parent"
+        android:layout_alignParentLeft="true"
+        android:src="@android:color/white"
+        />
+        
     <TextView
         android:id="@+id/playlist_item_episode_tv"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Episode 393: Red Card" 
         android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
+        android:layout_toRightOf="@id/playlist_item_album_iv"
         />
     <TextView 
         android:id="@+id/playlist_item_date_tv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
+        android:layout_toRightOf="@id/playlist_item_album_iv"
         android:text="4 Apr"
         />
 
+	<ImageButton 
+	    android:id="@+id/playlist_popup_menu"
+	    android:layout_width="48dp"
+	    android:layout_height="48dp"
+	    android:layout_alignParentRight="true"
+	    android:src="@drawable/ic_action_overflow"
+	    android:focusable="false"
+	    android:background="@null"
+	    />
 </RelativeLayout>

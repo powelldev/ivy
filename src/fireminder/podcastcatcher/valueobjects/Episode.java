@@ -4,8 +4,8 @@ package fireminder.podcastcatcher.valueobjects;
  * A representation of an episode of a podcast.
  */
 public class Episode {
-    public Episode(Long _id, Long podcast_id, String title,
-            String description, String url, long pubDate, String mp3) {
+    public Episode(Long _id, Long podcast_id, String title, String description,
+            String url, long pubDate, String mp3) {
         super();
         this._id = _id;
         this.podcast_id = podcast_id;
@@ -15,7 +15,7 @@ public class Episode {
         this.pubDate = pubDate;
         this.mp3 = mp3;
     }
-    
+
     public Episode(Long _id, Long podcast_id, String title) {
         super();
         this._id = _id;
@@ -23,42 +23,43 @@ public class Episode {
         this.title = title;
     }
 
-    // id assigned by sqlite
     private Long _id;
-    // sqlite id of the podcast this episode belongs to
     private Long podcast_id;
     private String title;
     private String description;
     private String url;
     private long pubDate;
-    //mp3 location on disk of downloaded episode
     private String mp3;
     private String mDuration;
     private int mElapsed;
-    
+    private int mPlaylistRank;
+
     @Override
-    public String toString(){
+    public String toString() {
         String info = "";
-        info += "_id: " + _id + "\n"; 
-        info += "podcast_id: " + podcast_id + "\n"; 
-        info += "title: " + title + "\n"; 
-        info += "description: " + description + "\n"; 
-        info += "url: " + url + "\n"; 
-        info += "pubDate: " + pubDate + "\n"; 
-        //No need to catch exception - this just checks if it has been downlaoded.
-        try { info += "mp3: " + mp3 + "\n"; } catch (Exception e) {} 
+        info += "_id: " + _id + "\n";
+        info += "podcast_id: " + podcast_id + "\n";
+        info += "title: " + title + "\n";
+        info += "description: " + description + "\n";
+        info += "url: " + url + "\n";
+        info += "pubDate: " + pubDate + "\n";
+        // No need to catch exception - this just checks if it has been
+        // downlaoded.
+        try {
+            info += "mp3: " + mp3 + "\n";
+        } catch (Exception e) {
+        }
         return info;
     }
 
-    public Episode(){
+    public Episode() {
         this.title = "";
         this.description = "";
         this.url = "";
         this.pubDate = 0;
         this.mp3 = "";
     }
-    
-    
+
     public Long get_id() {
         return _id;
     }
@@ -129,5 +130,13 @@ public class Episode {
 
     public int getElapsed() {
         return mElapsed;
+    }
+
+    public void setPlaylistRank(int rank) {
+        this.mPlaylistRank = rank;
+    }
+
+    public int getPlaylistRank() {
+        return mPlaylistRank;
     }
 }

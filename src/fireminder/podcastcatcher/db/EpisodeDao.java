@@ -8,6 +8,7 @@ import java.util.List;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 import fireminder.podcastcatcher.PodcastCatcher;
 import fireminder.podcastcatcher.utils.Utils;
 import fireminder.podcastcatcher.valueobjects.Episode;
@@ -25,11 +26,12 @@ public class EpisodeDao {
     public static final String COLUMN_MP3 = "mp3";
     public static final String COLUMN_DURATION = "duration";
     public static final String COLUMN_ELAPSED = "elapsed";
+    public static final String COLUMN_PLAYLIST = "playlist";
 
     /*** A list of all the columns in the episode db, useful for queries */
     public static final String[] allColumns = { COLUMN_ID, COLUMN_PODCAST_ID,
             COLUMN_TITLE, COLUMN_DESCRIP, COLUMN_URL, COLUMN_PUBDATE,
-            COLUMN_MP3, COLUMN_DURATION, COLUMN_ELAPSED };
+            COLUMN_MP3, COLUMN_DURATION, COLUMN_ELAPSED, COLUMN_PLAYLIST };
     public static String TAG = EpisodeDao.class.getSimpleName();
 
     public EpisodeDao() {
@@ -46,6 +48,7 @@ public class EpisodeDao {
         e.setMp3(cursor.getString(cursor.getColumnIndex(COLUMN_MP3)));
         e.setDuration(Utils.getStringFromCursor(cursor, COLUMN_DURATION));
         e.setElapsed(Utils.getIntFromCursor(cursor, COLUMN_ELAPSED));
+        e.setElapsed(Utils.getIntFromCursor(cursor, COLUMN_PLAYLIST));
         return e;
     }
 
@@ -73,6 +76,7 @@ public class EpisodeDao {
         cv.put(COLUMN_MP3, episode.getMp3());
         cv.put(COLUMN_DURATION, episode.getDuration());
         cv.put(COLUMN_ELAPSED, episode.getElapsed());
+        cv.put(COLUMN_PLAYLIST, episode.getPlaylistRank());
         id = db.update(TABLE_NAME, cv, COLUMN_ID + " = " + episode.get_id(),
                 null);
         db.close();
@@ -92,6 +96,7 @@ public class EpisodeDao {
         cv.put(COLUMN_MP3, e.getMp3());
         cv.put(COLUMN_DURATION, e.getDuration());
         cv.put(COLUMN_ELAPSED, e.getElapsed());
+        cv.put(COLUMN_PLAYLIST, e.getPlaylistRank());
 
         id = db.insert(TABLE_NAME, null, cv);
 
@@ -179,6 +184,26 @@ public class EpisodeDao {
         return cursor;
     }
 
+    public Cursor getPlaylistEpisodes() {
+        SQLiteDatabase db = new SqlHelper(PodcastCatcher.getInstance()
+                .getContext()).getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE "
+                + COLUMN_PLAYLIST + " >= 1"  + " ORDER BY "
+                + COLUMN_PLAYLIST + " ASC ", null);
+
+        return cursor;
+    }
+    
+    public int getNumberOfEpisodesInPlaylist() {
+        SQLiteDatabase db = new SqlHelper(PodcastCatcher.getInstance()
+                .getContext()).getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE "
+                + COLUMN_PLAYLIST + " >= 1"  + " ORDER BY "
+                + COLUMN_PLAYLIST + " ASC ", null);
+
+        return cursor.getCount();
+    }
+
     public void clearDataOn(long mId) {
         Episode episode = get(mId);
         File file = new File(episode.getMp3());
@@ -202,6 +227,7 @@ public class EpisodeDao {
             this.delete(e);
         }
     }
+    
 
 
 }
