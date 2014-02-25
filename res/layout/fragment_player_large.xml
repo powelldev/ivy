@@ -74,10 +74,11 @@
                 android:id="@+id/fragment_player_header_playpause_icon"
                 android:layout_width="@dimen/header_height"
                 android:layout_height="match_parent"
+                android:src="@drawable/ic_action_play_icon"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentTop="true"
                 android:background="@null"
-                android:src="#000" />
+                />
         </RelativeLayout>
     </RelativeLayout>
     <!-- Footer -->
@@ -96,27 +97,30 @@
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
             android:layout_marginLeft="10dp"
+            android:src="@drawable/ic_action_play_icon"
             android:layout_marginRight="10dp"
             android:background="@null"
-            android:src="#000" />
+            />
 
         <ImageButton
             android:id="@+id/fragment_player_rewind_icon"
             android:layout_width="48dp"
             android:layout_height="48dp"
+            android:src="@drawable/seek_rwd"
             android:layout_centerVertical="true"
             android:layout_toLeftOf="@id/fragment_player_playpause_icon"
             android:background="@null"
-            android:src="#000" />
+            />
 
         <ImageButton
             android:id="@+id/fragment_player_ff_icon"
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:layout_centerVertical="true"
+            android:src="@drawable/ic_action_seek_fwd"
             android:layout_toRightOf="@id/fragment_player_playpause_icon"
             android:background="@null"
-            android:src="#000" />
+            />
     </RelativeLayout>
 
     <ImageView

@@ -4,12 +4,16 @@ CURRENT:
 
 PIPELINE:
 
+Adapter update
+    * Search
+    * Recent
+    * podcasts
+    * episodes
 Search fragment update to stand-alone
 Delete podcasts when OnCompleteListener set
 Navigation drawer
 Notification 
     * play/pause (might need graphics)
-Playlist fragment
 Playback
     * Rewind, ff, play/pause icons
     * Play/Pause selector & functionality
@@ -24,6 +28,7 @@ Settings fragment
 
 DONE:
 
+Playlist fragment
 Settings fragment
     * Update timings
 Recent Fragment

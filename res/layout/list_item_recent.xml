@@ -46,7 +46,7 @@
 	    android:layout_width="12dp"
 	    android:layout_height="24dp"
 	    android:layout_alignParentRight="true"
-	    android:src="@drawable/ic_action_overflow"
+	    android:src="@drawable/ic_action_menu_icon"
 	    android:focusable="false"
 	    android:background="@null"
 	    	    />

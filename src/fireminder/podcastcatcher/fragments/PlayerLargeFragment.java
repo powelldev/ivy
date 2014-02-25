@@ -189,4 +189,22 @@ public class PlayerLargeFragment extends Fragment implements OnClickListener,
 
     }
 
+    public void setPlayOn(boolean playing){
+        if (playing) {
+        ((ImageButton) getView()
+                .findViewById(R.id.fragment_player_header_playpause_icon))
+                .setActivated(true);
+        ((ImageButton) getView()
+                .findViewById(R.id.fragment_player_playpause_icon))
+                .setActivated(false);
+        } else {
+        ((ImageButton) getView()
+                .findViewById(R.id.fragment_player_header_playpause_icon))
+                .setActivated(false);
+        ((ImageButton) getView()
+                .findViewById(R.id.fragment_player_playpause_icon))
+                .setActivated(true);
+            
+        }
+    }
 }
