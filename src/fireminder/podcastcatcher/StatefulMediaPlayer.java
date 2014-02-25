@@ -92,6 +92,24 @@ public class StatefulMediaPlayer extends MediaPlayer {
         this.start();
     }
 
+    public void seek(int time) {
+        if (mState == State.STARTED) {
+            super.seekTo(time);
+        } else if (mState == State.STOPPED) {
+
+        } else if (mState == State.PAUSED) {
+
+            super.seekTo(time);
+
+        } else if (mState == State.PREPARED) {
+
+            super.seekTo(time);
+
+        } else if (mState == State.CREATED) {
+
+        }
+    }
+
     public void start() {
         if (mState == State.STARTED) {
 

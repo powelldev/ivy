@@ -86,8 +86,25 @@ public class PlaybackService extends Service implements Target {
                     Log.e(TAG, "Playing...");
                     play();
                 }
+            } else if (intent.getAction().contains("FORWARD")) {
+                Log.e(Utils.TAG, intent.getAction());
+                boolean player = mPlayer.isPlaying();
+                int i = mPlayer.getCurrentPosition() + 30000;
+                mPlayer.pause();
+                mPlayer.seek(i);
+                if (player)
+                    mPlayer.start();
             } else if (intent.getAction().contains("REWIND")) {
-                pause();
+                Log.e(Utils.TAG, intent.getAction());
+                boolean player = mPlayer.isPlaying();
+                int i = mPlayer.getCurrentPosition() - 30000;
+                if (i < 0) {
+                    i = 0;
+                }
+                mPlayer.pause();
+                mPlayer.seek(i);
+                if (player)
+                    mPlayer.start();
             } else if (intent.getAction().contains("SEEK")) {
                 int time = intent.getIntExtra(SEEK_EXTRA, 0);
                 Log.e("HAPT", "SEEKING PROGRESS INTENT: " + time);
