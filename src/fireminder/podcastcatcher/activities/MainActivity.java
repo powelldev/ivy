@@ -1,6 +1,7 @@
 package fireminder.podcastcatcher.activities;
 
 
+import java.io.File;
 import java.util.Calendar;
 import java.util.List;
 
@@ -16,6 +17,7 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.DrawerLayout;
@@ -50,6 +52,7 @@ import fireminder.podcastcatcher.fragments.SettingsFragment;
 import fireminder.podcastcatcher.services.ADownloadService;
 import fireminder.podcastcatcher.services.BootService;
 import fireminder.podcastcatcher.services.PlaybackService;
+import fireminder.podcastcatcher.utils.Helper;
 import fireminder.podcastcatcher.utils.Utils;
 import fireminder.podcastcatcher.valueobjects.Episode;
 import fireminder.podcastcatcher.valueobjects.Podcast;
@@ -331,10 +334,8 @@ public class MainActivity extends Activity implements OnTaskCompleted,
             Intent i = new Intent(this, SearchActivity.class);
             startActivityForResult(i, 42);
             return true;
-        case R.id.viewDownloads:
-            Intent dlIntent = new Intent();
-            dlIntent.setAction(DownloadManager.ACTION_VIEW_DOWNLOADS);
-            startActivity(dlIntent);
+        case R.id.import_opml:
+            importFromOpml();
             return true;
         case R.id.settings:
             this.startPreferenceFragment();
@@ -466,5 +467,9 @@ public class MainActivity extends Activity implements OnTaskCompleted,
 
         Log.e(Utils.TAG, preference.getAll().toString());
 
+    }
+    private void importFromOpml(){
+        File file = new File( Environment.getExternalStorageDirectory(), "podkicker_backup.opml");
+        Helper.parseOpmlForPodcasts(file, this);
     }
 }

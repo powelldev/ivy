@@ -128,7 +128,6 @@ public class PlaybackService extends Service implements Target {
 
     private void pause() {
         mPlayer.pause();
-        // mHandler.removeCallbacks(updateProgressRunnable);
         mHandler.removeCallbacksAndMessages(null);
         Episode episode = mEdao.get(mEpisodeId);
         episode.setElapsed(mElapsed);

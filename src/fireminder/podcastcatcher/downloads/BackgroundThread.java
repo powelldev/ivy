@@ -1,20 +1,8 @@
 package fireminder.podcastcatcher.downloads;
 
-import android.app.DownloadManager;
-import android.app.DownloadManager.Request;
-import android.content.Context;
-import android.database.Cursor;
-import android.net.Uri;
-import android.os.AsyncTask;
-import android.os.Environment;
-import android.util.Log;
-import android.widget.Toast;
-
-import org.apache.http.util.ByteArrayBuffer;
-import org.xmlpull.v1.XmlPullParserException;
-
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -24,12 +12,25 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.http.util.ByteArrayBuffer;
+import org.xmlpull.v1.XmlPullParserException;
+
+import android.app.DownloadManager;
+import android.app.DownloadManager.Request;
+import android.content.Context;
+import android.database.Cursor;
+import android.net.Uri;
+import android.os.AsyncTask;
+import android.os.Environment;
+import android.util.Log;
+import android.widget.Toast;
 import fireminder.podcastcatcher.OnTaskCompleted;
 import fireminder.podcastcatcher.PodcastCatcher;
 import fireminder.podcastcatcher.db.EpisodeDao;
 import fireminder.podcastcatcher.db.PodcastDao;
 import fireminder.podcastcatcher.utils.Helper;
 import fireminder.podcastcatcher.utils.RssParser;
+import fireminder.podcastcatcher.utils.Utils;
 import fireminder.podcastcatcher.valueobjects.Episode;
 import fireminder.podcastcatcher.valueobjects.Podcast;
 
@@ -131,7 +132,7 @@ public class BackgroundThread {
 
             Podcast podcast = pdao.get(Long.parseLong(idForQuery));
             if (imagelink != null) {
-            podcast.setImagePath(imagelink);
+                podcast.setImagePath(imagelink);
             } else {
                 podcast.setImagePath("http://static.tvtropes.org/lampshade_logo_blue.png");
             }
@@ -140,7 +141,6 @@ public class BackgroundThread {
                     .onTaskCompleted(null);
             return null;
         }
-
 
     }
 
@@ -433,6 +433,40 @@ public class BackgroundThread {
 
     public void subscribeToPodcast(String url) {
         new SubscribeAsyncTask().execute(new String[] { url });
+    }
+
+    public void parseOpmlForPodcasts(File file) {
+        new OpmlAsyncTask().execute(new File[] { file });
+    }
+
+    private class OpmlAsyncTask extends AsyncTask<File, Void, String[]> {
+
+        @Override
+        protected String[] doInBackground(File... args) {
+            List<String> podcasts = null;
+            try {
+                FileInputStream fis = new FileInputStream(args[0]);
+                BufferedReader reader = new BufferedReader(
+                        new InputStreamReader(fis));
+                podcasts = RssParser.parseOpmlForPodcasts(reader);
+            } catch (Exception e) {
+                Log.e(Utils.TAG, "Err opmlasync: " + e.getMessage());
+            }
+            String[] arr = new String[podcasts.size()];
+            for (String p : podcasts) {
+                arr[0] = p;
+            }
+
+            return arr;
+        }
+        
+        @Override
+        protected void onPostExecute(String[] result){
+            for(String s : result) {
+                subscribeToPodcast(s);
+            }
+        }
+
     }
 
 }

@@ -184,7 +184,7 @@ public class EpisodeDao {
         return cursor;
     }
 
-    public Cursor getPlaylistEpisodes() {
+    public Cursor getPlaylistEpisodesAsCursor() {
         SQLiteDatabase db = new SqlHelper(PodcastCatcher.getInstance()
                 .getContext()).getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE "

@@ -2,32 +2,37 @@ Features:
 
 CURRENT:
 
-PIPELINE:
+Do things with OnCompleteListener set
+    Play next
+    Delete
 
+FUNCTIONAL:
+
+Keep X most recent episodes
 Adapter update
-    * Search
-    * Recent
-    * podcasts
-    * episodes
-Search fragment update to stand-alone
-Delete podcasts when OnCompleteListener set
-Navigation drawer
-Notification 
-    * play/pause (might need graphics)
-Playback
-    * Rewind, ff, play/pause icons
-    * Play/Pause selector & functionality
-    * FF/Rewind icon & functionality
-Placeholder for loading images
+    Search
+    Recent
+    podcasts
+    episodes
+
+NON-FUNCTIONAL:
+
+Swipe to dismiss
+Graphic:
+    Icon pack
+    Play/pause selector
+    Placeholder for loading images
 Naming convention
+Refactorings
+
+SAVE FOR 1.1:
+
 Custom download manager
-Settings fragment
-    * Update timings
-    * Delete after played
-    * Keep X most recent episodes
+Search fragment update to stand-alone
 
 DONE:
 
+Navigation drawer
 Playlist fragment
 Settings fragment
     * Update timings

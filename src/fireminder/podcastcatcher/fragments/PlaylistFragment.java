@@ -53,7 +53,7 @@ public class PlaylistFragment extends ListFragment implements OnItemClickListene
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
-        Cursor cursor = new EpisodeDao().getPlaylistEpisodes();
+        Cursor cursor = new EpisodeDao().getPlaylistEpisodesAsCursor();
         mAdapter = new PlaylistAdapter(getActivity(), cursor, 0);
         setListAdapter(mAdapter);
         super.onViewCreated(view, savedInstanceState);

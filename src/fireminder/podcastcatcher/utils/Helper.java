@@ -178,4 +178,8 @@ public class Helper {
         BackgroundThread bt = new BackgroundThread(context);
         bt.getNewEpisodesForPodcast((int) itemId);
     }
+    public static void parseOpmlForPodcasts(File file, Context context) {
+        BackgroundThread bt = new BackgroundThread(context);
+        bt.parseOpmlForPodcasts(file);
+    }
 }
