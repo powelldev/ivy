@@ -14,7 +14,6 @@ import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
-import android.media.MediaPlayer.OnCompletionListener;
 import android.media.MediaPlayer.OnErrorListener;
 import android.os.Handler;
 import android.os.IBinder;
@@ -49,7 +48,7 @@ public class PlaybackService extends Service implements Target {
     public static final String SEEK_EXTRA = "seek_extra";
     private EpisodeDao mEdao = new EpisodeDao();;
     private PodcastDao mPdao = new PodcastDao();;
-    private long mEpisodeId;
+    private long mEpisodeId = -1;
     private int mElapsed;
     private LocalBroadcastManager mBroadcaster;
     private LockscreenManager mLockscreen;
@@ -155,6 +154,7 @@ public class PlaybackService extends Service implements Target {
     }
 
     private void start(Intent intent) {
+
         mLockscreen = new LockscreenManager(getApplicationContext());
         mEpisodeId = intent.getExtras().getLong(EPISODE_EXTRA);
         if (mPlayer.getPlayingEpisodeId() != mEpisodeId) {

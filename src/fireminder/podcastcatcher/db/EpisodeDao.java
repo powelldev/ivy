@@ -7,6 +7,7 @@ import java.util.List;
 
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.database.CursorIndexOutOfBoundsException;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 import fireminder.podcastcatcher.PodcastCatcher;
@@ -188,18 +189,18 @@ public class EpisodeDao {
         SQLiteDatabase db = new SqlHelper(PodcastCatcher.getInstance()
                 .getContext()).getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE "
-                + COLUMN_PLAYLIST + " >= 1"  + " ORDER BY "
-                + COLUMN_PLAYLIST + " ASC ", null);
+                + COLUMN_PLAYLIST + " >= 1" + " ORDER BY " + COLUMN_PLAYLIST
+                + " ASC ", null);
 
         return cursor;
     }
-    
+
     public int getNumberOfEpisodesInPlaylist() {
         SQLiteDatabase db = new SqlHelper(PodcastCatcher.getInstance()
                 .getContext()).getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE "
-                + COLUMN_PLAYLIST + " >= 1"  + " ORDER BY "
-                + COLUMN_PLAYLIST + " ASC ", null);
+                + COLUMN_PLAYLIST + " >= 1" + " ORDER BY " + COLUMN_PLAYLIST
+                + " ASC ", null);
 
         return cursor.getCount();
     }
@@ -212,22 +213,31 @@ public class EpisodeDao {
         }
         episode.setElapsed(0);
     }
-    
+
     public void clearDataOnAll(long episodeId) {
         List<Episode> episodes = getAllEpisodes(get(episodeId).getPodcast_id());
-        for (Episode e : episodes){
+        for (Episode e : episodes) {
             clearDataOn(e.get_id());
         }
     }
 
     public void deleteDataOnAll(Podcast podcast) {
         List<Episode> episodes = getAllEpisodes(podcast.getId());
-        for (Episode e : episodes){
+        for (Episode e : episodes) {
             clearDataOn(e.get_id());
             this.delete(e);
         }
     }
-    
 
+    public List<Episode> getPlaylistEpisodes() {
+        Cursor c = getPlaylistEpisodesAsCursor();
+        List<Episode> episodes = new ArrayList<Episode>();
+        if (c.moveToFirst()) {
+            do {
+                episodes.add(cursorToEpisode(c));
+            } while (c.moveToNext());
+        }
+        return episodes;
+    }
 
 }
