@@ -1,6 +1,7 @@
 package fireminder.podcastcatcher.services;
 
 import java.io.File;
+import java.util.List;
 
 import android.app.Notification;
 import android.app.PendingIntent;
@@ -9,12 +10,16 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
 import android.media.MediaMetadataRetriever;
+import android.media.MediaPlayer;
+import android.media.MediaPlayer.OnCompletionListener;
 import android.os.Handler;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
@@ -33,7 +38,8 @@ import fireminder.podcastcatcher.utils.Utils;
 import fireminder.podcastcatcher.valueobjects.Episode;
 import fireminder.podcastcatcher.valueobjects.Podcast;
 
-public class PlaybackService extends Service implements Target {
+public class PlaybackService extends Service implements Target,
+        OnCompletionListener {
 
     private static final String TAG = PlaybackService.class.getSimpleName();
 
@@ -54,6 +60,9 @@ public class PlaybackService extends Service implements Target {
     public static final String FOREGROUND_ON_ACTION = "fireminder.podcastcatcher.services.PlaybackService.FOREGROUND_ON";
     public static final String FOREGROUND_OFF_ACTION = "fireminder.podcastcatcher.services.PlaybackService.FOREGROUND_OFF";
 
+    public static final String EPISODE_CHANGE_INTENT = "fireminder.podcastcatcher.services.PlaybackService.EPISODE_CHANGE";
+    public static final String EPISODE_ID_EXTRA = "episode_id";
+
     private long mEpisodeId = -2;
     private int mElapsed;
     private StatefulMediaPlayer mPlayer;
@@ -63,6 +72,7 @@ public class PlaybackService extends Service implements Target {
     @Override
     public void onCreate() {
         mPlayer = new StatefulMediaPlayer();
+        mPlayer.setOnCompletionListener(this);
         mBroadcaster = LocalBroadcastManager
                 .getInstance(getApplicationContext());
 
@@ -131,7 +141,8 @@ public class PlaybackService extends Service implements Target {
     private void startPlaying() {
         Episode episode = pullCurrentEpisode();
         Log.e(Utils.TAG, "Episode id: " + episode.get_id());
-        Log.e(Utils.TAG, "Elapsed for starting episode: " + episode.getElapsed());
+        Log.e(Utils.TAG,
+                "Elapsed for starting episode: " + episode.getElapsed());
         File file = new File(episode.getMp3());
         if (file.exists()) {
             mPlayer.setDataSource(episode);
@@ -194,20 +205,21 @@ public class PlaybackService extends Service implements Target {
 
     private void updateEpisodeElapsed() {
         if (mEpisodeId != -2) {
-        EpisodeDao mEdao = new EpisodeDao(getApplicationContext());
-        Episode episode = mEdao.get(mEpisodeId);
-        Log.e(Utils.TAG, "Elapsed before insert: " + episode.getElapsed());
-        episode.setElapsed(mElapsed);
-        Log.e(Utils.TAG, "Elapsed after set: " + episode.getElapsed());
-        long id = mEdao.update(episode);
-        Log.e(Utils.TAG, id + " Elapsed after insert: " + mEdao.get(id));
+            EpisodeDao mEdao = new EpisodeDao(getApplicationContext());
+            Episode episode = mEdao.get(mEpisodeId);
+            Log.e(Utils.TAG, "Elapsed before insert: " + episode.getElapsed());
+            episode.setElapsed(mElapsed);
+            Log.e(Utils.TAG, "Elapsed after set: " + episode.getElapsed());
+            long id = mEdao.update(episode);
+            Log.e(Utils.TAG, id + " Elapsed after insert: " + mEdao.get(id));
         }
     }
 
     private void play() {
         Episode episode = pullCurrentEpisode();
         Log.e(Utils.TAG, "Episode id: " + episode.get_id());
-        Log.e(Utils.TAG, "Elapsed for starting episode: " + episode.getElapsed());
+        Log.e(Utils.TAG,
+                "Elapsed for starting episode: " + episode.getElapsed());
         setupUiElements(episode);
         setupLockscreen(episode);
         mPlayer.start();
@@ -244,6 +256,18 @@ public class PlaybackService extends Service implements Target {
     }
 
     Handler mHandler = new Handler();
+
+    private void tellActivityThereIsNewEpisode() {
+        SharedPreferences settings = PreferenceManager
+                .getDefaultSharedPreferences(getApplicationContext());
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putLong(MainActivity.EPISODE_PLAYING, mEpisodeId);
+        editor.commit();
+        Intent intent = new Intent(EPISODE_CHANGE_INTENT);
+        intent.putExtra(EPISODE_ID_EXTRA, mEpisodeId);
+        mBroadcaster.sendBroadcast(intent);
+
+    }
 
     Runnable updateProgressRunnable = new Runnable() {
 
@@ -301,6 +325,23 @@ public class PlaybackService extends Service implements Target {
 
     @Override
     public void onPrepareLoad(Drawable arg0) {
+    }
+
+    @Override
+    public void onCompletion(MediaPlayer arg0) {
+        Log.e(Utils.TAG, "complete");
+        mPlayer.setPlaybackCompleted();
+        mPlayer.seek(0);
+        EpisodeDao edao = new EpisodeDao(getApplicationContext());
+        Episode e = pullCurrentEpisode();
+        e.setPlaylistRank(-1);
+        edao.update(e);
+
+        List<Episode> playlist = edao.getPlaylistEpisodes();
+
+        setCurrentEpisodeId(playlist.get(0).get_id());
+        tellActivityThereIsNewEpisode();
+        startPlaying();
     }
 
 }

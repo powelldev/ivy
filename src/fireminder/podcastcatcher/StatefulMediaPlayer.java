@@ -3,8 +3,8 @@ package fireminder.podcastcatcher;
 import java.io.File;
 
 import android.media.MediaPlayer;
+import android.media.MediaPlayer.OnCompletionListener;
 import android.util.Log;
-import fireminder.podcastcatcher.utils.Utils;
 import fireminder.podcastcatcher.valueobjects.Episode;
 
 public class StatefulMediaPlayer {
@@ -13,6 +13,8 @@ public class StatefulMediaPlayer {
     public State mState;
     private long mEpisodeId;
     private Episode episode;
+
+    private OnCompletionListener listener;
 
     private static final String TAG = StatefulMediaPlayer.class.getSimpleName();
     private String mCurrentTrack = "";
@@ -109,23 +111,24 @@ public class StatefulMediaPlayer {
         if (mState == State.STARTED) {
             mediaPlayer.pause();
             mediaPlayer.seekTo(time);
-            if (playing)
+            if (playing) {
                 mediaPlayer.start();
+                mediaPlayer.setOnCompletionListener(listener);
+            }
         } else if (mState == State.STOPPED) {
 
         } else if (mState == State.PAUSED) {
 
             mediaPlayer.pause();
             mediaPlayer.seekTo(time);
-            if (playing)
+            if (playing) {
                 mediaPlayer.start();
+                mediaPlayer.setOnCompletionListener(listener);
+            }
 
         } else if (mState == State.PREPARED) {
 
-            mediaPlayer.pause();
             mediaPlayer.seekTo(time);
-            if (playing)
-                mediaPlayer.start();
 
         } else if (mState == State.CREATED) {
 
@@ -136,18 +139,21 @@ public class StatefulMediaPlayer {
         if (mState == State.STARTED) {
 
             mediaPlayer.start();
+            mediaPlayer.setOnCompletionListener(listener);
         } else if (mState == State.STOPPED) {
             this.setDataSource(episode);
-            
+
         } else if (mState == State.PAUSED) {
 
             mediaPlayer.start();
+            mediaPlayer.setOnCompletionListener(listener);
 
             mState = State.STARTED;
 
         } else if (mState == State.PREPARED) {
 
             mediaPlayer.start();
+            mediaPlayer.setOnCompletionListener(listener);
 
             mState = State.STARTED;
 
@@ -173,8 +179,13 @@ public class StatefulMediaPlayer {
         return mediaPlayer.isPlaying();
     }
 
-    public void setOnCompletionListener(MediaPlayer.OnCompletionListener listener) {
-        mediaPlayer.setOnCompletionListener(listener);
+    public void setOnCompletionListener(
+            MediaPlayer.OnCompletionListener listener) {
+        this.listener = listener;
+    }
+
+    public void setPlaybackCompleted() {
+        mState = State.PREPARED;
     }
 
 }

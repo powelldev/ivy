@@ -1,6 +1,5 @@
 package fireminder.podcastcatcher.activities;
 
-
 import java.io.File;
 import java.util.Calendar;
 import java.util.List;
@@ -61,7 +60,7 @@ public class MainActivity extends Activity implements OnTaskCompleted,
 
     private Uri data = null;
 
-    private static final String EPISODE_PLAYING = "episode_playing";
+    public static final String EPISODE_PLAYING = "episode_playing";
 
     static PodcastFragment podcastFragment;
     static PlayerFragment playerFragment;
@@ -93,7 +92,12 @@ public class MainActivity extends Activity implements OnTaskCompleted,
                             PlaybackService.MAX_EXTRA, 0));
                     Log.e("HAPT",
                             "sentEpisodeMax ACTIVITY "
-                                    + arg1.getIntExtra(PlaybackService.MAX_EXTRA, 0));
+                                    + arg1.getIntExtra(
+                                            PlaybackService.MAX_EXTRA, 0));
+                } else if (arg1.getAction().matches(
+                        PlaybackService.EPISODE_CHANGE_INTENT)) {
+                    long id = arg1.getLongExtra(PlaybackService.EPISODE_ID_EXTRA, 0);
+                    setupPlayerAndDisplayEpisode(id);
                 } else if (arg1.getAction().matches(
                         DownloadManager.ACTION_DOWNLOAD_COMPLETE)) {
                     Utils.log("Download of "
@@ -190,7 +194,8 @@ public class MainActivity extends Activity implements OnTaskCompleted,
                     setPlaylistFragment();
                     break;
                 case 3:
-                    Intent i = new Intent(getApplicationContext(), SearchActivity.class);
+                    Intent i = new Intent(getApplicationContext(),
+                            SearchActivity.class);
                     startActivityForResult(i, 42);
                     break;
                 case 4:
@@ -209,6 +214,7 @@ public class MainActivity extends Activity implements OnTaskCompleted,
         IntentFilter ifi = new IntentFilter();
         ifi.addAction(PlaybackService.TIME_INTENT);
         ifi.addAction(PlaybackService.MAX_INTENT);
+        ifi.addAction(PlaybackService.EPISODE_CHANGE_INTENT);
         LocalBroadcastManager.getInstance(this)
                 .registerReceiver(mReceiver, ifi);
         registerReceiver(mReceiver, new IntentFilter(
@@ -345,7 +351,7 @@ public class MainActivity extends Activity implements OnTaskCompleted,
         if (requestCode == 42 && resultCode == RESULT_OK) {
             BackgroundThread bt = new BackgroundThread(this);
             String[] podcasts = data.getStringArrayExtra("result");
-            for (String p : podcasts){
+            for (String p : podcasts) {
                 bt.subscribeToPodcast(p, this);
             }
             podcastFragment.updateListAdapter();
@@ -366,7 +372,8 @@ public class MainActivity extends Activity implements OnTaskCompleted,
     private void setupPlayerAndDisplayEpisode(long episodeId) {
         try {
             Episode episode = new EpisodeDao(MainActivity.this).get(episodeId);
-            Podcast podcast = new PodcastDao(MainActivity.this).get(episode.getPodcast_id());
+            Podcast podcast = new PodcastDao(MainActivity.this).get(episode
+                    .getPodcast_id());
             playerLargeFragment.setEpisode(episode, podcast);
             findViewById(R.id.lower_container).setVisibility(View.VISIBLE);
 
@@ -466,8 +473,10 @@ public class MainActivity extends Activity implements OnTaskCompleted,
         Log.e(Utils.TAG, preference.getAll().toString());
 
     }
-    private void importFromOpml(){
-        File file = new File( Environment.getExternalStorageDirectory(), "podkicker_backup.opml");
+
+    private void importFromOpml() {
+        File file = new File(Environment.getExternalStorageDirectory(),
+                "podkicker_backup.opml");
         Helper.parseOpmlForPodcasts(file, this);
     }
 }
