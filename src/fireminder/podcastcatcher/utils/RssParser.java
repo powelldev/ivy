@@ -519,7 +519,6 @@ public class RssParser {
                 }
                 eventType = xpp.next();
             }
-            Log.e(Utils.TAG, "Err opmlasync: " + podcasts.get(0));
             return podcasts;
         } catch (Exception e) {
             Log.e(Utils.TAG, "Err opmlasync: " + e.getMessage());

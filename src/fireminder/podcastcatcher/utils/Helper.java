@@ -21,7 +21,7 @@ import fireminder.podcastcatcher.valueobjects.Episode;
 
 public class Helper {
 
-    public static boolean isDownloaded(Episode e, Context context) {
+    public static boolean updateIfDownloadedAlready(Episode e, Context context) {
         String fileName = e.getUrl();
         fileName = fileName.substring(fileName.lastIndexOf("/"));
         fileName = fileName.replaceAll("\\.", "_");

@@ -338,8 +338,9 @@ public class PlaybackService extends Service implements Target,
         edao.update(e);
 
         List<Episode> playlist = edao.getPlaylistEpisodes();
-
-        setCurrentEpisodeId(playlist.get(0).get_id());
+        if (playlist != null) {
+            setCurrentEpisodeId(playlist.get(0).get_id());
+        }
         tellActivityThereIsNewEpisode();
         startPlaying();
     }

@@ -43,18 +43,70 @@ public class BackgroundThread {
     private Context context;
     private PodcastDao pdao;
     private EpisodeDao edao;
+
     public BackgroundThread(Context context) {
         this.context = context;
         pdao = new PodcastDao(context);
         edao = new EpisodeDao(context);
     }
 
-    /***
-     * launches AsyncTasks for adding episodes to episode database
-     * 
-     * @param url
-     * @param id
-     */
+    public void subscribeToPodcast(String url, OnTaskCompleted listener) {
+        new SubscribeAsyncTask(listener).execute(new String[] { url });
+    }
+
+    private class SubscribeAsyncTask extends AsyncTask<String, Void, Podcast> {
+
+        private OnTaskCompleted listener;
+
+        public SubscribeAsyncTask(OnTaskCompleted activity) {
+            listener = activity;
+        }
+
+        @Override
+        protected Podcast doInBackground(String... urls) {
+
+            BufferedReader reader = null;
+            Podcast podcast = null;
+            try {
+                URL url = new URL(urls[0]);
+                HttpURLConnection con = (HttpURLConnection) url
+                        .openConnection();
+                InputStream is = con.getInputStream();
+                reader = new BufferedReader(new InputStreamReader(is));
+                podcast = RssParser.parsePodcastFromXml(is);
+                podcast.setLink(urls[0]);
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+                return null;
+            } catch (IOException e) {
+                e.printStackTrace();
+                return null;
+            } catch (XmlPullParserException e) {
+                e.printStackTrace();
+                return null;
+            }
+            return podcast;
+        }
+
+        @Override
+        protected void onPostExecute(Podcast result) {
+            if (result != null) {
+                Podcast podcast = pdao.get(pdao.insert(result));
+                BackgroundThread bt = new BackgroundThread(context);
+                bt.getEpisodesFromBackgroundThread(podcast.getLink(),
+                        podcast.getId());
+                bt.getPodcastImageFromBackgroundThread(podcast.getLink(),
+                        podcast.getId(), listener);
+                listener.onTaskCompleted(null);
+
+            } else {
+                Toast.makeText(context,
+                        "Podcast subscription failed: Please check url",
+                        Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
     public void getEpisodesFromBackgroundThread(String url, long id) {
         new ParseXmlForEpisodes().executeOnExecutor(
                 AsyncTask.THREAD_POOL_EXECUTOR, new String[] { url, "" + id });
@@ -66,7 +118,8 @@ public class BackgroundThread {
      * @param url
      * @param id
      */
-    public void getPodcastImageFromBackgroundThread(String url, long id, OnTaskCompleted listener) {
+    public void getPodcastImageFromBackgroundThread(String url, long id,
+            OnTaskCompleted listener) {
         new ParseXmlForImage(listener).execute(new String[] { url, "" + id });
     }
 
@@ -114,6 +167,7 @@ public class BackgroundThread {
         public ParseXmlForImage(OnTaskCompleted activity) {
             this.listener = activity;
         }
+
         OnTaskCompleted listener;
         String idForQuery;
 
@@ -139,8 +193,7 @@ public class BackgroundThread {
                 podcast.setImagePath("http://static.tvtropes.org/lampshade_logo_blue.png");
             }
             pdao.update(podcast);
-            listener
-                    .onTaskCompleted(null);
+            listener.onTaskCompleted(null);
             return null;
         }
 
@@ -172,7 +225,7 @@ public class BackgroundThread {
                 for (Episode episode : episodes) {
                     Log.d("Inserting: ", episode.getTitle());
                     edao.insert(episode);
-                    Helper.isDownloaded(episode, context);
+                    Helper.updateIfDownloadedAlready(episode, context);
                 }
 
                 return null;
@@ -375,78 +428,14 @@ public class BackgroundThread {
         }
     }
 
-    public class SubscribeAsyncTask extends AsyncTask<String, Void, Podcast> {
-        public SubscribeAsyncTask(OnTaskCompleted activity) {
-            sListener = activity;
-            
-        }
-        private OnTaskCompleted sListener;
-        private long id;
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            id = pdao.insert(new Podcast("Loading ..."));
-            sListener.onTaskCompleted(null);
-        }
-
-        @Override
-        protected Podcast doInBackground(String... urls) {
-
-            BufferedReader reader = null;
-            Podcast podcast = null;
-            try {
-                URL url = new URL(urls[0]);
-                HttpURLConnection con = (HttpURLConnection) url
-                        .openConnection();
-                InputStream is = con.getInputStream();
-                reader = new BufferedReader(new InputStreamReader(is));
-                podcast = RssParser.parsePodcastFromXml(is);
-                podcast.setLink(urls[0]);
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-                return null;
-            } catch (IOException e) {
-                e.printStackTrace();
-                return null;
-            } catch (XmlPullParserException e) {
-                e.printStackTrace();
-                return null;
-            }
-            return podcast;
-        }
-
-        @Override
-        protected void onPostExecute(Podcast result) {
-            pdao.delete(pdao.get(id));
-            if (result != null) {
-                Podcast podcast = pdao.get(pdao.insert(result));
-                BackgroundThread bt = new BackgroundThread(context);
-                bt.getEpisodesFromBackgroundThread(podcast.getLink(),
-                        podcast.getId());
-                bt.getPodcastImageFromBackgroundThread(podcast.getLink(),
-                        podcast.getId(), sListener);
-                sListener.onTaskCompleted(null);
-                
-            } else {
-                Toast.makeText(context,
-                        "Podcast subscription failed: Please check url",
-                        Toast.LENGTH_LONG).show();
-            }
-        }
-    }
-
-    public void subscribeToPodcast(String url, OnTaskCompleted listener) {
-        new SubscribeAsyncTask(listener).execute(new String[] { url });
-    }
-
     public void parseOpmlForPodcasts(File file, OnTaskCompleted listener) {
         new OpmlAsyncTask(listener).execute(new File[] { file });
     }
 
     private class OpmlAsyncTask extends AsyncTask<File, Void, String[]> {
-        private OnTaskCompleted listener; 
-        public OpmlAsyncTask (OnTaskCompleted activity) {
+        private OnTaskCompleted listener;
+
+        public OpmlAsyncTask(OnTaskCompleted activity) {
             listener = activity;
         }
 
@@ -468,10 +457,10 @@ public class BackgroundThread {
 
             return arr;
         }
-        
+
         @Override
-        protected void onPostExecute(String[] result){
-            for(String s : result) {
+        protected void onPostExecute(String[] result) {
+            for (String s : result) {
                 subscribeToPodcast(s, listener);
             }
         }

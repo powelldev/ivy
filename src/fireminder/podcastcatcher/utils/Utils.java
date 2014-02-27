@@ -16,6 +16,10 @@ public class Utils {
     public static final String TAG = "PodcastCatcher";
     public static final String DEFUALT_UPDATE = "24";
 
+
+    public static String getPodcastDir() {
+        return Environment.getExternalStorageState() + File.separator + Environment.DIRECTORY_PODCASTS;
+    }
     public static String getStringFromCursor(Cursor cursor, String index) {
         return cursor.getString(cursor.getColumnIndex(index));
     }
@@ -56,5 +60,7 @@ public class Utils {
     public static int getIntFromCursor(Cursor cursor, String index) {
         return cursor.getInt(cursor.getColumnIndex(index));
     }
+    
+    
     
 }

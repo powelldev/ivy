@@ -101,13 +101,18 @@ public class PodcastAdapter extends CursorAdapter {
             Log.e("Err", "Unable to load episode: " + xe.getMessage());
         }
         TextView tv = (TextView) arg0.findViewById(R.id.podcast_tv);
-        String title = Utils.getStringFromCursor(cursor,
+        String title;
+        try {
+        title = Utils.getStringFromCursor(cursor,
                 PodcastDao.COLUMN_TITLE);
         int textViewSize = 32;
         if (title.length() > textViewSize) {
             title = title.substring(0, textViewSize - 3) + "...";
         }
         tv.setText(title);
+        } catch (Exception e) {
+            tv.setText("Refresh");
+        }
     }
 
     @Override
