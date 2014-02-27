@@ -54,7 +54,7 @@ public class PlaybackService extends Service implements Target {
     public static final String FOREGROUND_ON_ACTION = "fireminder.podcastcatcher.services.PlaybackService.FOREGROUND_ON";
     public static final String FOREGROUND_OFF_ACTION = "fireminder.podcastcatcher.services.PlaybackService.FOREGROUND_OFF";
 
-    private long mEpisodeId;
+    private long mEpisodeId = -2;
     private int mElapsed;
     private StatefulMediaPlayer mPlayer;
     private LocalBroadcastManager mBroadcaster;
@@ -103,13 +103,70 @@ public class PlaybackService extends Service implements Target {
             seekToAndResume(time);
 
         } else if (action == FOREGROUND_ON_ACTION) {
-            setForeground(true);
+            if (mPlayer.isPlaying())
+                setForeground(true);
 
         } else if (action == FOREGROUND_OFF_ACTION) {
             setForeground(false);
 
         }
         return Service.START_STICKY;
+    }
+
+    private void prepare(Intent intent) {
+        updateEpisodeElapsed();
+        long id = pullIdFromIntent(intent);
+        setCurrentEpisodeId(id);
+    }
+
+    private long pullIdFromIntent(Intent intent) {
+        long id = intent.getExtras().getLong(EPISODE_EXTRA);
+        return id;
+    }
+
+    private void setCurrentEpisodeId(long id) {
+        mEpisodeId = id;
+    }
+
+    private void startPlaying() {
+        Episode episode = pullCurrentEpisode();
+        Log.e(Utils.TAG, "Episode id: " + episode.get_id());
+        Log.e(Utils.TAG, "Elapsed for starting episode: " + episode.getElapsed());
+        File file = new File(episode.getMp3());
+        if (file.exists()) {
+            mPlayer.setDataSource(episode);
+            mPlayer.startAt(episode.getElapsed());
+            setupUiElements(episode);
+            setupLockscreen(episode);
+        }
+    }
+
+    private Episode pullCurrentEpisode() {
+        EpisodeDao mEdao = new EpisodeDao(getApplicationContext());
+        return mEdao.get(mEpisodeId);
+    }
+
+    private void setupLockscreen(Episode episode) {
+        Podcast p = new PodcastDao(getApplicationContext()).get(episode
+                .getPodcast_id());
+        mLockscreen = new LockscreenManager(getApplicationContext());
+        Picasso.with(getApplicationContext()).load(p.getImagePath()).into(this);
+        mLockscreen.requestAudioFocus(getApplicationContext());
+        mLockscreen.setLockscreenPlaying();
+    }
+
+    private void setupUiElements(Episode episode) {
+        mHandler.removeCallbacksAndMessages(null);
+        mHandler.post(updateProgressRunnable);
+        sentEpisodeMax(episode);
+    }
+
+    private void resumeOrPause() {
+        if (mPlayer.isPlaying()) {
+            pause();
+        } else {
+            play();
+        }
     }
 
     private void seekQuantum(int delta) {
@@ -128,71 +185,38 @@ public class PlaybackService extends Service implements Target {
 
     }
 
-    private void resumeOrPause() {
-        if (mPlayer.isPlaying()) {
-            pause();
-        } else {
-            play();
-        }
-    }
-
     private void pause() {
+        updateEpisodeElapsed();
         mPlayer.pause();
         mHandler.removeCallbacksAndMessages(null);
-        EpisodeDao mEdao = new EpisodeDao(getApplicationContext());
-        Episode episode = mEdao.get(mEpisodeId);
-        episode.setElapsed(mElapsed);
-        mEdao.update(episode);
-        Log.e(TAG, "Elapsed update: " + episode.getElapsed());
         mLockscreen.setLockscreenPaused();
     }
 
-    private void play() {
-        mHandler.post(updateProgressRunnable);
+    private void updateEpisodeElapsed() {
+        if (mEpisodeId != -2) {
         EpisodeDao mEdao = new EpisodeDao(getApplicationContext());
         Episode episode = mEdao.get(mEpisodeId);
-        sentEpisodeMax(episode);
-        Podcast p = new PodcastDao(getApplicationContext()).get(episode
-                .getPodcast_id());
-        mLockscreen.requestAudioFocus(getApplicationContext());
-        Picasso.with(getApplicationContext()).load(p.getImagePath()).into(this);
-        mLockscreen.setLockscreenPlaying();
-        mPlayer.start();
-    }
-
-    private void prepare(Intent intent) {
-        long id = pullIdFromIntent(intent);
-        setCurrentEpisodeId(id);
-    }
-
-    private long pullIdFromIntent(Intent intent) {
-        long id = intent.getExtras().getLong(EPISODE_EXTRA);
-        return id;
-    }
-
-    private void setCurrentEpisodeId(long id) {
-        mEpisodeId = id;
-    }
-
-    private void startPlaying() {
-        EpisodeDao mEdao = new EpisodeDao(getApplicationContext());
-        Episode episode = mEdao.get(mEpisodeId);
-        File file = new File(episode.getMp3());
-        if (file.exists()) {
-            mPlayer.setDataSource(episode);
-            mPlayer.startAt(episode.getElapsed());
-            mHandler.post(updateProgressRunnable);
-            sentEpisodeMax(episode);
+        Log.e(Utils.TAG, "Elapsed before insert: " + episode.getElapsed());
+        episode.setElapsed(mElapsed);
+        Log.e(Utils.TAG, "Elapsed after set: " + episode.getElapsed());
+        long id = mEdao.update(episode);
+        Log.e(Utils.TAG, id + " Elapsed after insert: " + mEdao.get(id));
         }
+    }
 
-        mLockscreen = new LockscreenManager(getApplicationContext());
+    private void play() {
+        Episode episode = pullCurrentEpisode();
+        Log.e(Utils.TAG, "Episode id: " + episode.get_id());
+        Log.e(Utils.TAG, "Elapsed for starting episode: " + episode.getElapsed());
+        setupUiElements(episode);
+        setupLockscreen(episode);
+        mPlayer.start();
     }
 
     private void setForeground(boolean on) {
         if (on) {
+            Episode episode = pullCurrentEpisode();
             Intent notificationIntent = new Intent(this, MainActivity.class);
-            EpisodeDao mEdao = new EpisodeDao(getApplicationContext());
-            Episode episode = mEdao.get(mEpisodeId);
             NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(
                     this)
                     .setSmallIcon(R.drawable.ic_launcher)
@@ -220,6 +244,7 @@ public class PlaybackService extends Service implements Target {
     }
 
     Handler mHandler = new Handler();
+
     Runnable updateProgressRunnable = new Runnable() {
 
         @Override
@@ -236,12 +261,10 @@ public class PlaybackService extends Service implements Target {
     };
 
     private void sentEpisodeMax(Episode episode) {
-        Log.e("HAPT", "sentEpisodeMax");
         MediaMetadataRetriever mmr = new MediaMetadataRetriever();
         mmr.setDataSource(episode.getMp3());
         String duration = mmr
                 .extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
-        Log.e("HAPT", "sentEpisodeMax" + duration);
         Intent intent = new Intent(MAX_INTENT);
         intent.putExtra(MAX_EXTRA, Integer.parseInt(duration));
         mBroadcaster.sendBroadcast(intent);
@@ -270,9 +293,8 @@ public class PlaybackService extends Service implements Target {
 
     @Override
     public void onBitmapLoaded(Bitmap arg0, LoadedFrom arg1) {
-        EpisodeDao edao = new EpisodeDao(getApplicationContext());
         PodcastDao pdao = new PodcastDao(getApplicationContext());
-        Episode e = edao.get(mEpisodeId);
+        Episode e = pullCurrentEpisode();
         Podcast p = pdao.get(e.getPodcast_id());
         mLockscreen.setMetadata(e, p, arg0);
     }

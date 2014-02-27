@@ -50,7 +50,7 @@ public class EpisodeDao {
         e.setMp3(cursor.getString(cursor.getColumnIndex(COLUMN_MP3)));
         e.setDuration(Utils.getStringFromCursor(cursor, COLUMN_DURATION));
         e.setElapsed(Utils.getIntFromCursor(cursor, COLUMN_ELAPSED));
-        e.setElapsed(Utils.getIntFromCursor(cursor, COLUMN_PLAYLIST));
+        e.setPlaylistRank(Utils.getIntFromCursor(cursor, COLUMN_PLAYLIST));
         return e;
     }
 
@@ -65,9 +65,9 @@ public class EpisodeDao {
     }
 
     public long update(Episode episode) {
-        long id = 0;
         SQLiteDatabase db = new SqlHelper(context).getWritableDatabase();
         ContentValues cv = new ContentValues();
+        cv.put(COLUMN_ID, episode.get_id());
         cv.put(COLUMN_PODCAST_ID, episode.getPodcast_id());
         cv.put(COLUMN_TITLE, episode.getTitle());
         cv.put(COLUMN_DESCRIP, episode.getDescription());
@@ -77,8 +77,8 @@ public class EpisodeDao {
         cv.put(COLUMN_DURATION, episode.getDuration());
         cv.put(COLUMN_ELAPSED, episode.getElapsed());
         cv.put(COLUMN_PLAYLIST, episode.getPlaylistRank());
-        id = db.update(TABLE_NAME, cv, COLUMN_ID + " = " + episode.get_id(),
-                null);
+        long id = db.insertWithOnConflict(TABLE_NAME, null, cv,
+                SQLiteDatabase.CONFLICT_REPLACE);
         db.close();
         return id;
     }
@@ -177,8 +177,7 @@ public class EpisodeDao {
     }
 
     public Cursor getPlaylistEpisodesAsCursor() {
-        SQLiteDatabase db = new SqlHelper(context
-                ).getReadableDatabase();
+        SQLiteDatabase db = new SqlHelper(context).getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE "
                 + COLUMN_PLAYLIST + " >= 1" + " ORDER BY " + COLUMN_PLAYLIST
                 + " ASC ", null);
@@ -187,8 +186,7 @@ public class EpisodeDao {
     }
 
     public int getNumberOfEpisodesInPlaylist() {
-        SQLiteDatabase db = new SqlHelper(context
-                ).getReadableDatabase();
+        SQLiteDatabase db = new SqlHelper(context).getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE "
                 + COLUMN_PLAYLIST + " >= 1" + " ORDER BY " + COLUMN_PLAYLIST
                 + " ASC ", null);
