@@ -13,14 +13,11 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
 import android.media.MediaMetadataRetriever;
-import android.media.MediaPlayer;
-import android.media.MediaPlayer.OnErrorListener;
 import android.os.Handler;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Picasso.LoadedFrom;
@@ -89,10 +86,8 @@ public class PlaybackService extends Service implements Target {
     public int onStartCommand(Intent intent, int flags, int startId) {
         String action = intent.getAction();
         if (action == START_ACTION) {
-            start(intent);
-
-        } else if (action == SET_ACTION) {
-            set(intent);
+            prepare(intent);
+            startPlaying();
 
         } else if (action == PLAY_PAUSE_ACTION) {
             resumeOrPause();
@@ -105,7 +100,7 @@ public class PlaybackService extends Service implements Target {
 
         } else if (action == SEEK_ACTION) {
             int time = intent.getIntExtra(SEEK_EXTRA, 0);
-            mPlayer.seek(time);
+            seekToAndResume(time);
 
         } else if (action == FOREGROUND_ON_ACTION) {
             setForeground(true);
@@ -118,21 +113,25 @@ public class PlaybackService extends Service implements Target {
     }
 
     private void seekQuantum(int delta) {
-        boolean player = mPlayer.isPlaying();
         int updatedTime = mPlayer.getCurrentPosition() + delta;
         if (updatedTime < 0)
             updatedTime = 0;
+        seekToAndResume(updatedTime);
+    }
+
+    private void seekToAndResume(int target) {
+        boolean player = mPlayer.isPlaying();
         mPlayer.pause();
-        mPlayer.seek(updatedTime);
+        mPlayer.seek(target);
         if (player)
             mPlayer.start();
+
     }
 
     private void resumeOrPause() {
         if (mPlayer.isPlaying()) {
             pause();
         } else {
-            Log.e(TAG, "Playing...");
             play();
         }
     }
@@ -153,9 +152,7 @@ public class PlaybackService extends Service implements Target {
         EpisodeDao mEdao = new EpisodeDao(getApplicationContext());
         Episode episode = mEdao.get(mEpisodeId);
         sentEpisodeMax(episode);
-        Log.e(Utils.TAG, "Requesting audio focus");
-        Episode e = mEdao.get(mEpisodeId);
-        Podcast p = new PodcastDao(getApplicationContext()).get(e
+        Podcast p = new PodcastDao(getApplicationContext()).get(episode
                 .getPodcast_id());
         mLockscreen.requestAudioFocus(getApplicationContext());
         Picasso.with(getApplicationContext()).load(p.getImagePath()).into(this);
@@ -163,39 +160,32 @@ public class PlaybackService extends Service implements Target {
         mPlayer.start();
     }
 
-    private void start(Intent intent) {
-
-        mLockscreen = new LockscreenManager(getApplicationContext());
-        mEpisodeId = intent.getExtras().getLong(EPISODE_EXTRA);
-        if (mPlayer.getPlayingEpisodeId() != mEpisodeId) {
-            EpisodeDao mEdao = new EpisodeDao(getApplicationContext());
-            Episode episode = mEdao.get(mEpisodeId);
-            Log.e(TAG, episode.getMp3());
-            File file = new File(episode.getMp3());
-            Log.e(TAG, file.getAbsolutePath());
-            if (file.exists()) {
-                mPlayer.setDataSource(episode);
-                mPlayer.startAt(episode.getElapsed());
-                mHandler.post(updateProgressRunnable);
-                sentEpisodeMax(episode);
-            }
-        }
+    private void prepare(Intent intent) {
+        long id = pullIdFromIntent(intent);
+        setCurrentEpisodeId(id);
     }
 
-    private void set(Intent intent) {
-        mEpisodeId = intent.getExtras().getLong(EPISODE_EXTRA);
-        if (mPlayer.getPlayingEpisodeId() != mEpisodeId) {
-            EpisodeDao mEdao = new EpisodeDao(getApplicationContext());
-            Episode episode = mEdao.get(mEpisodeId);
-            Log.e(TAG, episode.getMp3());
-            File file = new File(episode.getMp3());
-            Log.e(TAG, file.getAbsolutePath());
-            if (file.exists()) {
-                mPlayer.setDataSource(episode);
-                mPlayer.seek(episode.getElapsed());
-                sentEpisodeMax(episode);
-            }
+    private long pullIdFromIntent(Intent intent) {
+        long id = intent.getExtras().getLong(EPISODE_EXTRA);
+        return id;
+    }
+
+    private void setCurrentEpisodeId(long id) {
+        mEpisodeId = id;
+    }
+
+    private void startPlaying() {
+        EpisodeDao mEdao = new EpisodeDao(getApplicationContext());
+        Episode episode = mEdao.get(mEpisodeId);
+        File file = new File(episode.getMp3());
+        if (file.exists()) {
+            mPlayer.setDataSource(episode);
+            mPlayer.startAt(episode.getElapsed());
+            mHandler.post(updateProgressRunnable);
+            sentEpisodeMax(episode);
         }
+
+        mLockscreen = new LockscreenManager(getApplicationContext());
     }
 
     private void setForeground(boolean on) {

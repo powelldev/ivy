@@ -242,8 +242,7 @@ public class MainActivity extends Activity implements OnTaskCompleted,
 
         mEpisodeId = settings.getLong(EPISODE_PLAYING, -1);
         if (mEpisodeId != -1) {
-            resumeEpisode(mEpisodeId);
-            findViewById(R.id.lower_container).setVisibility(View.VISIBLE);
+            setupPlayerAndDisplayEpisode(mEpisodeId);
         }
         // Stop notification
         Intent intent = new Intent(this, PlaybackService.class);
@@ -364,16 +363,14 @@ public class MainActivity extends Activity implements OnTaskCompleted,
         Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
     }
 
-    private void resumeEpisode(long episodeId) {
+    private void setupPlayerAndDisplayEpisode(long episodeId) {
         try {
             Episode episode = new EpisodeDao(MainActivity.this).get(episodeId);
             Podcast podcast = new PodcastDao(MainActivity.this).get(episode.getPodcast_id());
-            // startPlayingEpisode(episode, podcast);
             playerLargeFragment.setEpisode(episode, podcast);
             findViewById(R.id.lower_container).setVisibility(View.VISIBLE);
+
             Intent intent = new Intent(this, PlaybackService.class);
-            intent.setAction(PlaybackService.SET_ACTION);
-            intent.putExtra(PlaybackService.EPISODE_EXTRA, episode.get_id());
             startService(intent);
         } catch (Exception e) {
             mEpisodeId = -1;

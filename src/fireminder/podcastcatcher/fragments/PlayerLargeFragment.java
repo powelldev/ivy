@@ -177,7 +177,7 @@ public class PlayerLargeFragment extends Fragment implements OnClickListener,
         if (fromUser) {
             Log.e(Utils.TAG, "Starting seek from user: " + progress);
             Intent intent = new Intent(getActivity(), PlaybackService.class);
-            intent.setAction("fireminder.PlaybackService.SEEK");
+            intent.setAction(PlaybackService.SEEK_ACTION);
             intent.putExtra(PlaybackService.SEEK_EXTRA, progress);
             getActivity().startService(intent);
         }
