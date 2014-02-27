@@ -22,9 +22,6 @@ import fireminder.podcastcatcher.valueobjects.Episode;
 
 public class ADownloadService extends IntentService {
     
-    PodcastDao pdao = new PodcastDao();
-    EpisodeDao edao = new EpisodeDao();
-
     public ADownloadService() {
         super("DownloadService");
     }
@@ -33,8 +30,8 @@ public class ADownloadService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
 
+
         Utils.log("HAPT", "DownloadService started at " + System.currentTimeMillis() + "");
-        PodcastCatcher.getInstance().setContext(getApplicationContext());
         BackgroundThread bt = new BackgroundThread(this);
         bt.getNewEpisodes();
 //        
@@ -62,6 +59,8 @@ public class ADownloadService extends IntentService {
 
     protected List<Episode> doInBackground() {
 
+        PodcastDao pdao = new PodcastDao(getApplicationContext());
+        EpisodeDao edao = new EpisodeDao(getApplicationContext());
         Cursor cursor = null;
         cursor = pdao.getAllPodcastsAsCursor();
 
@@ -111,7 +110,7 @@ public class ADownloadService extends IntentService {
             return; 
             }
         for (Episode e : result) {
-            Helper.downloadEpisodeMp3(e);
+            Helper.downloadEpisodeMp3(e, getApplicationContext());
         }
         this.stopSelf();
     }

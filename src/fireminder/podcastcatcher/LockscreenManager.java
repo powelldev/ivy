@@ -70,9 +70,7 @@ public class LockscreenManager {
                 .setPlaybackState(RemoteControlClient.PLAYSTATE_PLAYING);
     }
 
-    public void setMetadata(long mEpisodeId, Bitmap arg0) {
-        Episode e = new EpisodeDao().get(mEpisodeId);
-        Podcast p = new PodcastDao().get(e.getPodcast_id());
+    public void setMetadata(Episode e, Podcast p, Bitmap arg0) {
         remoteControlClient
                 .editMetadata(true)
                 .putString(MediaMetadataRetriever.METADATA_KEY_ARTIST,

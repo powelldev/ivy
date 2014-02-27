@@ -1,28 +1,27 @@
 package fireminder.podcastcatcher.utils;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import android.app.DownloadManager;
 import android.app.DownloadManager.Request;
 import android.content.Context;
 import android.net.Uri;
 import android.os.Environment;
 import android.util.Log;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
-
-import fireminder.podcastcatcher.PodcastCatcher;
+import fireminder.podcastcatcher.activities.MainActivity;
 import fireminder.podcastcatcher.db.EpisodeDao;
 import fireminder.podcastcatcher.downloads.BackgroundThread;
 import fireminder.podcastcatcher.valueobjects.Episode;
 
 public class Helper {
 
-    public static boolean isDownloaded(Episode e) {
+    public static boolean isDownloaded(Episode e, Context context) {
         String fileName = e.getUrl();
         fileName = fileName.substring(fileName.lastIndexOf("/"));
         fileName = fileName.replaceAll("\\.", "_");
@@ -32,13 +31,13 @@ public class Helper {
                 .getPath() + "/" + Environment.DIRECTORY_PODCASTS + fileName);
         if (file.exists()) {
             e.setMp3(file.getAbsolutePath());
-            new EpisodeDao().update(e);
+            new EpisodeDao(context).update(e);
             return true;
         } else {
             return false;
         }
     }
-    public static void downloadEpisodeMp3(Episode e) {
+    public static void downloadEpisodeMp3(Episode e, Context context) {
         String fileName = e.getUrl();
         fileName = fileName.substring(fileName.lastIndexOf("/"));
         fileName = fileName.replaceAll("\\.", "_");
@@ -52,8 +51,7 @@ public class Helper {
             Log.e("Downloading...", fileName);
             // TODO Make download notification point back at app - or allow
             // cessation of download
-            final DownloadManager dm = (DownloadManager) PodcastCatcher
-                    .getInstance().getContext()
+            final DownloadManager dm = (DownloadManager) context
                     .getSystemService(Context.DOWNLOAD_SERVICE);
 
             Request request = new Request(Uri.parse(e.getUrl()));
@@ -68,7 +66,7 @@ public class Helper {
             e.setMp3(Environment.getExternalStorageDirectory().getPath() + "/"
                     + Environment.DIRECTORY_PODCASTS + fileName);
         }
-        new EpisodeDao().update(e);
+        new EpisodeDao(context).update(e);
     }
 
     public static void searchForPodcasts(Context context, String term) {
@@ -178,8 +176,9 @@ public class Helper {
         BackgroundThread bt = new BackgroundThread(context);
         bt.getNewEpisodesForPodcast((int) itemId);
     }
-    public static void parseOpmlForPodcasts(File file, Context context) {
-        BackgroundThread bt = new BackgroundThread(context);
-        bt.parseOpmlForPodcasts(file);
+    public static void parseOpmlForPodcasts(File file, MainActivity activity) {
+        BackgroundThread bt = new BackgroundThread(activity);
+        bt.parseOpmlForPodcasts(file, activity);
+        
     }
 }

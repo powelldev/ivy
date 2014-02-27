@@ -20,7 +20,6 @@ public class BootService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
         Log.e("HAPT", "Starting service");
-        PodcastCatcher.getInstance().setContext(getApplicationContext());
         AlarmManager alarmManager = (AlarmManager) this
                 .getSystemService(Context.ALARM_SERVICE);
         Intent i = new Intent(this, ADownloadService.class);

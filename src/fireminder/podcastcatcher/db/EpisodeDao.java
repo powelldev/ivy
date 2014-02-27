@@ -6,10 +6,9 @@ import java.util.Calendar;
 import java.util.List;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.database.Cursor;
-import android.database.CursorIndexOutOfBoundsException;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
 import fireminder.podcastcatcher.PodcastCatcher;
 import fireminder.podcastcatcher.utils.Utils;
 import fireminder.podcastcatcher.valueobjects.Episode;
@@ -35,7 +34,10 @@ public class EpisodeDao {
             COLUMN_MP3, COLUMN_DURATION, COLUMN_ELAPSED, COLUMN_PLAYLIST };
     public static String TAG = EpisodeDao.class.getSimpleName();
 
-    public EpisodeDao() {
+    Context context;
+
+    public EpisodeDao(Context context) {
+        this.context = context;
     }
 
     public static Episode cursorToEpisode(Cursor cursor) {
@@ -54,8 +56,7 @@ public class EpisodeDao {
     }
 
     public Episode get(long id) {
-        SQLiteDatabase db = new SqlHelper(PodcastCatcher.getInstance()
-                .getContext()).getReadableDatabase();
+        SQLiteDatabase db = new SqlHelper(context).getReadableDatabase();
         Cursor cursor = db.query(TABLE_NAME, allColumns,
                 COLUMN_ID + " = " + id, null, null, null, null);
         cursor.moveToFirst();
@@ -66,8 +67,7 @@ public class EpisodeDao {
 
     public long update(Episode episode) {
         long id = 0;
-        SQLiteDatabase db = new SqlHelper(PodcastCatcher.getInstance()
-                .getContext()).getWritableDatabase();
+        SQLiteDatabase db = new SqlHelper(context).getWritableDatabase();
         ContentValues cv = new ContentValues();
         cv.put(COLUMN_PODCAST_ID, episode.getPodcast_id());
         cv.put(COLUMN_TITLE, episode.getTitle());
@@ -86,8 +86,7 @@ public class EpisodeDao {
 
     public long insert(Episode e) {
         long id = -1;
-        SQLiteDatabase db = new SqlHelper(PodcastCatcher.getInstance()
-                .getContext()).getWritableDatabase();
+        SQLiteDatabase db = new SqlHelper(this.context).getWritableDatabase();
         ContentValues cv = new ContentValues();
         cv.put(COLUMN_PODCAST_ID, e.getPodcast_id());
         cv.put(COLUMN_TITLE, e.getTitle());
@@ -107,31 +106,27 @@ public class EpisodeDao {
     }
 
     public Cursor getAllEpisodesAsCursor(long id) {
-        SQLiteDatabase db = new SqlHelper(PodcastCatcher.getInstance()
-                .getContext()).getWritableDatabase();
+        SQLiteDatabase db = new SqlHelper(context).getWritableDatabase();
         Cursor cursor = db.query(TABLE_NAME, allColumns, COLUMN_PODCAST_ID
                 + "=" + id, null, null, null, null);
         return cursor;
     }
 
     public void deleteAllEpisodes(long id) {
-        SQLiteDatabase db = new SqlHelper(PodcastCatcher.getInstance()
-                .getContext()).getWritableDatabase();
+        SQLiteDatabase db = new SqlHelper(context).getWritableDatabase();
         db.delete(TABLE_NAME, COLUMN_PODCAST_ID + " = ?", new String[] { ""
                 + id });
         db.close();
     }
 
     public void delete(Episode episode) {
-        SQLiteDatabase db = new SqlHelper(PodcastCatcher.getInstance()
-                .getContext()).getWritableDatabase();
+        SQLiteDatabase db = new SqlHelper(context).getWritableDatabase();
         db.delete(TABLE_NAME, COLUMN_ID + " = " + episode.get_id(), null);
         db.close();
     }
 
     public Episode getLatestEpisode(long id) {
-        SQLiteDatabase db = new SqlHelper(PodcastCatcher.getInstance()
-                .getContext()).getWritableDatabase();
+        SQLiteDatabase db = new SqlHelper(context).getWritableDatabase();
         Episode e = null;
         /*
          * SELECT * FROM episodes WHERE podcast_id = id ORDER BY pubDate DESC
@@ -149,8 +144,7 @@ public class EpisodeDao {
     }
 
     public Cursor getAllEpisodesAsCursorByDate(long id) {
-        SQLiteDatabase db = new SqlHelper(PodcastCatcher.getInstance()
-                .getContext()).getWritableDatabase();
+        SQLiteDatabase db = new SqlHelper(context).getWritableDatabase();
         Cursor cursor = db
                 .query(TABLE_NAME, allColumns, COLUMN_PODCAST_ID + " = " + id,
                         null, null, null, COLUMN_PUBDATE + " DESC ", null);
@@ -158,8 +152,7 @@ public class EpisodeDao {
     }
 
     public List<Episode> getAllEpisodes(long id) {
-        SQLiteDatabase db = new SqlHelper(PodcastCatcher.getInstance()
-                .getContext()).getWritableDatabase();
+        SQLiteDatabase db = new SqlHelper(context).getWritableDatabase();
         List<Episode> episodes = new ArrayList<Episode>();
         Cursor cursor = db
                 .query(TABLE_NAME, allColumns, COLUMN_PODCAST_ID + " = " + id,
@@ -174,8 +167,7 @@ public class EpisodeDao {
     }
 
     public Cursor getAllRecentEpisodes() {
-        SQLiteDatabase db = new SqlHelper(PodcastCatcher.getInstance()
-                .getContext()).getWritableDatabase();
+        SQLiteDatabase db = new SqlHelper(context).getWritableDatabase();
         long lastWeekInMillis = Calendar.getInstance().getTimeInMillis()
                 - (7 * 24 * 60 * 60 * 1000);
         Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE "
@@ -186,8 +178,8 @@ public class EpisodeDao {
     }
 
     public Cursor getPlaylistEpisodesAsCursor() {
-        SQLiteDatabase db = new SqlHelper(PodcastCatcher.getInstance()
-                .getContext()).getReadableDatabase();
+        SQLiteDatabase db = new SqlHelper(context
+                ).getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE "
                 + COLUMN_PLAYLIST + " >= 1" + " ORDER BY " + COLUMN_PLAYLIST
                 + " ASC ", null);
@@ -196,8 +188,8 @@ public class EpisodeDao {
     }
 
     public int getNumberOfEpisodesInPlaylist() {
-        SQLiteDatabase db = new SqlHelper(PodcastCatcher.getInstance()
-                .getContext()).getReadableDatabase();
+        SQLiteDatabase db = new SqlHelper(context
+                ).getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE "
                 + COLUMN_PLAYLIST + " >= 1" + " ORDER BY " + COLUMN_PLAYLIST
                 + " ASC ", null);

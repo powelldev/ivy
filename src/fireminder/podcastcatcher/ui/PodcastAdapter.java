@@ -67,7 +67,7 @@ public class PodcastAdapter extends CursorAdapter {
             TextView descripTv = (TextView) arg0.findViewById(R.id.descrip);
             long id = cursor.getLong(cursor
                     .getColumnIndex(PodcastDao.COLUMN_ID));
-            Episode e = new EpisodeDao().getLatestEpisode(id);
+            Episode e = new EpisodeDao(context).getLatestEpisode(id);
             String descrip = e.getDescription();
             descrip = android.text.Html.fromHtml(descrip).toString();
             int descripSize = 125;
@@ -132,7 +132,7 @@ public class PodcastAdapter extends CursorAdapter {
                 ProgressDialog dialog = new ProgressDialog(context);
                 dialog.setTitle("Removing");
                 dialog.show();
-                new PodcastDao().delete(mId);
+                new PodcastDao(context).delete(mId);
                 notifyDataSetChanged();
                 dialog.dismiss();
                 break;

@@ -46,8 +46,7 @@ public class PlaybackService extends Service implements Target {
     public static final String MAX_INTENT = "fireminder.podcastcatcher.services.PlaybackService.TIME_MAX";
     public static final String MAX = "max_time";
     public static final String SEEK_EXTRA = "seek_extra";
-    private EpisodeDao mEdao = new EpisodeDao();;
-    private PodcastDao mPdao = new PodcastDao();;
+
     private long mEpisodeId = -1;
     private int mElapsed;
     private LocalBroadcastManager mBroadcaster;
@@ -133,6 +132,7 @@ public class PlaybackService extends Service implements Target {
     private void pause() {
         mPlayer.pause();
         mHandler.removeCallbacksAndMessages(null);
+        EpisodeDao mEdao = new EpisodeDao(getApplicationContext());
         Episode episode = mEdao.get(mEpisodeId);
         episode.setElapsed(mElapsed);
         mEdao.update(episode);
@@ -142,11 +142,12 @@ public class PlaybackService extends Service implements Target {
 
     private void play() {
         mHandler.post(updateProgressRunnable);
+        EpisodeDao mEdao = new EpisodeDao(getApplicationContext());
         Episode episode = mEdao.get(mEpisodeId);
         sentEpisodeMax(episode);
         Log.e(Utils.TAG, "Requesting audio focus");
         Episode e = mEdao.get(mEpisodeId);
-        Podcast p = mPdao.get(e.getPodcast_id());
+        Podcast p = new PodcastDao(getApplicationContext()).get(e.getPodcast_id());
         mLockscreen.requestAudioFocus(getApplicationContext());
         Picasso.with(getApplicationContext()).load(p.getImagePath()).into(this);
         mLockscreen.setLockscreenPlaying();
@@ -158,6 +159,7 @@ public class PlaybackService extends Service implements Target {
         mLockscreen = new LockscreenManager(getApplicationContext());
         mEpisodeId = intent.getExtras().getLong(EPISODE_EXTRA);
         if (mPlayer.getPlayingEpisodeId() != mEpisodeId) {
+            EpisodeDao mEdao = new EpisodeDao(getApplicationContext());
             Episode episode = mEdao.get(mEpisodeId);
             Log.e(TAG, episode.getMp3());
             File file = new File(episode.getMp3());
@@ -174,6 +176,7 @@ public class PlaybackService extends Service implements Target {
     private void set(Intent intent) {
         mEpisodeId = intent.getExtras().getLong(EPISODE_EXTRA);
         if (mPlayer.getPlayingEpisodeId() != mEpisodeId) {
+            EpisodeDao mEdao = new EpisodeDao(getApplicationContext());
             Episode episode = mEdao.get(mEpisodeId);
             Log.e(TAG, episode.getMp3());
             File file = new File(episode.getMp3());
@@ -189,6 +192,7 @@ public class PlaybackService extends Service implements Target {
     private void setForeground(boolean on) {
         if (on) {
             Intent notificationIntent = new Intent(this, MainActivity.class);
+            EpisodeDao mEdao = new EpisodeDao(getApplicationContext());
             Episode episode = mEdao.get(mEpisodeId);
             NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(
                     this)
@@ -268,7 +272,11 @@ public class PlaybackService extends Service implements Target {
 
     @Override
     public void onBitmapLoaded(Bitmap arg0, LoadedFrom arg1) {
-        mLockscreen.setMetadata(mEpisodeId, arg0);
+        EpisodeDao edao = new EpisodeDao(getApplicationContext());
+        PodcastDao pdao = new PodcastDao(getApplicationContext());
+        Episode e = edao.get(mEpisodeId);
+        Podcast p = pdao.get(e.getPodcast_id());
+        mLockscreen.setMetadata(e, p, arg0);
     }
 
     @Override

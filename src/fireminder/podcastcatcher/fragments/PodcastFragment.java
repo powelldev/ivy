@@ -50,9 +50,6 @@ public class PodcastFragment extends ListFragment implements LoaderManager.Loade
     final static String TAG = PodcastFragment.class.getSimpleName();
 
     public PodcastAdapter cursorAdapter;
-    PodcastDao pdao = new PodcastDao();
-    EpisodeDao edao = new EpisodeDao();
-    public BackgroundThread bt = new BackgroundThread(getActivity());
     
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -65,6 +62,7 @@ public class PodcastFragment extends ListFragment implements LoaderManager.Loade
         
         View rootView = inflater.inflate(R.layout.listfragment1, container, false);
         
+        PodcastDao pdao = new PodcastDao(getActivity());
         Cursor podcastCursor = pdao.getAllPodcastsAsCursor();
         cursorAdapter = new PodcastAdapter(getActivity(), podcastCursor, 0);
         setListAdapter(cursorAdapter);
@@ -184,6 +182,7 @@ public class PodcastFragment extends ListFragment implements LoaderManager.Loade
     
 
     private class HttpDownloadTask extends AsyncTask<String, Void, Podcast>{
+        PodcastDao pdao = new PodcastDao(getActivity());
         long id;
         @Override
         protected void onPreExecute() {
@@ -226,7 +225,7 @@ public class PodcastFragment extends ListFragment implements LoaderManager.Loade
                 Podcast podcast = pdao.get(pdao.insert(result));
                 BackgroundThread bt = new BackgroundThread(getActivity());
                 bt.getEpisodesFromBackgroundThread(podcast.getLink(), podcast.getId());
-                bt.getPodcastImageFromBackgroundThread(podcast.getLink(), podcast.getId());
+                bt.getPodcastImageFromBackgroundThread(podcast.getLink(), podcast.getId(), (MainActivity) getActivity());
                 Log.d(TAG, "parsing for episodes");
                 //new ParseXmlForEpisodes().execute(new String[] {podcast.getLink(), String.valueOf(podcast.get_id())});
             }
@@ -251,6 +250,8 @@ public class PodcastFragment extends ListFragment implements LoaderManager.Loade
         @Override
         public boolean onItemLongClick(AdapterView<?> arg0, View arg1,
                 int itemPosition, long itemId) {
+            PodcastDao pdao = new PodcastDao(getActivity());
+            EpisodeDao edao = new EpisodeDao(getActivity());
             pdao.delete(pdao.get(itemId));
             edao.deleteAllEpisodes(itemId);
             updateListAdapter();

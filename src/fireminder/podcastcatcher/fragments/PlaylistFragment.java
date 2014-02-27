@@ -53,7 +53,7 @@ public class PlaylistFragment extends ListFragment implements OnItemClickListene
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
-        Cursor cursor = new EpisodeDao().getPlaylistEpisodesAsCursor();
+        Cursor cursor = new EpisodeDao(getActivity()).getPlaylistEpisodesAsCursor();
         mAdapter = new PlaylistAdapter(getActivity(), cursor, 0);
         setListAdapter(mAdapter);
         super.onViewCreated(view, savedInstanceState);
@@ -63,20 +63,20 @@ public class PlaylistFragment extends ListFragment implements OnItemClickListene
     public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
             long episode_id) {
 
-        Episode episode = new EpisodeDao().get(episode_id);
+        Episode episode = new EpisodeDao(getActivity()).get(episode_id);
 
         if (episode.getMp3().matches("")) {
-            Helper.downloadEpisodeMp3(episode);
+            Helper.downloadEpisodeMp3(episode, getActivity());
         } else {
             File mp3 = new File(episode.getMp3());
             if (mp3.exists()) {
                 MainActivity activity = (MainActivity) getActivity();
                 activity.startPlayingEpisode(episode,
-                        new PodcastDao().get(episode.getPodcast_id()));
+                        new PodcastDao(getActivity()).get(episode.getPodcast_id()));
                 Toast.makeText(getActivity(), "Playing", Toast.LENGTH_SHORT)
                         .show();
             } else {
-                Helper.downloadEpisodeMp3(episode);
+                Helper.downloadEpisodeMp3(episode, getActivity());
             }
         }
 

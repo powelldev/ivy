@@ -109,15 +109,15 @@ public class EpisodeAdapter extends CursorAdapter {
         public boolean onMenuItemClick(MenuItem item) {
             switch (item.getItemId()) {
             case R.id.menu_episode_delete:
-                new EpisodeDao().clearDataOn(mId);
+                new EpisodeDao(context).clearDataOn(mId);
                 notifyDataSetChanged();
                 break;
             case R.id.menu_episode_delete_all:
-                new EpisodeDao().clearDataOnAll(mId);
+                new EpisodeDao(context).clearDataOnAll(mId);
                 notifyDataSetChanged();
                 break;
             case R.id.menu_episode_queue:
-                EpisodeDao eDao = new EpisodeDao();
+                EpisodeDao eDao = new EpisodeDao(context);
                 Episode e = eDao.get(mId);
                 e.setPlaylistRank(eDao.getNumberOfEpisodesInPlaylist() + 1);
                 eDao.update(e);

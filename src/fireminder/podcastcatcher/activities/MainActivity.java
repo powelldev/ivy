@@ -144,8 +144,6 @@ public class MainActivity extends Activity implements OnTaskCompleted,
         // UI Listeners
         ((SlidingUpPanelLayout) findViewById(R.id.sliding_layout))
                 .setPanelSlideListener(this);
-        PodcastCatcher.getInstance().setContext(this);
-        PodcastCatcher.getInstance().setActivity(this);
         // DrawerListener
 
         Intent updateIntent = new Intent(MainActivity.this, BootService.class);
@@ -347,7 +345,11 @@ public class MainActivity extends Activity implements OnTaskCompleted,
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == 42 && resultCode == RESULT_OK) {
-            // Search finished, update ListView?
+            BackgroundThread bt = new BackgroundThread(this);
+            String[] podcasts = data.getStringArrayExtra("result");
+            for (String p : podcasts){
+                bt.subscribeToPodcast(p, this);
+            }
             podcastFragment.updateListAdapter();
         } else {
             super.onActivityResult(requestCode, resultCode, data);
@@ -365,8 +367,8 @@ public class MainActivity extends Activity implements OnTaskCompleted,
 
     private void resumeEpisode(long episodeId) {
         try {
-            Episode episode = new EpisodeDao().get(episodeId);
-            Podcast podcast = new PodcastDao().get(episode.getPodcast_id());
+            Episode episode = new EpisodeDao(MainActivity.this).get(episodeId);
+            Podcast podcast = new PodcastDao(MainActivity.this).get(episode.getPodcast_id());
             // startPlayingEpisode(episode, podcast);
             playerLargeFragment.setEpisode(episode, podcast);
             findViewById(R.id.lower_container).setVisibility(View.VISIBLE);

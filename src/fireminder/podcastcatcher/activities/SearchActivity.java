@@ -106,11 +106,16 @@ public class SearchActivity extends ListActivity implements OnTaskCompleted {
 
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            BackgroundThread bt = new BackgroundThread(PodcastCatcher.getInstance().getContext());
-                            for (String podcast : mSelectedPodcasts) {
-                                bt.subscribeToPodcast(podcast);
+                            String[] podcasts = new String[mSelectedPodcasts.size()];
+                            for (int i = 0;i <  mSelectedPodcasts.size(); i++) {
+                                podcasts[i] = mSelectedPodcasts.get(i);
                             }
-                            finishWithItem(null);
+                            Bundle b = new Bundle();
+                            b.putStringArray("result", podcasts);
+                            Intent data = new Intent();
+                            data.putExtras(b);
+                            setResult(RESULT_OK, data);
+                            finish();
                         }
                     });
             builder.create().show();

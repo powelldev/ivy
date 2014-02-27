@@ -18,7 +18,6 @@ import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.PopupMenu.OnMenuItemClickListener;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
@@ -26,6 +25,7 @@ import fireminder.podcastcatcher.R;
 import fireminder.podcastcatcher.db.EpisodeDao;
 import fireminder.podcastcatcher.db.PodcastDao;
 import fireminder.podcastcatcher.utils.Utils;
+import fireminder.podcastcatcher.valueobjects.Podcast;
 
 public class RecentAdapter extends CursorAdapter {
 
@@ -78,7 +78,9 @@ public class RecentAdapter extends CursorAdapter {
         try {
             long id = cursor.getLong(cursor
                     .getColumnIndex(EpisodeDao.COLUMN_PODCAST_ID));
-            String path = new PodcastDao().get(id).getImagePath();
+            PodcastDao pdao = new PodcastDao(context);
+            Podcast parent = pdao.get(id);
+            String path = parent.getImagePath();
             Picasso.with(arg1).load(path).noFade().fit().centerCrop()
                     .placeholder(R.drawable.ic_launcher).into(iv);
 
@@ -101,7 +103,7 @@ public class RecentAdapter extends CursorAdapter {
         public boolean onMenuItemClick(MenuItem menu) {
             switch (menu.getItemId()) {
             case R.id.menu_podcast_delete:
-                new EpisodeDao().clearDataOn(mId);
+                new EpisodeDao(context).clearDataOn(mId);
                 notifyDataSetChanged();
                 break;
             }
