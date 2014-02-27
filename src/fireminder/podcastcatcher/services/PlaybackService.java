@@ -38,17 +38,28 @@ import fireminder.podcastcatcher.valueobjects.Podcast;
 
 public class PlaybackService extends Service implements Target {
 
-    private StatefulMediaPlayer mPlayer;
-    public static final String EPISODE_EXTRA = "episode_extra";
-    public static final String TIME = "timing_update";
-    public static final String TIME_INTENT = "fireminder.podcastcatcher.services.PlaybackService.TIME_UPDATE";
     private static final String TAG = PlaybackService.class.getSimpleName();
-    public static final String MAX_INTENT = "fireminder.podcastcatcher.services.PlaybackService.TIME_MAX";
-    public static final String MAX = "max_time";
-    public static final String SEEK_EXTRA = "seek_extra";
 
-    private long mEpisodeId = -1;
+    public static final String MAX_EXTRA = "max";
+    public static final String SEEK_EXTRA = "seek";
+    public static final String TIME_EXTRA = "timing";
+    public static final String EPISODE_EXTRA = "episode";
+
+    public static final String MAX_INTENT = "fireminder.podcastcatcher.services.PlaybackService.TIME_MAX";
+    public static final String TIME_INTENT = "fireminder.podcastcatcher.services.PlaybackService.TIME_UPDATE";
+
+    public static final String START_ACTION = "fireminder.podcastcatcher.services.PlaybackService.START";
+    public static final String SET_ACTION = "fireminder.podcastcatcher.services.PlaybackService.SET";
+    public static final String PLAY_PAUSE_ACTION = "fireminder.podcastcatcher.services.PlaybackService.PLAY_PAUSE";
+    public static final String FORWARD_ACTION = "fireminder.podcastcatcher.services.PlaybackService.FORWARD";
+    public static final String REWIND_ACTION = "fireminder.podcastcatcher.services.PlaybackService.REWIND";
+    public static final String SEEK_ACTION = "fireminder.podcastcatcher.services.PlaybackService.SEEK";
+    public static final String FOREGROUND_ON_ACTION = "fireminder.podcastcatcher.services.PlaybackService.FOREGROUND_ON";
+    public static final String FOREGROUND_OFF_ACTION = "fireminder.podcastcatcher.services.PlaybackService.FOREGROUND_OFF";
+
+    private long mEpisodeId;
     private int mElapsed;
+    private StatefulMediaPlayer mPlayer;
     private LocalBroadcastManager mBroadcaster;
     private LockscreenManager mLockscreen;
 
@@ -61,6 +72,7 @@ public class PlaybackService extends Service implements Target {
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(AudioManager.ACTION_AUDIO_BECOMING_NOISY);
         this.registerReceiver(mReceiver, intentFilter);
+
         mLockscreen = new LockscreenManager(getApplicationContext());
         super.onCreate();
     }
@@ -75,51 +87,48 @@ public class PlaybackService extends Service implements Target {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        try {
-            if (intent.getAction().contains("START")) {
-                start(intent);
-            } else if (intent.getAction().contains("SET")) {
-                set(intent);
-            } else if (intent.getAction().contains("PLAY")) {
-                Log.e(TAG, intent.getAction() + mPlayer.isPlaying());
-                if (mPlayer.isPlaying()) {
-                    pause();
-                } else {
-                    Log.e(TAG, "Playing...");
-                    play();
-                }
-            } else if (intent.getAction().contains("FORWARD")) {
-                Log.e(Utils.TAG, intent.getAction());
-                boolean player = mPlayer.isPlaying();
-                int i = mPlayer.getCurrentPosition() + 30000;
-                mPlayer.pause();
-                mPlayer.seek(i);
-                if (player)
-                    mPlayer.start();
-            } else if (intent.getAction().contains("REWIND")) {
-                Log.e(Utils.TAG, intent.getAction());
-                boolean player = mPlayer.isPlaying();
-                int i = mPlayer.getCurrentPosition() - 30000;
-                if (i < 0) {
-                    i = 0;
-                }
-                mPlayer.pause();
-                mPlayer.seek(i);
-                if (player)
-                    mPlayer.start();
-            } else if (intent.getAction().contains("SEEK")) {
-                int time = intent.getIntExtra(SEEK_EXTRA, 0);
-                Log.e(Utils.TAG, "SEEKING PROGRESS INTENT: " + time);
-                mPlayer.seek(time);
-            } else if (intent.getAction().contains("FOREGROUND_ON")) {
-                if (mPlayer.isPlaying()) {
-                    setForeground(true);
-                }
-            } else if (intent.getAction().contains("FOREGROUND_OFF")) {
-                setForeground(false);
+        String action = intent.getAction();
+        if (action == START_ACTION) {
+            start(intent);
+        } else if (action == SET_ACTION) {
+            set(intent);
+        } else if (action == PLAY_PAUSE_ACTION) {
+            Log.e(TAG, intent.getAction() + mPlayer.isPlaying());
+            if (mPlayer.isPlaying()) {
+                pause();
+            } else {
+                Log.e(TAG, "Playing...");
+                play();
             }
-        } catch (Exception e) {
-            Log.e(TAG, "Err in onStartCommand: " + e.getMessage());
+        } else if (action == FORWARD_ACTION) {
+            Log.e(Utils.TAG, intent.getAction());
+            boolean player = mPlayer.isPlaying();
+            int i = mPlayer.getCurrentPosition() + 30000;
+            mPlayer.pause();
+            mPlayer.seek(i);
+            if (player)
+                mPlayer.start();
+        } else if (action == REWIND_ACTION) {
+            Log.e(Utils.TAG, intent.getAction());
+            boolean player = mPlayer.isPlaying();
+            int i = mPlayer.getCurrentPosition() - 30000;
+            if (i < 0) {
+                i = 0;
+            }
+            mPlayer.pause();
+            mPlayer.seek(i);
+            if (player)
+                mPlayer.start();
+        } else if (action == SEEK_ACTION) {
+            int time = intent.getIntExtra(SEEK_EXTRA, 0);
+            Log.e(Utils.TAG, "SEEKING PROGRESS INTENT: " + time);
+            mPlayer.seek(time);
+        } else if (action == FOREGROUND_ON_ACTION) {
+            if (mPlayer.isPlaying()) {
+                setForeground(true);
+            }
+        } else if (action == FOREGROUND_OFF_ACTION) {
+            setForeground(false);
         }
         return Service.START_STICKY;
     }
@@ -147,7 +156,8 @@ public class PlaybackService extends Service implements Target {
         sentEpisodeMax(episode);
         Log.e(Utils.TAG, "Requesting audio focus");
         Episode e = mEdao.get(mEpisodeId);
-        Podcast p = new PodcastDao(getApplicationContext()).get(e.getPodcast_id());
+        Podcast p = new PodcastDao(getApplicationContext()).get(e
+                .getPodcast_id());
         mLockscreen.requestAudioFocus(getApplicationContext());
         Picasso.with(getApplicationContext()).load(p.getImagePath()).into(this);
         mLockscreen.setLockscreenPlaying();
@@ -229,7 +239,7 @@ public class PlaybackService extends Service implements Target {
             Log.e(TAG, "" + mPlayer.getCurrentPosition());
             mElapsed = mPlayer.getCurrentPosition();
             Intent intent = new Intent(TIME_INTENT);
-            intent.putExtra(TIME, mPlayer.getCurrentPosition());
+            intent.putExtra(TIME_EXTRA, mPlayer.getCurrentPosition());
             mBroadcaster.sendBroadcast(intent);
             mHandler.postDelayed(this, 1000);
         }
@@ -244,7 +254,7 @@ public class PlaybackService extends Service implements Target {
                 .extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
         Log.e("HAPT", "sentEpisodeMax" + duration);
         Intent intent = new Intent(MAX_INTENT);
-        intent.putExtra(MAX, Integer.parseInt(duration));
+        intent.putExtra(MAX_EXTRA, Integer.parseInt(duration));
         mBroadcaster.sendBroadcast(intent);
         mmr.release();
 
@@ -258,8 +268,7 @@ public class PlaybackService extends Service implements Target {
                     AudioManager.ACTION_AUDIO_BECOMING_NOISY)) {
                 pause();
                 Intent pauseIntent = new Intent(context, PlaybackService.class);
-                pauseIntent
-                        .setAction("fireminder.playbackService.FOREGROUND_OFF");
+                pauseIntent.setAction(FOREGROUND_OFF_ACTION);
                 startService(pauseIntent);
             }
         }

@@ -1,12 +1,12 @@
 package fireminder.podcastcatcher.receivers;
 
-import fireminder.podcastcatcher.services.PlaybackService;
-import fireminder.podcastcatcher.utils.Utils;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 import android.view.KeyEvent;
+import fireminder.podcastcatcher.services.PlaybackService;
+import fireminder.podcastcatcher.utils.Utils;
 
 public class MediaButtonReceiver extends BroadcastReceiver {
 
@@ -19,17 +19,17 @@ public class MediaButtonReceiver extends BroadcastReceiver {
             if (KeyEvent.ACTION_DOWN == event.getAction()) {
                 if (KeyEvent.KEYCODE_MEDIA_PREVIOUS == event.getKeyCode()) {
                     Intent sIntent = new Intent(context, PlaybackService.class);
-                    sIntent.setAction("fireminder.podcastcatcher.REWIND");
+                    sIntent.setAction(PlaybackService.REWIND_ACTION);
                     context.startService(sIntent);
                 } else if (KeyEvent.KEYCODE_MEDIA_NEXT == event
                         .getKeyCode()) {
                     Intent sIntent = new Intent(context, PlaybackService.class);
-                    sIntent.setAction("fireminder.podcastcatcher.FAST_FORWARD");
+                    sIntent.setAction(PlaybackService.FORWARD_ACTION);
                     context.startService(sIntent);
                 } else if (KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE == event
                         .getKeyCode()) {
                     Intent sIntent = new Intent(context, PlaybackService.class);
-                    sIntent.setAction("fireminder.podcastcatcher.PLAY_PAUSE");
+                    sIntent.setAction(PlaybackService.PLAY_PAUSE_ACTION);
                     context.startService(sIntent);
                 }
             }

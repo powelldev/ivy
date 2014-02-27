@@ -110,15 +110,15 @@ public class PlayerLargeFragment extends Fragment implements OnClickListener,
         switch (v.getId()) {
         case R.id.fragment_player_header_playpause_icon:
         case R.id.fragment_player_playpause_icon:
-            intent.setAction("fireminder.PlaybackService.PLAY");
+            intent.setAction(PlaybackService.PLAY_PAUSE_ACTION);
             getActivity().startService(intent);
             break;
         case R.id.fragment_player_rewind_icon:
-            intent.setAction("fireminder.PlaybackService.REWIND");
+            intent.setAction(PlaybackService.REWIND_ACTION);
             getActivity().startService(intent);
             break;
         case R.id.fragment_player_ff_icon:
-            intent.setAction("fireminder.PlaybackService.FORWARD");
+            intent.setAction(PlaybackService.FORWARD_ACTION);
             getActivity().startService(intent);
             break;
         }
@@ -175,7 +175,7 @@ public class PlayerLargeFragment extends Fragment implements OnClickListener,
     public void onProgressChanged(SeekBar seekBar, int progress,
             boolean fromUser) {
         if (fromUser) {
-            Log.e(Utils.TAG, "Starting seek from user: "  + progress);
+            Log.e(Utils.TAG, "Starting seek from user: " + progress);
             Intent intent = new Intent(getActivity(), PlaybackService.class);
             intent.setAction("fireminder.PlaybackService.SEEK");
             intent.putExtra(PlaybackService.SEEK_EXTRA, progress);
@@ -192,22 +192,20 @@ public class PlayerLargeFragment extends Fragment implements OnClickListener,
 
     }
 
-    public void setPlayOn(boolean playing){
+    public void setPlayOn(boolean playing) {
         if (playing) {
-        ((ImageButton) getView()
-                .findViewById(R.id.fragment_player_header_playpause_icon))
-                .setActivated(true);
-        ((ImageButton) getView()
-                .findViewById(R.id.fragment_player_playpause_icon))
-                .setActivated(false);
+            ((ImageButton) getView().findViewById(
+                    R.id.fragment_player_header_playpause_icon))
+                    .setActivated(true);
+            ((ImageButton) getView().findViewById(
+                    R.id.fragment_player_playpause_icon)).setActivated(false);
         } else {
-        ((ImageButton) getView()
-                .findViewById(R.id.fragment_player_header_playpause_icon))
-                .setActivated(false);
-        ((ImageButton) getView()
-                .findViewById(R.id.fragment_player_playpause_icon))
-                .setActivated(true);
-            
+            ((ImageButton) getView().findViewById(
+                    R.id.fragment_player_header_playpause_icon))
+                    .setActivated(false);
+            ((ImageButton) getView().findViewById(
+                    R.id.fragment_player_playpause_icon)).setActivated(true);
+
         }
     }
 }

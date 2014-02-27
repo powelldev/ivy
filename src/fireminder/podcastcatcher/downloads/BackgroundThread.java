@@ -25,7 +25,6 @@ import android.os.Environment;
 import android.util.Log;
 import android.widget.Toast;
 import fireminder.podcastcatcher.OnTaskCompleted;
-import fireminder.podcastcatcher.PodcastCatcher;
 import fireminder.podcastcatcher.db.EpisodeDao;
 import fireminder.podcastcatcher.db.PodcastDao;
 import fireminder.podcastcatcher.utils.Helper;

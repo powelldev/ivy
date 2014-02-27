@@ -37,7 +37,6 @@ import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout.PanelSlideListener;
 
 import fireminder.podcastcatcher.OnTaskCompleted;
-import fireminder.podcastcatcher.PodcastCatcher;
 import fireminder.podcastcatcher.R;
 import fireminder.podcastcatcher.db.EpisodeDao;
 import fireminder.podcastcatcher.db.PodcastDao;
@@ -88,13 +87,13 @@ public class MainActivity extends Activity implements OnTaskCompleted,
             public void onReceive(Context arg0, Intent arg1) {
                 if (arg1.getAction().matches(PlaybackService.TIME_INTENT)) {
                     playerLargeFragment.updateTime(arg1.getIntExtra(
-                            PlaybackService.TIME, 0));
+                            PlaybackService.TIME_EXTRA, 0));
                 } else if (arg1.getAction().matches(PlaybackService.MAX_INTENT)) {
                     playerLargeFragment.setMaxTime(arg1.getIntExtra(
-                            PlaybackService.MAX, 0));
+                            PlaybackService.MAX_EXTRA, 0));
                     Log.e("HAPT",
                             "sentEpisodeMax ACTIVITY "
-                                    + arg1.getIntExtra(PlaybackService.MAX, 0));
+                                    + arg1.getIntExtra(PlaybackService.MAX_EXTRA, 0));
                 } else if (arg1.getAction().matches(
                         DownloadManager.ACTION_DOWNLOAD_COMPLETE)) {
                     Utils.log("Download of "
@@ -223,7 +222,7 @@ public class MainActivity extends Activity implements OnTaskCompleted,
     @Override
     protected void onStop() {
         Intent intent = new Intent(this, PlaybackService.class);
-        intent.setAction("fireminder.playbackService.OFF");
+        intent.setAction(PlaybackService.FOREGROUND_OFF_ACTION);
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mReceiver);
 
         super.onStop();
@@ -248,7 +247,7 @@ public class MainActivity extends Activity implements OnTaskCompleted,
         }
         // Stop notification
         Intent intent = new Intent(this, PlaybackService.class);
-        intent.setAction("fireminder.playbackService.FOREGROUND_OFF");
+        intent.setAction(PlaybackService.FOREGROUND_OFF_ACTION);
         startService(intent);
 
     }
@@ -263,7 +262,7 @@ public class MainActivity extends Activity implements OnTaskCompleted,
 
         // Launch notification
         Intent intent = new Intent(this, PlaybackService.class);
-        intent.setAction("fireminder.playbackService.FOREGROUND_ON");
+        intent.setAction(PlaybackService.FOREGROUND_ON_ACTION);
         startService(intent);
 
         super.onPause();
@@ -373,7 +372,7 @@ public class MainActivity extends Activity implements OnTaskCompleted,
             playerLargeFragment.setEpisode(episode, podcast);
             findViewById(R.id.lower_container).setVisibility(View.VISIBLE);
             Intent intent = new Intent(this, PlaybackService.class);
-            intent.setAction("SET");
+            intent.setAction(PlaybackService.SET_ACTION);
             intent.putExtra(PlaybackService.EPISODE_EXTRA, episode.get_id());
             startService(intent);
         } catch (Exception e) {
@@ -385,7 +384,7 @@ public class MainActivity extends Activity implements OnTaskCompleted,
         playerLargeFragment.setEpisode(episode, podcast);
         findViewById(R.id.lower_container).setVisibility(View.VISIBLE);
         Intent intent = new Intent(this, PlaybackService.class);
-        intent.setAction("START");
+        intent.setAction(PlaybackService.START_ACTION);
         intent.putExtra(PlaybackService.EPISODE_EXTRA, episode.get_id());
         startService(intent);
     }
