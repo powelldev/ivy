@@ -2,10 +2,6 @@ package fireminder.podcastcatcher.services;
 
 import java.io.File;
 
-import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Picasso.LoadedFrom;
-import com.squareup.picasso.Target;
-
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.Service;
@@ -14,15 +10,23 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
 import android.media.MediaMetadataRetriever;
+import android.media.MediaPlayer;
+import android.media.MediaPlayer.OnCompletionListener;
+import android.media.MediaPlayer.OnErrorListener;
 import android.os.Handler;
 import android.os.IBinder;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
+import android.widget.Toast;
+
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Picasso.LoadedFrom;
+import com.squareup.picasso.Target;
+
 import fireminder.podcastcatcher.LockscreenManager;
 import fireminder.podcastcatcher.R;
 import fireminder.podcastcatcher.StatefulMediaPlayer;
@@ -107,8 +111,8 @@ public class PlaybackService extends Service implements Target {
                     mPlayer.start();
             } else if (intent.getAction().contains("SEEK")) {
                 int time = intent.getIntExtra(SEEK_EXTRA, 0);
-                Log.e("HAPT", "SEEKING PROGRESS INTENT: " + time);
-                mPlayer.seekTo(time);
+                Log.e(Utils.TAG, "SEEKING PROGRESS INTENT: " + time);
+                mPlayer.seek(time);
             } else if (intent.getAction().contains("FOREGROUND_ON")) {
                 if (mPlayer.isPlaying()) {
                     setForeground(true);
@@ -123,6 +127,7 @@ public class PlaybackService extends Service implements Target {
     }
 
     private void stop() {
+        mLockscreen.removeLockscreenControls(getApplicationContext());
         this.stopSelf();
     }
 
@@ -175,7 +180,7 @@ public class PlaybackService extends Service implements Target {
             Log.e(TAG, file.getAbsolutePath());
             if (file.exists()) {
                 mPlayer.setDataSource(episode);
-                mPlayer.seekTo(episode.getElapsed());
+                mPlayer.seek(episode.getElapsed());
                 sentEpisodeMax(episode);
             }
         }

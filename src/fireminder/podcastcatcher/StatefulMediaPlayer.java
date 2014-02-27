@@ -1,10 +1,10 @@
 package fireminder.podcastcatcher;
 
-import android.media.MediaPlayer;
-import android.util.Log;
-
 import java.io.File;
 
+import android.media.MediaPlayer;
+import android.util.Log;
+import fireminder.podcastcatcher.utils.Utils;
 import fireminder.podcastcatcher.valueobjects.Episode;
 
 public class StatefulMediaPlayer extends MediaPlayer {
@@ -14,8 +14,9 @@ public class StatefulMediaPlayer extends MediaPlayer {
 
     private static final String TAG = StatefulMediaPlayer.class.getSimpleName();
     private String mCurrentTrack = "";
+
     public enum State {
-        STARTED, STOPPED, PAUSED, PREPARED, CREATED;
+        STARTED, STOPPED, PAUSED, PREPARED, CREATED, RELEASED;
     }
 
     public StatefulMediaPlayer() {
@@ -26,7 +27,13 @@ public class StatefulMediaPlayer extends MediaPlayer {
     public State getState() {
         return mState;
     }
+    public void release() {
+        super.stop();
+        super.release();
+        mState = State.RELEASED;
+    }
 
+    
     public void setDataSource(Episode episode) {
         this.reset();
         try {
@@ -40,14 +47,14 @@ public class StatefulMediaPlayer extends MediaPlayer {
             Log.e(TAG, e.getMessage());
             mState = State.CREATED;
         }
-        
-        
+
     }
-    
+
     public void reset() {
         super.reset();
         mState = State.CREATED;
     }
+
     public void stop() {
         if (mState == State.STARTED) {
 
@@ -58,9 +65,9 @@ public class StatefulMediaPlayer extends MediaPlayer {
         } else if (mState == State.STOPPED) {
 
         } else if (mState == State.PAUSED) {
-            
+
             super.stop();
-            
+
             mState = State.STOPPED;
 
         } else if (mState == State.PREPARED) {
@@ -69,6 +76,7 @@ public class StatefulMediaPlayer extends MediaPlayer {
 
         }
     }
+
     public void pause() {
         if (mState == State.STARTED) {
 
@@ -86,24 +94,32 @@ public class StatefulMediaPlayer extends MediaPlayer {
 
         }
     }
-    
+
     public void startAt(int elapsed) {
         super.seekTo(elapsed);
         this.start();
     }
 
     public void seek(int time) {
+
+        boolean playing = super.isPlaying();
         if (mState == State.STARTED) {
+            super.pause();
             super.seekTo(time);
+            if (playing) super.start();
         } else if (mState == State.STOPPED) {
 
         } else if (mState == State.PAUSED) {
 
+            super.pause();
             super.seekTo(time);
+            if (playing) super.start();
 
         } else if (mState == State.PREPARED) {
 
+            super.pause();
             super.seekTo(time);
+            if (playing) super.start();
 
         } else if (mState == State.CREATED) {
 
@@ -140,6 +156,5 @@ public class StatefulMediaPlayer extends MediaPlayer {
     public long getPlayingEpisodeId() {
         return mEpisodeId;
     }
-    
-    
+
 }

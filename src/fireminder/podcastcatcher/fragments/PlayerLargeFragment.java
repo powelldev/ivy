@@ -1,8 +1,11 @@
 package fireminder.podcastcatcher.fragments;
 
+import java.util.concurrent.TimeUnit;
+
 import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -16,10 +19,9 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
-import java.util.concurrent.TimeUnit;
-
 import fireminder.podcastcatcher.R;
 import fireminder.podcastcatcher.services.PlaybackService;
+import fireminder.podcastcatcher.utils.Utils;
 import fireminder.podcastcatcher.valueobjects.Episode;
 import fireminder.podcastcatcher.valueobjects.Podcast;
 
@@ -173,6 +175,7 @@ public class PlayerLargeFragment extends Fragment implements OnClickListener,
     public void onProgressChanged(SeekBar seekBar, int progress,
             boolean fromUser) {
         if (fromUser) {
+            Log.e(Utils.TAG, "Starting seek from user: "  + progress);
             Intent intent = new Intent(getActivity(), PlaybackService.class);
             intent.setAction("fireminder.PlaybackService.SEEK");
             intent.putExtra(PlaybackService.SEEK_EXTRA, progress);
