@@ -90,52 +90,51 @@ public class PlaybackService extends Service implements Target {
         String action = intent.getAction();
         if (action == START_ACTION) {
             start(intent);
+
         } else if (action == SET_ACTION) {
             set(intent);
+
         } else if (action == PLAY_PAUSE_ACTION) {
-            Log.e(TAG, intent.getAction() + mPlayer.isPlaying());
-            if (mPlayer.isPlaying()) {
-                pause();
-            } else {
-                Log.e(TAG, "Playing...");
-                play();
-            }
+            resumeOrPause();
+
         } else if (action == FORWARD_ACTION) {
-            Log.e(Utils.TAG, intent.getAction());
-            boolean player = mPlayer.isPlaying();
-            int i = mPlayer.getCurrentPosition() + 30000;
-            mPlayer.pause();
-            mPlayer.seek(i);
-            if (player)
-                mPlayer.start();
+            seekQuantum(30000);
+
         } else if (action == REWIND_ACTION) {
-            Log.e(Utils.TAG, intent.getAction());
-            boolean player = mPlayer.isPlaying();
-            int i = mPlayer.getCurrentPosition() - 30000;
-            if (i < 0) {
-                i = 0;
-            }
-            mPlayer.pause();
-            mPlayer.seek(i);
-            if (player)
-                mPlayer.start();
+            seekQuantum(-30000);
+
         } else if (action == SEEK_ACTION) {
             int time = intent.getIntExtra(SEEK_EXTRA, 0);
-            Log.e(Utils.TAG, "SEEKING PROGRESS INTENT: " + time);
             mPlayer.seek(time);
+
         } else if (action == FOREGROUND_ON_ACTION) {
-            if (mPlayer.isPlaying()) {
-                setForeground(true);
-            }
+            setForeground(true);
+
         } else if (action == FOREGROUND_OFF_ACTION) {
             setForeground(false);
+
         }
         return Service.START_STICKY;
     }
 
-    private void stop() {
-        mLockscreen.removeLockscreenControls(getApplicationContext());
-        this.stopSelf();
+    private void seekQuantum(int delta) {
+        boolean player = mPlayer.isPlaying();
+        int updatedTime = mPlayer.getCurrentPosition() + delta;
+        if (updatedTime < 0)
+            updatedTime = 0;
+        mPlayer.pause();
+        mPlayer.seek(updatedTime);
+        if (player)
+            mPlayer.start();
+    }
+
+    private void resumeOrPause() {
+        if (mPlayer.isPlaying()) {
+            pause();
+        } else {
+            Log.e(TAG, "Playing...");
+            play();
+        }
     }
 
     private void pause() {
