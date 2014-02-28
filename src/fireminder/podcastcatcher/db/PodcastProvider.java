@@ -34,7 +34,7 @@ public class PodcastProvider extends ContentProvider {
             
     @Override
     public boolean onCreate() {
-        mSqlHelper = new SqlHelper(getContext());
+        mSqlHelper = SqlHelper.getInstance(getContext());
         return false;
     }
 

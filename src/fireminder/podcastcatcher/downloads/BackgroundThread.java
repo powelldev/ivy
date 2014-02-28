@@ -9,6 +9,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -64,41 +65,30 @@ public class BackgroundThread {
 
         @Override
         protected Podcast doInBackground(String... urls) {
-
-            BufferedReader reader = null;
-            Podcast podcast = null;
             try {
                 URL url = new URL(urls[0]);
                 HttpURLConnection con = (HttpURLConnection) url
                         .openConnection();
                 InputStream is = con.getInputStream();
-                reader = new BufferedReader(new InputStreamReader(is));
-                podcast = RssParser.parsePodcastFromXml(is);
+                Podcast podcast = RssParser.parsePodcastFromXml(is);
                 podcast.setLink(urls[0]);
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-                return null;
-            } catch (IOException e) {
-                e.printStackTrace();
-                return null;
-            } catch (XmlPullParserException e) {
-                e.printStackTrace();
+                return podcast;
+            } catch (Exception e) {
+                Log.e(Utils.TAG, "Error in SubscribeAsyncTask doInBackground: "
+                        + e.getMessage());
+                Log.e(Utils.TAG, "Subscribing to: " + urls[0]);
                 return null;
             }
-            return podcast;
         }
 
         @Override
         protected void onPostExecute(Podcast result) {
             if (result != null) {
-                Podcast podcast = pdao.get(pdao.insert(result));
-                BackgroundThread bt = new BackgroundThread(context);
-                bt.getEpisodesFromBackgroundThread(podcast.getLink(),
-                        podcast.getId());
-                bt.getPodcastImageFromBackgroundThread(podcast.getLink(),
-                        podcast.getId(), listener);
+                // TODO: check for duplicates
+                long id = pdao.insert(result);
+                Podcast podcast = pdao.get(id);
+                getEpisodesFromBackgroundThread(podcast);
                 listener.onTaskCompleted(null);
-
             } else {
                 Toast.makeText(context,
                         "Podcast subscription failed: Please check url",
@@ -107,25 +97,47 @@ public class BackgroundThread {
         }
     }
 
-    public void getEpisodesFromBackgroundThread(String url, long id) {
-        new ParseXmlForEpisodes().executeOnExecutor(
+    public void getEpisodesFromBackgroundThread(Podcast podcast) {
+        String url = podcast.getLink();
+        long id = podcast.getId();
+        new EpisodeRetrieveAsync().executeOnExecutor(
                 AsyncTask.THREAD_POOL_EXECUTOR, new String[] { url, "" + id });
     }
 
-    /***
-     * launches AsyncTask for loading a podcast image
-     * 
-     * @param url
-     * @param id
-     */
-    public void getPodcastImageFromBackgroundThread(String url, long id,
-            OnTaskCompleted listener) {
-        new ParseXmlForImage(listener).execute(new String[] { url, "" + id });
+    private class EpisodeRetrieveAsync extends AsyncTask<String, Void, Void> {
+        long idForQuery;
+
+        @Override
+        protected Void doInBackground(String... urls) {
+            try {
+            idForQuery = Long.parseLong(urls[1]);
+            BufferedReader reader = null;
+            List<Episode> episodes = null;
+            URL url = new URL(urls[0]);
+            HttpURLConnection con = (HttpURLConnection) url.openConnection();
+            InputStream is = con.getInputStream();
+            reader = new BufferedReader(new InputStreamReader(is));
+            Log.d("EpisodeParsing", "here: " + urls[0] + " " + urls[1]);
+            episodes = RssParser.parseEpisodesFromXml(is, idForQuery);
+            edao.insertLargeNumberOfEpisodes(episodes);
+            for (Episode episode : episodes) {
+                Helper.updateIfDownloadedAlready(episode, context);
+            }
+            } catch (MalformedURLException e) {
+               e.printStackTrace(); 
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (XmlPullParserException e) {
+                e.printStackTrace();
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+
+            return null;
+        }
+
     }
 
-    /***
-     * AsyncTask responsible for downlaoding an MP3.
-     */
     private class Mp3DownloadTask extends
             AsyncTask<Episode, Void, ByteArrayBuffer> {
 
@@ -158,84 +170,6 @@ public class BackgroundThread {
         protected void onPostExecute(ByteArrayBuffer result) {
 
         }
-    }
-
-    /***
-     * AsyncTask responsible for parsing xml page for image
-     */
-    private class ParseXmlForImage extends AsyncTask<String, Void, Void> {
-        public ParseXmlForImage(OnTaskCompleted activity) {
-            this.listener = activity;
-        }
-
-        OnTaskCompleted listener;
-        String idForQuery;
-
-        @Override
-        protected Void doInBackground(String... urls) {
-            URL url;
-            idForQuery = urls[1];
-            String imagelink = null;
-            try {
-                url = new URL(urls[0]);
-                HttpURLConnection con = (HttpURLConnection) url
-                        .openConnection();
-                InputStream is = con.getInputStream();
-                imagelink = RssParser.parsePodcastImageFromXml(is);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            Podcast podcast = pdao.get(Long.parseLong(idForQuery));
-            if (imagelink != null) {
-                podcast.setImagePath(imagelink);
-            } else {
-                podcast.setImagePath("http://static.tvtropes.org/lampshade_logo_blue.png");
-            }
-            pdao.update(podcast);
-            listener.onTaskCompleted(null);
-            return null;
-        }
-
-    }
-
-    /***
-     * AsyncTask responsible for grabbing individual episodes from a podcast's
-     * RSS.
-     */
-    private class ParseXmlForEpisodes extends AsyncTask<String, Void, Void> {
-        long idForQuery;
-
-        @Override
-        protected Void doInBackground(String... urls) {
-            URL url;
-            idForQuery = Long.parseLong(urls[1]);
-            BufferedReader reader = null;
-            List<Episode> episodes = null;
-            try {
-                url = new URL(urls[0]);
-                HttpURLConnection con = (HttpURLConnection) url
-                        .openConnection();
-                InputStream is = con.getInputStream();
-                reader = new BufferedReader(new InputStreamReader(is));
-                Log.d("EpisodeParsing", "here: " + urls[0] + " " + urls[1]);
-                // episodes = RssParser.parseEpisodesFromXml(reader,
-                // idForQuery);
-                episodes = RssParser.parseEpisodesFromXml(is, idForQuery);
-                for (Episode episode : episodes) {
-                    Log.d("Inserting: ", episode.getTitle());
-                    edao.insert(episode);
-                    Helper.updateIfDownloadedAlready(episode, context);
-                }
-
-                return null;
-            } catch (Exception e) {
-                e.printStackTrace();
-                return null;
-            }
-
-        }
-
     }
 
     /*** Wrapper for getting new episodes */

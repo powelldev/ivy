@@ -9,6 +9,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteStatement;
 import fireminder.podcastcatcher.utils.Utils;
 import fireminder.podcastcatcher.valueobjects.Episode;
 import fireminder.podcastcatcher.valueobjects.Podcast;
@@ -55,19 +56,17 @@ public class EpisodeDao {
     }
 
     public Episode get(long id) {
-        SQLiteDatabase db = new SqlHelper(context).getReadableDatabase();
+        SQLiteDatabase db = SqlHelper.getInstance(context).getReadableDatabase();
         Cursor cursor = db.query(TABLE_NAME, allColumns,
                 COLUMN_ID + " = " + id, null, null, null, null);
         cursor.moveToFirst();
         Episode e = cursorToEpisode(cursor);
-        db.close();
         return e;
     }
 
     public long update(Episode episode) {
-        SQLiteDatabase db = new SqlHelper(context).getWritableDatabase();
+        SQLiteDatabase db = SqlHelper.getInstance(context).getWritableDatabase();
         ContentValues cv = new ContentValues();
-        cv.put(COLUMN_ID, episode.get_id());
         cv.put(COLUMN_PODCAST_ID, episode.getPodcast_id());
         cv.put(COLUMN_TITLE, episode.getTitle());
         cv.put(COLUMN_DESCRIP, episode.getDescription());
@@ -77,15 +76,13 @@ public class EpisodeDao {
         cv.put(COLUMN_DURATION, episode.getDuration());
         cv.put(COLUMN_ELAPSED, episode.getElapsed());
         cv.put(COLUMN_PLAYLIST, episode.getPlaylistRank());
-        long id = db.insertWithOnConflict(TABLE_NAME, null, cv,
-                SQLiteDatabase.CONFLICT_REPLACE);
-        db.close();
+        long id = db.update(TABLE_NAME, cv, COLUMN_ID + " = " + episode.get_id(), null);
         return id;
     }
 
     public long insert(Episode e) {
         long id = -1;
-        SQLiteDatabase db = new SqlHelper(this.context).getWritableDatabase();
+        SQLiteDatabase db = SqlHelper.getInstance(this.context).getWritableDatabase();
         ContentValues cv = new ContentValues();
         cv.put(COLUMN_PODCAST_ID, e.getPodcast_id());
         cv.put(COLUMN_TITLE, e.getTitle());
@@ -99,33 +96,30 @@ public class EpisodeDao {
 
         id = db.insert(TABLE_NAME, null, cv);
 
-        db.close();
         return id;
 
     }
 
     public Cursor getAllEpisodesAsCursor(long id) {
-        SQLiteDatabase db = new SqlHelper(context).getWritableDatabase();
+        SQLiteDatabase db = SqlHelper.getInstance(context).getWritableDatabase();
         Cursor cursor = db.query(TABLE_NAME, allColumns, COLUMN_PODCAST_ID
                 + "=" + id, null, null, null, null);
         return cursor;
     }
 
     public void deleteAllEpisodes(long id) {
-        SQLiteDatabase db = new SqlHelper(context).getWritableDatabase();
+        SQLiteDatabase db = SqlHelper.getInstance(context).getWritableDatabase();
         db.delete(TABLE_NAME, COLUMN_PODCAST_ID + " = ?", new String[] { ""
                 + id });
-        db.close();
     }
 
     public void delete(Episode episode) {
-        SQLiteDatabase db = new SqlHelper(context).getWritableDatabase();
+        SQLiteDatabase db = SqlHelper.getInstance(context).getWritableDatabase();
         db.delete(TABLE_NAME, COLUMN_ID + " = " + episode.get_id(), null);
-        db.close();
     }
 
     public Episode getLatestEpisode(long id) {
-        SQLiteDatabase db = new SqlHelper(context).getWritableDatabase();
+        SQLiteDatabase db = SqlHelper.getInstance(context).getWritableDatabase();
         Episode e = null;
         /*
          * SELECT * FROM episodes WHERE podcast_id = id ORDER BY pubDate DESC
@@ -138,12 +132,11 @@ public class EpisodeDao {
         }
         c.moveToFirst();
         e = cursorToEpisode(c);
-        db.close();
         return e;
     }
 
     public Cursor getAllEpisodesAsCursorByDate(long id) {
-        SQLiteDatabase db = new SqlHelper(context).getWritableDatabase();
+        SQLiteDatabase db = SqlHelper.getInstance(context).getWritableDatabase();
         Cursor cursor = db
                 .query(TABLE_NAME, allColumns, COLUMN_PODCAST_ID + " = " + id,
                         null, null, null, COLUMN_PUBDATE + " DESC ", null);
@@ -151,7 +144,7 @@ public class EpisodeDao {
     }
 
     public List<Episode> getAllEpisodes(long id) {
-        SQLiteDatabase db = new SqlHelper(context).getWritableDatabase();
+        SQLiteDatabase db = SqlHelper.getInstance(context).getWritableDatabase();
         List<Episode> episodes = new ArrayList<Episode>();
         Cursor cursor = db
                 .query(TABLE_NAME, allColumns, COLUMN_PODCAST_ID + " = " + id,
@@ -160,13 +153,12 @@ public class EpisodeDao {
         do {
             episodes.add(cursorToEpisode(cursor));
         } while (cursor.moveToNext());
-        db.close();
 
         return episodes;
     }
 
     public Cursor getAllRecentEpisodes() {
-        SQLiteDatabase db = new SqlHelper(context).getWritableDatabase();
+        SQLiteDatabase db = SqlHelper.getInstance(context).getWritableDatabase();
         long lastWeekInMillis = Calendar.getInstance().getTimeInMillis()
                 - (7 * 24 * 60 * 60 * 1000);
         Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE "
@@ -177,7 +169,7 @@ public class EpisodeDao {
     }
 
     public Cursor getPlaylistEpisodesAsCursor() {
-        SQLiteDatabase db = new SqlHelper(context).getReadableDatabase();
+        SQLiteDatabase db = SqlHelper.getInstance(context).getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE "
                 + COLUMN_PLAYLIST + " >= 1" + " ORDER BY " + COLUMN_PLAYLIST
                 + " ASC ", null);
@@ -186,7 +178,7 @@ public class EpisodeDao {
     }
 
     public int getNumberOfEpisodesInPlaylist() {
-        SQLiteDatabase db = new SqlHelper(context).getReadableDatabase();
+        SQLiteDatabase db = SqlHelper.getInstance(context).getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_NAME + " WHERE "
                 + COLUMN_PLAYLIST + " >= 1" + " ORDER BY " + COLUMN_PLAYLIST
                 + " ASC ", null);
@@ -227,6 +219,21 @@ public class EpisodeDao {
             } while (c.moveToNext());
         }
         return episodes;
+    }
+
+    public void insertLargeNumberOfEpisodes(List<Episode> episodes) {
+        SQLiteDatabase db = SqlHelper.getInstance(context).getWritableDatabase();
+        try {
+            db.beginTransaction();
+
+            for (Episode episode : episodes) {
+                this.insert(episode);
+                db.yieldIfContendedSafely();
+            }
+            db.setTransactionSuccessful();
+        } finally {
+            db.endTransaction();
+        }
     }
 
 }

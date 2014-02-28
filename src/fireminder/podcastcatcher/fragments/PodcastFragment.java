@@ -108,7 +108,8 @@ public class PodcastFragment extends ListFragment implements LoaderManager.Loade
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 String userString = userInput.getText().toString();
-                new HttpDownloadTask().execute(userString);
+                new BackgroundThread(getActivity()).subscribeToPodcast(userString, (MainActivity) getActivity());
+                //new HttpDownloadTask().execute(userString);
             }
         });
 
@@ -156,7 +157,8 @@ public class PodcastFragment extends ListFragment implements LoaderManager.Loade
                     //BackgroundThread bt = new BackgroundThread(getActivity());
                     //bt.getPodcastInfoFromBackgroundThread(userString);
                     if(Utils.isHTTPAvailable()) {    
-                        new HttpDownloadTask().execute(userString);
+                        new BackgroundThread(getActivity()).subscribeToPodcast(userString, (MainActivity) getActivity());
+                        //new HttpDownloadTask().execute(userString);
                     }
                     else {
                         Toast.makeText(getActivity(), "Connection Unavaliable", Toast.LENGTH_LONG).show();
@@ -219,15 +221,12 @@ public class PodcastFragment extends ListFragment implements LoaderManager.Loade
         
         @Override
         protected void onPostExecute(Podcast result){
-            // Delete the placeholder "Loading ..." item
             pdao.delete(pdao.get(id));
             if(result != null){
                 Podcast podcast = pdao.get(pdao.insert(result));
                 BackgroundThread bt = new BackgroundThread(getActivity());
-                bt.getEpisodesFromBackgroundThread(podcast.getLink(), podcast.getId());
-                bt.getPodcastImageFromBackgroundThread(podcast.getLink(), podcast.getId(), (MainActivity) getActivity());
+                bt.getEpisodesFromBackgroundThread(podcast);
                 Log.d(TAG, "parsing for episodes");
-                //new ParseXmlForEpisodes().execute(new String[] {podcast.getLink(), String.valueOf(podcast.get_id())});
             }
             else{
                 Toast.makeText(getActivity(), "Podcast subscription failed: Please check url", Toast.LENGTH_LONG).show();

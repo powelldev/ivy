@@ -28,7 +28,7 @@ public class PodcastDao {
 
     public ArrayList<Podcast> getAll() {
         ArrayList<Podcast> podcasts = new ArrayList<Podcast>();
-        SQLiteDatabase db = new SqlHelper(context)
+        SQLiteDatabase db = SqlHelper.getInstance(context)
                 .getReadableDatabase();
         Cursor cursor = db.query(TABLE_NAME, allColumns, null, null, null,
                 null, null);
@@ -36,17 +36,15 @@ public class PodcastDao {
         do {
             podcasts.add(createPodcastFromCursor(cursor));
         } while (cursor.moveToNext());
-        db.close();
         return podcasts;
     }
 
     public Podcast get(long id) {
-        SQLiteDatabase db = new SqlHelper(context)
+        SQLiteDatabase db = SqlHelper.getInstance(context)
                 .getReadableDatabase();
         Cursor cursor = db.query(TABLE_NAME, allColumns,
                 COLUMN_ID + " = " + id, null, null, null, null);
         cursor.moveToFirst();
-        db.close();
         return createPodcastFromCursor(cursor);
     }
 
@@ -61,13 +59,12 @@ public class PodcastDao {
     }
 
     public void delete(Podcast podcast) {
-        SQLiteDatabase db = new SqlHelper(context).getWritableDatabase();
+        SQLiteDatabase db = SqlHelper.getInstance(context).getWritableDatabase();
         db.delete(TABLE_NAME, COLUMN_ID + " = " + podcast.getId(), null);
-        db.close();
     }
 
     public void update(Podcast podcast) {
-        SQLiteDatabase db = new SqlHelper(context).getWritableDatabase();
+        SQLiteDatabase db = SqlHelper.getInstance(context).getWritableDatabase();
         ContentValues cv = new ContentValues();
         cv.put(COLUMN_ID, podcast.getId());
         cv.put(COLUMN_TITLE, podcast.getTitle());
@@ -75,25 +72,23 @@ public class PodcastDao {
         cv.put(COLUMN_DESCRIP, podcast.getDescription());
         cv.put(COLUMN_IMAGELINK, podcast.getImagePath());
         db.update(TABLE_NAME, cv, COLUMN_ID + " = " + podcast.getId(), null);
-        db.close();
     }
 
     public long insert(Podcast podcast) {
         long id = -1;
-        SQLiteDatabase db = new SqlHelper(context).getWritableDatabase();
+        SQLiteDatabase db = SqlHelper.getInstance(context).getWritableDatabase();
         ContentValues cv = new ContentValues();
         cv.put(COLUMN_TITLE, podcast.getTitle());
         cv.put(COLUMN_LINK, podcast.getLink());
         cv.put(COLUMN_DESCRIP, podcast.getDescription());
         cv.put(COLUMN_IMAGELINK, podcast.getImagePath());
         id = db.insert(TABLE_NAME, null, cv);
-        db.close();
         return id;
     }
 
     //TODO will change when ContentProvider added
     public Cursor getAllPodcastsAsCursor(){
-        SQLiteDatabase db = new SqlHelper(context).getWritableDatabase();
+        SQLiteDatabase db = SqlHelper.getInstance(context).getWritableDatabase();
         Cursor cursor = db.query(TABLE_NAME, allColumns,
                 null, null, null, null, COLUMN_TITLE + " ASC");
         return cursor;

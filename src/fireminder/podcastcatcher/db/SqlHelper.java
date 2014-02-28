@@ -11,7 +11,14 @@ public class SqlHelper extends SQLiteOpenHelper {
     public static final String DATABASE_NAME = "podcasts.db";
     public static final int DATABASE_VER = 8;
 
-    public SqlHelper(Context context) {
+    private static SqlHelper helper = null;
+    public static synchronized SqlHelper getInstance(Context context) {
+        if (null == helper) {
+            helper = new SqlHelper(context);
+        }
+        return helper;
+    }
+    private SqlHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VER);
     }
 
