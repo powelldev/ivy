@@ -4,17 +4,17 @@
     <item
         android:id="@+id/menu_episode_delete"
         android:orderInCategory="100"
-        android:title="Delete"
+        android:title="@string/delete"
         />
     <item
         android:id="@+id/menu_episode_delete_all"
         android:orderInCategory="200"
-        android:title="Delete All"
+        android:title="@string/delete_all"
         />
     <item
         android:id="@+id/menu_episode_queue"
         android:orderInCategory="300"
-        android:title="Queue"
+        android:title="@string/add_to_playlist"
         />
 
 </menu>

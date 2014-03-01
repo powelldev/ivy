@@ -10,6 +10,11 @@
     <string name="paste">Paste</string>
     <string name="Subscribe">Enter the URL of the podcast you wish to subscribe to.</string>
     
+    <!-- Episode Adapter -->
+    <string name="delete">Delete</string>
+    <string name="delete_all">Delete All</string>
+    <string name="add_to_playlist">Add to playlist</string>
+    
     <!-- Settings -->
     <string name="prefSyncFrequency">prefSyncFrequency</string>
     <string name="prefSyncFrequency_summary">How often to download new shows.</string>
