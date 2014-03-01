@@ -34,6 +34,7 @@ import fireminder.podcastcatcher.StatefulMediaPlayer;
 import fireminder.podcastcatcher.activities.MainActivity;
 import fireminder.podcastcatcher.db.EpisodeDao;
 import fireminder.podcastcatcher.db.PodcastDao;
+import fireminder.podcastcatcher.fragments.SettingsFragment;
 import fireminder.podcastcatcher.utils.Utils;
 import fireminder.podcastcatcher.valueobjects.Episode;
 import fireminder.podcastcatcher.valueobjects.Podcast;
@@ -312,8 +313,14 @@ public class PlaybackService extends Service implements Target,
         Log.e(Utils.TAG, "complete");
         mPlayer.setPlaybackCompleted();
         mPlayer.seek(0);
+
         EpisodeDao edao = new EpisodeDao(getApplicationContext());
         Episode e = pullCurrentEpisode();
+        if (isSharedPreferenceAutoDelete(getApplicationContext())){
+            edao.clearDataOn(e.get_id());
+            e.setElapsed(0);
+            e.setMp3("");
+        }
         e.setPlaylistRank(-1);
         edao.update(e);
 
@@ -334,6 +341,11 @@ public class PlaybackService extends Service implements Target,
         mBroadcaster.sendBroadcast(intent);
     }
 
+    public static boolean isSharedPreferenceAutoDelete(Context context) {
+        SharedPreferences settings = PreferenceManager
+                .getDefaultSharedPreferences(context);
+        return settings.getBoolean(context.getResources().getString(R.string.prefAutoDelete), false);
+    }
     public static void setSharedPreferenceEpisodePlaying(Context context, long id) {
         SharedPreferences settings = PreferenceManager
                 .getDefaultSharedPreferences(context);

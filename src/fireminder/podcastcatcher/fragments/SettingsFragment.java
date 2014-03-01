@@ -11,6 +11,8 @@ import fireminder.podcastcatcher.utils.Utils;
 
 public class SettingsFragment extends PreferenceFragment implements
         OnSharedPreferenceChangeListener {
+    public static final String FLAG_AUTO_DELETE = "auto_delete";
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
