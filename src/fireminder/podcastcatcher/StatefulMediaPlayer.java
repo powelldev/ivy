@@ -5,13 +5,13 @@ import java.io.File;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnCompletionListener;
 import android.util.Log;
+import fireminder.podcastcatcher.utils.Utils;
 import fireminder.podcastcatcher.valueobjects.Episode;
 
 public class StatefulMediaPlayer {
 
     private MediaPlayer mediaPlayer;
     public State mState;
-    private long mEpisodeId;
     private Episode episode;
 
     private OnCompletionListener listener;
@@ -42,9 +42,9 @@ public class StatefulMediaPlayer {
         this.reset();
         try {
             this.episode = episode;
-            mEpisodeId = episode.get_id();
+            episode.get_id();
             File file = new File(episode.getMp3());
-            Log.e(TAG, file.getAbsolutePath());
+            Log.e(Utils.TAG, TAG + " File data source" + file.getAbsolutePath());
             mediaPlayer.setDataSource(file.getAbsolutePath());
             mediaPlayer.prepare();
             mState = State.PREPARED;
@@ -168,7 +168,7 @@ public class StatefulMediaPlayer {
     }
 
     public long getPlayingEpisodeId() {
-        return mEpisodeId;
+        return episode.get_id();
     }
 
     public int getCurrentPosition() {
