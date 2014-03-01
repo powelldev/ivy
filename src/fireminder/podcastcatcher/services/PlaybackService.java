@@ -63,7 +63,6 @@ public class PlaybackService extends Service implements Target,
     public static final String EPISODE_CHANGE_INTENT = "fireminder.podcastcatcher.services.PlaybackService.EPISODE_CHANGE";
     public static final String EPISODE_ID_EXTRA = "episode_id";
 
-    private long mEpisodeId = -2;
     private int mElapsed;
     private StatefulMediaPlayer mPlayer;
     private LocalBroadcastManager mBroadcaster;
@@ -135,7 +134,7 @@ public class PlaybackService extends Service implements Target,
     }
 
     private void setCurrentEpisodeId(long id) {
-        mEpisodeId = id;
+        setSharedPreferenceEpisodePlaying(getApplicationContext(), id);
     }
 
     private void startPlaying() {
@@ -154,7 +153,10 @@ public class PlaybackService extends Service implements Target,
 
     private Episode pullCurrentEpisode() {
         EpisodeDao mEdao = new EpisodeDao(getApplicationContext());
-        return mEdao.get(mEpisodeId);
+        long id = getSharedPreferenceEpisodePlaying(getApplicationContext());
+        if (id == -1) 
+            throw new RuntimeException("No episode set in PlaybackService");
+        return mEdao.get(id);
     }
 
     private void setupLockscreen(Episode episode) {
@@ -204,12 +206,10 @@ public class PlaybackService extends Service implements Target,
     }
 
     private void updateEpisodeElapsed() {
-        if (mEpisodeId != -2) {
+        if (getSharedPreferenceEpisodePlaying(getApplicationContext()) != -1) {
             EpisodeDao mEdao = new EpisodeDao(getApplicationContext());
-            Episode episode = mEdao.get(mEpisodeId);
-            Log.e(Utils.TAG, "Elapsed before insert: " + episode.getElapsed());
+            Episode episode = mEdao.get(getSharedPreferenceEpisodePlaying(getApplicationContext()));
             episode.setElapsed(mElapsed);
-            Log.e(Utils.TAG, "Elapsed after set: " + episode.getElapsed());
             long id = mEdao.update(episode);
             Log.e(Utils.TAG, id + " Elapsed after insert: " + mEdao.get(id));
         }
@@ -256,18 +256,6 @@ public class PlaybackService extends Service implements Target,
     }
 
     Handler mHandler = new Handler();
-
-    private void tellActivityThereIsNewEpisode() {
-        SharedPreferences settings = PreferenceManager
-                .getDefaultSharedPreferences(getApplicationContext());
-        SharedPreferences.Editor editor = settings.edit();
-        editor.putLong(MainActivity.EPISODE_PLAYING, mEpisodeId);
-        editor.commit();
-        Intent intent = new Intent(EPISODE_CHANGE_INTENT);
-        intent.putExtra(EPISODE_ID_EXTRA, mEpisodeId);
-        mBroadcaster.sendBroadcast(intent);
-
-    }
 
     Runnable updateProgressRunnable = new Runnable() {
 
@@ -341,8 +329,29 @@ public class PlaybackService extends Service implements Target,
         if (playlist != null) {
             setCurrentEpisodeId(playlist.get(0).get_id());
         }
-        tellActivityThereIsNewEpisode();
+
+        sendNewEpisodeBroadcastToMainActivity();
         startPlaying();
+    }
+
+    private void sendNewEpisodeBroadcastToMainActivity() {
+        Intent intent = new Intent(EPISODE_CHANGE_INTENT);
+        intent.putExtra(EPISODE_ID_EXTRA, getSharedPreferenceEpisodePlaying(getApplicationContext()));
+        mBroadcaster.sendBroadcast(intent);
+    }
+
+    private static void setSharedPreferenceEpisodePlaying(Context context, long id) {
+        SharedPreferences settings = PreferenceManager
+                .getDefaultSharedPreferences(context);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putLong(MainActivity.EPISODE_PLAYING, id);
+        editor.commit();
+    }
+    
+    private static long getSharedPreferenceEpisodePlaying(Context context) {
+        SharedPreferences settings = PreferenceManager
+                .getDefaultSharedPreferences(context);
+        return settings.getLong(MainActivity.EPISODE_PLAYING, -1);
     }
 
 }
