@@ -366,7 +366,7 @@ public class BackgroundThread {
         new OpmlAsyncTask(listener).execute(new File[] { file });
     }
 
-    private class OpmlAsyncTask extends AsyncTask<File, Void, String[]> {
+    private class OpmlAsyncTask extends AsyncTask<File, Void, List<String>> {
         private OnTaskCompleted listener;
 
         public OpmlAsyncTask(OnTaskCompleted activity) {
@@ -374,7 +374,7 @@ public class BackgroundThread {
         }
 
         @Override
-        protected String[] doInBackground(File... args) {
+        protected List<String> doInBackground(File... args) {
             List<String> podcasts = null;
             try {
                 FileInputStream fis = new FileInputStream(args[0]);
@@ -384,16 +384,11 @@ public class BackgroundThread {
             } catch (Exception e) {
                 Log.e(Utils.TAG, "Err opmlasync: " + e.getMessage());
             }
-            String[] arr = new String[podcasts.size()];
-            for (String p : podcasts) {
-                arr[0] = p;
-            }
-
-            return arr;
+            return podcasts;
         }
 
         @Override
-        protected void onPostExecute(String[] result) {
+        protected void onPostExecute(List<String> result) {
             for (String s : result) {
                 subscribeToPodcast(s, listener);
             }
