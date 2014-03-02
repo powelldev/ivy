@@ -37,6 +37,7 @@ import com.sothree.slidinguppanel.SlidingUpPanelLayout.PanelSlideListener;
 
 import fireminder.podcastcatcher.OnTaskCompleted;
 import fireminder.podcastcatcher.R;
+import fireminder.podcastcatcher.SettingsManager;
 import fireminder.podcastcatcher.db.EpisodeDao;
 import fireminder.podcastcatcher.db.PodcastDao;
 import fireminder.podcastcatcher.downloads.BackgroundThread;
@@ -428,50 +429,7 @@ public class MainActivity extends Activity implements OnTaskCompleted,
 
     public void onSharedPreferenceChanged(SharedPreferences preference,
             String key) {
-        if (key.matches(getResources().getString(R.string.prefSyncFrequency))) {
-            int hoursBetweenUpdates;
-            try {
-                hoursBetweenUpdates = Integer.parseInt(preference.getString(
-                        getResources().getString(R.string.prefSyncFrequency),
-                        "24"));
-            } catch (Exception e) {
-                hoursBetweenUpdates = 591;
-                SharedPreferences.Editor editor = preference.edit();
-                editor.putString(
-                        getResources().getString(R.string.prefSyncFrequency),
-                        "591");
-                editor.commit();
-            }
-            AlarmManager am = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-            Intent intent = new Intent(this, ADownloadService.class);
-            PendingIntent pi = PendingIntent.getService(this, 0, intent,
-                    PendingIntent.FLAG_CANCEL_CURRENT);
-            am.setRepeating(AlarmManager.RTC_WAKEUP,
-                    System.currentTimeMillis(),
-                    hoursBetweenUpdates * 60 * 60 * 1000, pi);
-        } else if (key.matches(getResources()
-                .getString(R.string.prefAutoDelete))) {
-            Log.e(Utils.TAG,
-                    "Auto Delete: " + preference.getBoolean(key, false));
-        } else if (key.matches(getResources().getString(
-                R.string.prefDeleteXShows))) {
-            int deleteThisMany;
-            try {
-                deleteThisMany = Integer.parseInt(preference.getString(
-                        getResources().getString(R.string.prefDeleteXShows),
-                        "2147483647"));
-            } catch (Exception e) {
-                deleteThisMany = Integer.MAX_VALUE;
-                SharedPreferences.Editor editor = preference.edit();
-                editor.putString(
-                        getResources().getString(R.string.prefSyncFrequency),
-                        String.valueOf(deleteThisMany));
-                editor.commit();
-            }
-        }
-
-        Log.e(Utils.TAG, preference.getAll().toString());
-
+        SettingsManager.onSettingsChangeListener(this, preference, key);
     }
 
     private void importFromOpml() {
