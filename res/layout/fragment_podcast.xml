@@ -18,6 +18,9 @@
         android:layout_width="wrap_content"
         android:textSize="18sp"
         android:layout_toLeftOf="@id/podcast_iv"
+        android:text="Title"
+        android:fontFamily="sans-serif-light"
+        android:textStyle="normal"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_alignParentLeft="true"
@@ -27,6 +30,9 @@
         android:id="@+id/descrip"
         android:layout_width="wrap_content"
         android:textSize="12sp"
+        android:text="subtitle"
+        android:fontFamily="sans-serif"
+        android:textColor="@color/light_grey"
         android:layout_height="wrap_content"
         android:layout_below="@id/podcast_tv"
         android:layout_toLeftOf="@id/podcast_iv"
@@ -36,6 +42,10 @@
 
     <TextView
         android:id="@+id/date_tv"
+        android:text="Recently added to My Library"
+        android:fontFamily="sans-serif-condensed"
+        android:textColor="@color/light_grey"
+        android:textStyle="italic"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
@@ -46,9 +56,8 @@
         android:src="@drawable/circle"
         android:layout_width="16dp"
         android:layout_height="16dp"
-        android:layout_above="@id/date_tv"
-        android:layout_alignParentBottom="true"
         android:visibility="invisible"
+        android:layout_below="@id/descrip"
         android:layout_alignParentLeft="true"
         />
 

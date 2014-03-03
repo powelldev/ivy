@@ -6,7 +6,6 @@
     android:padding="3dp"
     android:orientation="vertical" >
     <TextView
-        android:typeface="serif"
         android:id="@+id/list_item_episode_tv"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -15,7 +14,6 @@
         android:layout_alignParentLeft="true"
         />
     <TextView 
-        android:typeface="serif"
         android:id="@+id/list_item_date_tv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

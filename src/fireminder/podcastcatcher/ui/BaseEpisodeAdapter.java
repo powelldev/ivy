@@ -5,8 +5,6 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
-import org.ocpsoft.prettytime.PrettyTime;
-
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.database.Cursor;
@@ -31,13 +29,13 @@ import fireminder.podcastcatcher.db.PodcastDao;
 import fireminder.podcastcatcher.utils.Utils;
 import fireminder.podcastcatcher.valueobjects.Episode;
 
-public class PodcastAdapter extends CursorAdapter {
+public class BaseEpisodeAdapter extends CursorAdapter {
 
     public final LayoutInflater mInflater;
     public Context context;
     public Cursor cursor;
 
-    public PodcastAdapter(Context context, Cursor c, int flags) {
+    public BaseEpisodeAdapter(Context context, Cursor c, int flags) {
         super(context, c, flags);
         this.context = context;
         this.mInflater = LayoutInflater.from(context);
@@ -70,7 +68,8 @@ public class PodcastAdapter extends CursorAdapter {
             long id = cursor.getLong(cursor
                     .getColumnIndex(PodcastDao.COLUMN_ID));
             Episode e = new EpisodeDao(context).getLatestEpisode(id);
-            String descrip = e.getTitle();
+            String descrip = e.getDescription();
+            descrip = android.text.Html.fromHtml(descrip).toString();
             int descripSize = 125;
             if (descrip.length() > descripSize) {
                 descrip = descrip.substring(0, descripSize - 3) + "...";
@@ -81,10 +80,9 @@ public class PodcastAdapter extends CursorAdapter {
             long milliseconds = e.getPubDate();
             Calendar calendar = Calendar.getInstance();
             calendar.setTimeInMillis(milliseconds);
-
-            PrettyTime p = new PrettyTime();
             Date date = calendar.getTime();
-               dateTv.setText(p.format(date));
+            SimpleDateFormat sdf = new SimpleDateFormat("dd MMM");
+            dateTv.setText(sdf.format(date));
 
             ImageButton button = (ImageButton) arg0
                     .findViewById(R.id.podcast_popup_menu);
@@ -105,12 +103,13 @@ public class PodcastAdapter extends CursorAdapter {
         TextView tv = (TextView) arg0.findViewById(R.id.podcast_tv);
         String title;
         try {
-            title = Utils.getStringFromCursor(cursor, PodcastDao.COLUMN_TITLE);
-            int textViewSize = 32;
-            if (title.length() > textViewSize) {
-                title = title.substring(0, textViewSize - 3) + "...";
-            }
-            tv.setText(title);
+        title = Utils.getStringFromCursor(cursor,
+                PodcastDao.COLUMN_TITLE);
+        int textViewSize = 32;
+        if (title.length() > textViewSize) {
+            title = title.substring(0, textViewSize - 3) + "...";
+        }
+        tv.setText(title);
         } catch (Exception e) {
             tv.setText("Refresh");
         }
