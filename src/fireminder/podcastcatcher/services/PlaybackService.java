@@ -97,6 +97,9 @@ public class PlaybackService extends Service implements Target,
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         String action = intent.getAction();
+        if (null == action) {
+            return Service.START_STICKY;
+        }
         if (action == START_ACTION) {
             prepare(intent);
             startPlaying();
@@ -120,7 +123,6 @@ public class PlaybackService extends Service implements Target,
 
         } else if (action == FOREGROUND_OFF_ACTION) {
             setForeground(false);
-
         }
         return Service.START_STICKY;
     }
