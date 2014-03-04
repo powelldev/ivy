@@ -46,6 +46,9 @@ public class PlaylistAdapter extends CursorAdapter {
 
     @Override
     public void bindView(View arg0, Context arg1, Cursor cursor) {
+        Episode episode = EpisodeDao.cursorToEpisode(cursor);
+        EpisodeReadableInfo info = new EpisodeReadableInfo(episode);
+
         ImageView playIcon = (ImageView) arg0
                 .findViewById(R.id.playlist_item_album_iv);
         TextView episodeTitle = (TextView) arg0
@@ -53,37 +56,17 @@ public class PlaylistAdapter extends CursorAdapter {
         TextView episodeDate = (TextView) arg0
                 .findViewById(R.id.playlist_item_date_tv);
 
-        long milliseconds = cursor.getLong(cursor
-                .getColumnIndex(EpisodeDao.COLUMN_PUBDATE));
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(milliseconds);
-        Date date = calendar.getTime();
-        SimpleDateFormat sdf = new SimpleDateFormat("dd MMM");
-
-        String duration = Utils.getStringFromCursor(cursor,
-                EpisodeDao.COLUMN_DURATION);
-        episodeDate.setText(sdf.format(date));
-        episodeDate.setText(duration);
-        episodeTitle.setText(Utils.getStringFromCursor(cursor,
-                EpisodeDao.COLUMN_TITLE));
+        episodeDate.setText(info.getDate());
+        episodeTitle.setText(info.getTitle());
 
         ImageButton button = (ImageButton) arg0
                 .findViewById(R.id.playlist_popup_menu);
-        button.setOnClickListener(new PopupListener(cursor.getLong(cursor
-                .getColumnIndex(EpisodeDao.COLUMN_ID))));
+        PopupListener listener = new PopupListener(info.getId());
+        button.setOnClickListener(listener);
 
-        String file_mp3 = Utils.getStringFromCursor(cursor,
-                EpisodeDao.COLUMN_MP3);
-        if (file_mp3 != null) {
-            File mp3 = new File(Utils.getStringFromCursor(cursor,
-                    EpisodeDao.COLUMN_MP3));
-            if (mp3.exists()) {
-                playIcon.setVisibility(View.VISIBLE);
-                playIcon.setFocusable(false);
-            } else {
-                playIcon.setVisibility(View.GONE);
-            }
-
+        if (info.isDownloaded()) {
+            playIcon.setVisibility(View.VISIBLE);
+            playIcon.setFocusable(false);
         } else {
             playIcon.setVisibility(View.GONE);
         }
@@ -121,8 +104,8 @@ public class PlaylistAdapter extends CursorAdapter {
                 Episode e = eDao.get(mId);
                 e.setPlaylistRank(eDao.getNumberOfEpisodesInPlaylist() + 1);
                 eDao.update(e);
-                Log.e(Utils.TAG, "Playlsit set: "
-                        + eDao.getNumberOfEpisodesInPlaylist());
+                Log.e(Utils.TAG,
+                        "Playlsit set: " + eDao.getNumberOfEpisodesInPlaylist());
                 break;
             }
             return false;

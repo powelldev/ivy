@@ -25,6 +25,7 @@ import fireminder.podcastcatcher.R;
 import fireminder.podcastcatcher.db.EpisodeDao;
 import fireminder.podcastcatcher.db.PodcastDao;
 import fireminder.podcastcatcher.utils.Utils;
+import fireminder.podcastcatcher.valueobjects.Episode;
 import fireminder.podcastcatcher.valueobjects.Podcast;
 
 public class RecentAdapter extends CursorAdapter {
@@ -50,36 +51,28 @@ public class RecentAdapter extends CursorAdapter {
     @SuppressLint("SimpleDateFormat")
     @Override
     public void bindView(View arg0, Context arg1, Cursor cursor) {
+
+        Episode episode = EpisodeDao.cursorToEpisode(cursor);
+        EpisodeReadableInfo info = new EpisodeReadableInfo(episode);
+
         TextView episodeTitle = (TextView) arg0
                 .findViewById(R.id.list_item_recent_tv);
         TextView episodeDate = (TextView) arg0
                 .findViewById(R.id.list_item_recent_date_tv);
 
-        long milliseconds = cursor.getLong(cursor
-                .getColumnIndex(EpisodeDao.COLUMN_PUBDATE));
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(milliseconds);
-        Date date = calendar.getTime();
-        SimpleDateFormat sdf = new SimpleDateFormat("dd MMM");
-
-        String duration = Utils.getStringFromCursor(cursor,
-                EpisodeDao.COLUMN_DURATION);
-        episodeDate.setText(sdf.format(date));
-        episodeDate.setText(duration);
-        episodeTitle.setText(Utils.getStringFromCursor(cursor,
-                EpisodeDao.COLUMN_TITLE));
+        episodeDate.setText(info.getDate());
+        episodeTitle.setText(info.getTitle());
 
         ImageButton button = (ImageButton) arg0
                 .findViewById(R.id.list_item_recent_menu_button);
-        button.setOnClickListener(new PopupListener(cursor.getLong(cursor
-                .getColumnIndex(EpisodeDao.COLUMN_ID))));
+        PopupListener listener = new PopupListener(info.getId());
+        button.setOnClickListener(listener);
 
-        ImageView iv = (ImageView) arg0.findViewById(R.id.list_item_recent_album_iv);
+        ImageView iv = (ImageView) arg0
+                .findViewById(R.id.list_item_recent_album_iv);
         try {
-            long id = cursor.getLong(cursor
-                    .getColumnIndex(EpisodeDao.COLUMN_PODCAST_ID));
             PodcastDao pdao = new PodcastDao(context);
-            Podcast parent = pdao.get(id);
+            Podcast parent = pdao.get(episode.getPodcast_id());
             String path = parent.getImagePath();
             Picasso.with(arg1).load(path).noFade().fit().centerCrop()
                     .placeholder(R.drawable.ic_launcher).into(iv);

@@ -1,7 +1,6 @@
 package fireminder.podcastcatcher.ui;
 
 import java.io.File;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -30,6 +29,7 @@ import fireminder.podcastcatcher.db.EpisodeDao;
 import fireminder.podcastcatcher.db.PodcastDao;
 import fireminder.podcastcatcher.utils.Utils;
 import fireminder.podcastcatcher.valueobjects.Episode;
+import fireminder.podcastcatcher.valueobjects.Podcast;
 
 public class PodcastAdapter extends CursorAdapter {
 
@@ -50,62 +50,53 @@ public class PodcastAdapter extends CursorAdapter {
         super.notifyDataSetChanged();
     }
 
+    private void setupEpisodeInfo(Podcast podcast, View view, Context context) {
+        EpisodeDao edao = new EpisodeDao(context);
+        Episode episode = edao.getLatestEpisode(podcast.getId());
+        EpisodeReadableInfo info = new EpisodeReadableInfo(episode);
+
+        ((TextView) view.findViewById(R.id.descrip)).setText(info.getTitle());
+        ((TextView) view.findViewById(R.id.date_tv)).setText(info.getDate());
+
+        ImageButton button = (ImageButton) view
+                .findViewById(R.id.podcast_popup_menu);
+        button.setOnClickListener(new PopupListener(info.getId()));
+
+        ImageView starIv = (ImageView) view.findViewById(R.id.star_iv);
+        if (info.isDownloaded()) {
+            starIv.setVisibility(View.VISIBLE);
+        } else {
+            starIv.setVisibility(View.INVISIBLE);
+        }
+
+    }
+
     @Override
-    public void bindView(View arg0, Context arg1, Cursor arg2) {
-        ImageView iv = (ImageView) arg0.findViewById(R.id.podcast_iv);
+    public void bindView(View view, Context arg1, Cursor arg2) {
+
+        Podcast podcast = PodcastDao.createPodcastFromCursor(cursor);
+
+        ImageView iv = (ImageView) view.findViewById(R.id.podcast_iv);
 
         try {
-            Picasso.with(arg1)
-                    .load(Utils.getStringFromCursor(arg2,
-                            PodcastDao.COLUMN_IMAGELINK)).noFade().fit()
-                    .centerCrop().placeholder(R.drawable.ic_launcher).into(iv);
-
+            String uri = podcast.getImagePath();
+            Picasso.with(arg1).load(uri).noFade().fit().centerCrop()
+                    .placeholder(R.drawable.ic_launcher).into(iv);
         } catch (NullPointerException e) {
             iv.setImageResource(R.drawable.ic_launcher);
             e.printStackTrace();
         }
 
         try {
-            TextView descripTv = (TextView) arg0.findViewById(R.id.descrip);
-            long id = cursor.getLong(cursor
-                    .getColumnIndex(PodcastDao.COLUMN_ID));
-            Episode e = new EpisodeDao(context).getLatestEpisode(id);
-            String descrip = e.getTitle();
-            int descripSize = 125;
-            if (descrip.length() > descripSize) {
-                descrip = descrip.substring(0, descripSize - 3) + "...";
-            }
-            descripTv.setText(descrip);
-
-            TextView dateTv = (TextView) arg0.findViewById(R.id.date_tv);
-            long milliseconds = e.getPubDate();
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTimeInMillis(milliseconds);
-
-            PrettyTime p = new PrettyTime();
-            Date date = calendar.getTime();
-               dateTv.setText(p.format(date));
-
-            ImageButton button = (ImageButton) arg0
-                    .findViewById(R.id.podcast_popup_menu);
-            button.setOnClickListener(new PopupListener(cursor.getLong(cursor
-                    .getColumnIndex(EpisodeDao.COLUMN_ID))));
-
-            ImageView starIv = (ImageView) arg0.findViewById(R.id.star_iv);
-            if (e.getElapsed() <= 0 && new File(e.getMp3()).exists()) {
-                starIv.setVisibility(View.VISIBLE);
-            } else if (e.getElapsed() > 30000) {
-                starIv.setVisibility(View.INVISIBLE);
-            } else {
-                starIv.setVisibility(View.INVISIBLE);
-            }
-        } catch (Exception xe) {
-            Log.e("Err", "Unable to load episode: " + xe.getMessage());
+        setupEpisodeInfo(podcast, view, context);
+        } catch (Exception e) {
+            
         }
-        TextView tv = (TextView) arg0.findViewById(R.id.podcast_tv);
+
+        TextView tv = (TextView) view.findViewById(R.id.podcast_tv);
         String title;
         try {
-            title = Utils.getStringFromCursor(cursor, PodcastDao.COLUMN_TITLE);
+            title = podcast.getTitle();
             int textViewSize = 32;
             if (title.length() > textViewSize) {
                 title = title.substring(0, textViewSize - 3) + "...";
@@ -156,44 +147,4 @@ public class PodcastAdapter extends CursorAdapter {
         }
 
     }
-
-    /*
-     * public static Bitmap getBitmapFromPodcast(Podcast podcast) {
-     * WindowManager wm = (WindowManager) PodcastCatcher.getInstance()
-     * .getContext().getSystemService(Context.WINDOW_SERVICE); Display display =
-     * wm.getDefaultDisplay();
-     * 
-     * 
-     * BitmapFactory.Options options = new BitmapFactory.Options();
-     * options.inJustDecodeBounds = true;
-     * BitmapFactory.decodeFile(podcast.getImagePath(), options);
-     * 
-     * BitmapFactory.Options options2 = new BitmapFactory.Options();
-     * options2.inSampleSize = calculateInSampleSize(options,
-     * R.dimen.header_height, R.dimen.header_height); Bitmap image2 =
-     * BitmapFactory.decodeFile(podcast.getImagePath(), options2); return
-     * image2; }
-     */
-    /*
-     * 
-     * public static int calculateInSampleSize(BitmapFactory.Options options,
-     * int reqWidth, int reqHeight) { // Raw height and width of image final int
-     * height = options.outHeight; final int width = options.outWidth; int
-     * inSampleSize = 1;
-     * 
-     * if (height > reqHeight || width > reqWidth) {
-     * 
-     * // Calculate ratios of height and width to requested height and // width
-     * final int heightRatio = Math.round((float) height / (float) reqHeight);
-     * final int widthRatio = Math.round((float) width / (float) reqWidth);
-     * 
-     * // Choose the smallest ratio as inSampleSize value, this will //
-     * guarantee // a final image with both dimensions larger than or equal to
-     * the // requested height and width. inSampleSize = heightRatio <
-     * widthRatio ? heightRatio : widthRatio; } return (int) Math.pow(2,
-     * Math.ceil(Math.log10(inSampleSize) / Math.log10(2)));
-     * 
-     * }
-     */
-
 }
