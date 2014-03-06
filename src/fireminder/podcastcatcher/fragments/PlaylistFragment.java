@@ -110,11 +110,18 @@ public class PlaylistFragment extends ListFragment implements
         long itemOne = 0, itemTwo;
         switch (event.getAction()) {
         case DragEvent.ACTION_DRAG_STARTED:
-            itemOne = getPosition(event);
-            Log.e(Utils.TAG, "Item One: " + itemOne);
+            itemOne = clickedItem;
+            Cursor c; Episode e;
+            c = ((PlaylistAdapter)getListAdapter()).getCursor();
+            c.moveToPosition((int) clickedItem);
+            e = EpisodeDao.cursorToEpisode(c);
+            Log.e(Utils.TAG, "Item One: " + e.getTitle());
             return true;
         case DragEvent.ACTION_DROP:
             itemTwo = getPosition(event);
+            EpisodeDao edao = new EpisodeDao(getActivity());
+            //edao.swapPlaylistRank(itemOne, itemTwo);
+            //((PlaylistAdapter) getListAdapter()).notifyDataSetChanged();
             Log.e(Utils.TAG, "Item Two: " + itemTwo);
             return true;
         }
@@ -133,12 +140,14 @@ public class PlaylistFragment extends ListFragment implements
         return pos;
     }
 
+    long clickedItem;
     @Override
     public boolean onItemLongClick(AdapterView<?> arg0, View view, int arg2,
             long arg3) {
         ClipData data = ClipData.newPlainText((CharSequence) view.getTag(),
                 "text");
         View.DragShadowBuilder builder = new View.DragShadowBuilder(view);
+        clickedItem = arg3;
         view.startDrag(data, builder, null, 0);
         return false;
     }

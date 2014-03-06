@@ -37,7 +37,6 @@ public class PlaylistAdapter extends CursorAdapter {
         this.context = context;
         this.cursor = c;
     }
-
     @Override
     public void notifyDataSetChanged() {
         cursor.requery();

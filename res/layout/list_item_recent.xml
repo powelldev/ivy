@@ -46,16 +46,6 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
         />
-	<ImageButton
-        android:id="@+id/list_item_recent_menu_button"
-	    android:layout_width="12dp"
-	    android:layout_height="24dp"
-	    android:layout_alignParentRight="true"
-	    android:src="@drawable/ic_action_menu_icon"
-	    android:focusable="false"
-	    android:background="@null"
-	    	    />
-
     <TextView
         android:id="@+id/list_item_recent_date_tv"
         android:layout_width="wrap_content"
@@ -73,4 +63,14 @@
         android:visibility="invisible"
         android:layout_alignParentLeft="true"
         />
+
+	<ImageView 
+        android:id="@+id/list_item_recent_menu_button"
+	    android:layout_width="24dp"
+	    android:layout_height="24dp"
+	    android:layout_alignParentLeft="true"
+	    android:layout_above="@+id/list_item_recent_date_tv"
+	    android:src="@drawable/ic_action_menu_icon"
+	    android:background="@null"
+	    />
 </RelativeLayout>

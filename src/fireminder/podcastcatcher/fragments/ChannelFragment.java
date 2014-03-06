@@ -31,7 +31,6 @@ public class ChannelFragment extends ListFragment implements
         OnItemClickListener {
 
     private final static String TAG = ChannelFragment.class.getSimpleName();
-
     EpisodeAdapter cursorAdapter;
 
     public static ChannelFragment newInstance(long channelId) {
@@ -44,32 +43,26 @@ public class ChannelFragment extends ListFragment implements
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
-
             Bundle savedInstanceState) {
         long channelId;
         Podcast podcast;
         Bitmap image;
-
         View rootView = (View) inflater.inflate(R.layout.channel, container,
                 false);
-
         channelId = getArguments().getLong("channel_id");
-
         PodcastDao mPdao = new PodcastDao(getActivity());
-
         podcast = mPdao.get(channelId);
-
         try {
             image = BitmapFactory.decodeFile(podcast.getImagePath());
         } catch (Exception e) {
             image = null;
         }
-
         ((TextView) rootView.findViewById(R.id.title_tv)).setText(podcast
                 .getTitle());
         ImageView iv = (ImageView) rootView.findViewById(R.id.podcast_image);
-        Picasso.with(getActivity()).load(podcast.getImagePath()).fit().centerCrop().placeholder(R.drawable.ic_launcher).noFade().into(iv);
-
+        Picasso.with(getActivity()).load(podcast.getImagePath()).fit()
+                .centerCrop().placeholder(R.drawable.ic_launcher).noFade()
+                .into(iv);
         return rootView;
     }
 
@@ -120,9 +113,10 @@ public class ChannelFragment extends ListFragment implements
     }
 
     public void notifyDataSetChanged() {
-        try { 
-        ((EpisodeAdapter) getListAdapter()).notifyDataSetChanged();
-        } catch (Exception e) {}
+        try {
+            ((EpisodeAdapter) getListAdapter()).notifyDataSetChanged();
+        } catch (Exception e) {
+        }
     }
 
 }

@@ -2,28 +2,24 @@ Features:
 
 CURRENT:
 
-Do things with OnCompleteListener set
-    Play next
-    Delete
-
-FUNCTIONAL:
-
+Change "No data" to a link to search
+Add + button to episodes
+Implement + functionality
+Add - button to playlist
+Drag n drop to sort playlist
+Delete from playlist
+delete all from playlist
 Keep X most recent episodes
 Adapter update
     Search
     Recent
     podcasts
     episodes
-
-NON-FUNCTIONAL:
-
 Swipe to dismiss
 Graphic:
     Icon pack
     Play/pause selector
     Placeholder for loading images
-Naming convention
-Refactorings
 
 SAVE FOR 1.1:
 

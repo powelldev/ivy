@@ -63,7 +63,7 @@ public class RecentAdapter extends CursorAdapter {
         episodeDate.setText(info.getDate());
         episodeTitle.setText(info.getTitle());
 
-        ImageButton button = (ImageButton) arg0
+        ImageView button = (ImageView) arg0
                 .findViewById(R.id.list_item_recent_menu_button);
         PopupListener listener = new PopupListener(info.getId());
         button.setOnClickListener(listener);

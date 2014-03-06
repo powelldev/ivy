@@ -159,7 +159,7 @@ public class PlaybackService extends Service implements Target,
     private Episode pullCurrentEpisode() {
         EpisodeDao mEdao = new EpisodeDao(getApplicationContext());
         long id = getSharedPreferenceEpisodePlaying(getApplicationContext());
-        if (id == NO_EPISODE) 
+        if (id == NO_EPISODE)
             throw new RuntimeException("No episode set in PlaybackService");
         return mEdao.get(id);
     }
@@ -213,7 +213,8 @@ public class PlaybackService extends Service implements Target,
     private void updateEpisodeElapsed() {
         if (getSharedPreferenceEpisodePlaying(getApplicationContext()) != -1) {
             EpisodeDao mEdao = new EpisodeDao(getApplicationContext());
-            Episode episode = mEdao.get(getSharedPreferenceEpisodePlaying(getApplicationContext()));
+            Episode episode = mEdao
+                    .get(getSharedPreferenceEpisodePlaying(getApplicationContext()));
             episode.setElapsed(mElapsed);
             long id = mEdao.update(episode);
             Log.e(Utils.TAG, id + " Elapsed after insert: " + mEdao.get(id));
@@ -256,13 +257,15 @@ public class PlaybackService extends Service implements Target,
 
         @Override
         public void run() {
-            Log.e(TAG, mPlayer.getCurrentTrack());
-            Log.e(TAG, "" + mPlayer.getCurrentPosition());
-            mElapsed = mPlayer.getCurrentPosition();
-            Intent intent = new Intent(TIME_INTENT);
-            intent.putExtra(TIME_EXTRA, mPlayer.getCurrentPosition());
-            mBroadcaster.sendBroadcast(intent);
-            mHandler.postDelayed(this, 1000);
+            try {
+                mElapsed = mPlayer.getCurrentPosition();
+                Intent intent = new Intent(TIME_INTENT);
+                intent.putExtra(TIME_EXTRA, mPlayer.getCurrentPosition());
+                mBroadcaster.sendBroadcast(intent);
+                mHandler.postDelayed(this, 1000);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
 
     };
@@ -318,7 +321,7 @@ public class PlaybackService extends Service implements Target,
 
         EpisodeDao edao = new EpisodeDao(getApplicationContext());
         Episode e = pullCurrentEpisode();
-        if (isSharedPreferenceAutoDelete(getApplicationContext())){
+        if (isSharedPreferenceAutoDelete(getApplicationContext())) {
             edao.clearDataOn(e.get_id());
             e.setElapsed(0);
             e.setMp3("");
@@ -327,35 +330,41 @@ public class PlaybackService extends Service implements Target,
         edao.update(e);
 
         List<Episode> playlist = edao.getPlaylistEpisodes();
-        if (playlist != null) {
+        if (playlist != null && playlist.size() != 0) {
             setCurrentEpisodeId(playlist.get(0).get_id());
             sendNewEpisodeBroadcastToMainActivity();
             startPlaying();
         } else {
             setCurrentEpisodeId(NO_EPISODE);
+            this.stopSelf();
         }
 
     }
 
     private void sendNewEpisodeBroadcastToMainActivity() {
         Intent intent = new Intent(EPISODE_CHANGE_INTENT);
-        intent.putExtra(EPISODE_ID_EXTRA, getSharedPreferenceEpisodePlaying(getApplicationContext()));
+        intent.putExtra(EPISODE_ID_EXTRA,
+                getSharedPreferenceEpisodePlaying(getApplicationContext()));
         mBroadcaster.sendBroadcast(intent);
     }
 
     public static boolean isSharedPreferenceAutoDelete(Context context) {
         SharedPreferences settings = PreferenceManager
                 .getDefaultSharedPreferences(context);
-        return settings.getBoolean(context.getResources().getString(R.string.prefAutoDelete), false);
+        return settings.getBoolean(
+                context.getResources().getString(R.string.prefAutoDelete),
+                false);
     }
-    public static void setSharedPreferenceEpisodePlaying(Context context, long id) {
+
+    public static void setSharedPreferenceEpisodePlaying(Context context,
+            long id) {
         SharedPreferences settings = PreferenceManager
                 .getDefaultSharedPreferences(context);
         SharedPreferences.Editor editor = settings.edit();
         editor.putLong(MainActivity.EPISODE_PLAYING, id);
         editor.commit();
     }
-    
+
     public static long getSharedPreferenceEpisodePlaying(Context context) {
         SharedPreferences settings = PreferenceManager
                 .getDefaultSharedPreferences(context);

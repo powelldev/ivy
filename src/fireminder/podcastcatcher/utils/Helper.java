@@ -138,36 +138,6 @@ public class Helper {
             // TODO: handle exception
         }
 
-        /*
-         * JsonReader jsonReader = new JsonReader(reader); try {
-         * jsonReader.beginObject(); Log.d("JSON: ", jsonReader.nextName());
-         * Log.d("JSON: ", jsonReader.nextString()); Log.d("JSON: ",
-         * jsonReader.nextName()); jsonReader.beginArray();
-         * jsonReader.beginObject(); JsonToken jtok = null;
-         * while(jsonReader.hasNext() || found == ITEMS_FOUND){ jtok =
-         * jsonReader.peek(); Log.d("jtok: ", jtok.name());
-         * if(jtok.equals(JsonToken.NAME)){ Log.d("jsonReader: ",
-         * jsonReader.nextName()); } else if (jtok.equals(JsonToken.STRING)) {
-         * Log.d("jsonReader: ", jsonReader.nextString()); } else if
-         * (jtok.equals(JsonToken.NUMBER)) { Log.d("jsonReader: ", "" +
-         * jsonReader.nextInt()); } else { Log.d("jsonReader: ",
-         * jsonReader.nextName()); }
-         * 
-         * if(jsonReader.nextName().contains("trackName")){
-         * 
-         * messages.add(jsonReader.nextString());
-         * 
-         * found++; } else if(jsonReader.nextName().matches("feedUrl")){
-         * messages.add(jsonReader.nextString()); found++; } else{
-         * jsonReader.nextName();
-         * 
-         * }
-         * 
-         * }
-         * 
-         * jsonReader.close(); } catch (IOException e) { // TODO Auto-generated
-         * catch block e.printStackTrace(); }
-         */
         return messages;
     }
 
