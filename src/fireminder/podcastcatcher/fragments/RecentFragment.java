@@ -46,6 +46,7 @@ public class RecentFragment extends ListFragment implements OnItemClickListener 
     @Override
     public void onResume() {
         super.onResume();
+        getActivity().getActionBar().setTitle("Recent");
         getListView().setOnItemClickListener(this);
     }
 

@@ -18,6 +18,8 @@
         android:id="@+id/list_item_recent_tv"
         android:layout_width="wrap_content"
         android:textSize="18sp"
+        android:textStyle="normal"
+        android:fontFamily="sans-serif-light"
         android:layout_height="wrap_content"
         android:layout_toLeftOf="@id/list_item_recent_album_iv"
         android:layout_alignParentTop="true"
@@ -34,7 +36,10 @@
         android:layout_alignParentLeft="true"
         />
     <TextView 
-        android:typeface="serif"
+        android:textSize="12sp"
+        android:textStyle="italic"
+        android:textColor="@color/light_grey"
+        android:fontFamily="sans-serif"
         android:id="@+id/list_item_recent_date_tv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -50,9 +55,6 @@
 	    android:focusable="false"
 	    android:background="@null"
 	    	    />
-
-
-        
 
     <TextView
         android:id="@+id/list_item_recent_date_tv"
@@ -70,13 +72,5 @@
         android:layout_alignParentBottom="true"
         android:visibility="invisible"
         android:layout_alignParentLeft="true"
-        />
-
-
-    <ImageView
-        android:src="@color/card_shadow"
-        android:layout_width="match_parent"
-        android:layout_height="2dp"
-        android:layout_alignParentBottom="true"
         />
 </RelativeLayout>

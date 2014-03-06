@@ -15,8 +15,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:drawSelectorOnTop="false"
-        android:divider="@android:color/transparent"
-        android:dividerHeight="10dp"
+        android:divider="@color/light_grey"
+        android:dividerHeight="1dp"
         />
 
 </LinearLayout>

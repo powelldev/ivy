@@ -236,4 +236,15 @@ public class EpisodeDao {
         }
     }
 
+    public void swapPlaylistRank(long itemOne, long itemTwo) {
+        Episode e1 = this.get(itemOne);
+        Episode e2 = this.get(itemTwo);
+        int temp = e1.getPlaylistRank();
+        e1.setPlaylistRank(e2.getPlaylistRank());
+        e2.setPlaylistRank(temp);
+        this.update(e1);
+        this.update(e2);
+    }
+
+
 }

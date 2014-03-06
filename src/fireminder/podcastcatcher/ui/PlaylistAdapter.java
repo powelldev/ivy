@@ -63,6 +63,7 @@ public class PlaylistAdapter extends CursorAdapter {
                 .findViewById(R.id.playlist_popup_menu);
         PopupListener listener = new PopupListener(info.getId());
         button.setOnClickListener(listener);
+        button.setFocusable(false);
 
         if (info.isDownloaded()) {
             playIcon.setVisibility(View.VISIBLE);
