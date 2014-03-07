@@ -15,7 +15,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import fireminder.podcastcatcher.ui.LazyAdapter;
 import fireminder.podcastcatcher.valueobjects.Episode;
 import fireminder.podcastcatcher.valueobjects.Podcast;
 
@@ -129,10 +128,6 @@ public class RssParser {
                     test += content + "\n";
                     Date pubDate = pubDateFormatter.parse(content);
                     Log.d("pubdate", content);
-                    Log.d("pubDate",
-                            ""
-                                    + LazyAdapter.getDate(pubDate.getTime(),
-                                            "EEE, dd MMM yyyy HH:mm:ss zzzz"));
                     episode.setPubDate(pubDate.getTime());
                 } else if (name.contains("duration")
                         && xpp.getDepth() == ITEM_DEPTH) {

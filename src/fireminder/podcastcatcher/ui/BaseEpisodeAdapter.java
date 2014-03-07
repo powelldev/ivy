@@ -117,7 +117,7 @@ public class BaseEpisodeAdapter extends CursorAdapter {
 
     @Override
     public View newView(Context arg0, Cursor arg1, ViewGroup arg2) {
-        View view = mInflater.inflate(R.layout.fragment_podcast, arg2, false);
+        View view = mInflater.inflate(R.layout.list_item_podcast, arg2, false);
         return view;
     }
 

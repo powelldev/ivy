@@ -4,6 +4,8 @@ import java.io.File;
 
 import android.app.ListFragment;
 import android.database.Cursor;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -54,6 +56,7 @@ public class RecentFragment extends ListFragment implements OnItemClickListener 
     public void onViewCreated(View view, Bundle savedInstanceState) {
         Cursor cursor = new EpisodeDao(getActivity()).getAllRecentEpisodes();
         mAdapter = new RecentAdapter(getActivity(), cursor, 0);
+        getActivity().getActionBar().setBackgroundDrawable(new ColorDrawable(Color.argb(255, 86, 116, 185)));
         setListAdapter(mAdapter);
         super.onViewCreated(view, savedInstanceState);
     }

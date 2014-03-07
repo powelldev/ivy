@@ -71,7 +71,7 @@ public class EpisodeAdapter extends CursorAdapter {
 
     @Override
     public View newView(Context context, Cursor arg1, ViewGroup arg2) {
-        View view = mLayoutInflater.inflate(R.layout.episode_list_item, arg2,
+        View view = mLayoutInflater.inflate(R.layout.list_item_episode, arg2,
                 false);
         return view;
     }

@@ -2,12 +2,13 @@ package fireminder.podcastcatcher.fragments;
 
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.preference.PreferenceFragment;
-import android.util.Log;
+import android.view.View;
 import fireminder.podcastcatcher.R;
 import fireminder.podcastcatcher.activities.MainActivity;
-import fireminder.podcastcatcher.utils.Utils;
 
 public class SettingsFragment extends PreferenceFragment implements
         OnSharedPreferenceChangeListener {
@@ -19,6 +20,11 @@ public class SettingsFragment extends PreferenceFragment implements
         addPreferencesFromResource(R.xml.preferences);
     }
 
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        getActivity().getActionBar().setBackgroundDrawable(new ColorDrawable(Color.argb(255, 86, 116, 185)));
+        super.onViewCreated(view, savedInstanceState);
+    }
     @Override
     public void onResume() {
         super.onResume();

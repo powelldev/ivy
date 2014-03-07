@@ -6,6 +6,8 @@ import android.app.ListFragment;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -60,8 +62,8 @@ public class ChannelFragment extends ListFragment implements
         ((TextView) rootView.findViewById(R.id.title_tv)).setText(podcast
                 .getTitle());
         ImageView iv = (ImageView) rootView.findViewById(R.id.podcast_image);
-        Picasso.with(getActivity()).load(podcast.getImagePath()).fit()
-                .centerCrop().placeholder(R.drawable.ic_launcher).noFade()
+        Picasso.with(getActivity()).load(podcast.getImagePath())
+                .placeholder(R.drawable.ic_launcher)
                 .into(iv);
         return rootView;
     }
@@ -80,8 +82,14 @@ public class ChannelFragment extends ListFragment implements
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         EpisodeDao mEdao = new EpisodeDao(getActivity());
-        Cursor cursor = mEdao.getAllEpisodesAsCursorByDate(getArguments()
-                .getLong("channel_id"));
+        PodcastDao pdao = new PodcastDao(getActivity());
+        long id = getArguments().getLong("channel_id");
+        Podcast podcast = pdao.get(id);
+        getActivity().getActionBar().setTitle(podcast.getTitle());
+        ColorDrawable transparent = new ColorDrawable(Color.argb(0, 0, 0, 0));
+        getActivity().getActionBar().setBackgroundDrawable(transparent);
+
+        Cursor cursor = mEdao.getAllEpisodesAsCursorByDate(id);
         cursorAdapter = new EpisodeAdapter(getActivity(), cursor, 0);
         setListAdapter(cursorAdapter);
         super.onViewCreated(view, savedInstanceState);

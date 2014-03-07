@@ -1,5 +1,15 @@
 package fireminder.podcastcatcher.fragments;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+
+import org.xmlpull.v1.XmlPullParserException;
+
 import android.app.AlertDialog;
 import android.app.ListFragment;
 import android.app.LoaderManager;
@@ -7,6 +17,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Loader;
 import android.database.Cursor;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.ClipboardManager;
@@ -22,17 +34,6 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Toast;
-
-import org.xmlpull.v1.XmlPullParserException;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-
 import fireminder.podcastcatcher.R;
 import fireminder.podcastcatcher.activities.MainActivity;
 import fireminder.podcastcatcher.db.EpisodeDao;
@@ -60,7 +61,7 @@ public class PodcastFragment extends ListFragment implements LoaderManager.Loade
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         
-        View rootView = inflater.inflate(R.layout.listfragment1, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_podcast, container, false);
         
         PodcastDao pdao = new PodcastDao(getActivity());
         Cursor podcastCursor = pdao.getAllPodcastsAsCursor();
@@ -72,6 +73,11 @@ public class PodcastFragment extends ListFragment implements LoaderManager.Loade
         return rootView;
     }
     
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        getActivity().getActionBar().setBackgroundDrawable(new ColorDrawable(Color.argb(255, 86, 116, 185)));
+        super.onViewCreated(view, savedInstanceState);
+    }
 
     @Override
     public void onResume() {

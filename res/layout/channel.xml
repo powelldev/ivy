@@ -20,17 +20,17 @@
 	    android:scaleType="centerCrop"
 	    />
 	<ImageView
-	     android:background="@drawable/fireminder_podcast_selector"
+	     android:background="@drawable/gradient_shape_reverse"
 	     android:layout_width="match_parent"
 	     android:layout_height="match_parent"
 	     android:scaleType="centerCrop"
 	     />
 	<TextView 
-	    android:typeface="monospace"
+	    android:visibility="gone"
 	    android:id="@+id/title_tv"
 	    android:textColor="#FFFFFF"
 	    android:textSize="24sp"
-	    android:textStyle="bold"
+	    android:fontFamily="sans-serif"
 	    android:layout_alignParentBottom="true"
 	    android:layout_alignRight="@id/podcast_image"
 	    android:layout_width="match_parent"

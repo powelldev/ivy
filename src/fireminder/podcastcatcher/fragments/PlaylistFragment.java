@@ -5,14 +5,14 @@ import java.io.File;
 import android.app.ListFragment;
 import android.content.ClipData;
 import android.database.Cursor;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.DragEvent;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.View.OnDragListener;
-import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -25,7 +25,6 @@ import fireminder.podcastcatcher.db.EpisodeDao;
 import fireminder.podcastcatcher.db.PodcastDao;
 import fireminder.podcastcatcher.ui.EpisodeAdapter;
 import fireminder.podcastcatcher.ui.PlaylistAdapter;
-import fireminder.podcastcatcher.ui.RecentAdapter;
 import fireminder.podcastcatcher.utils.Helper;
 import fireminder.podcastcatcher.utils.Utils;
 import fireminder.podcastcatcher.valueobjects.Episode;
@@ -68,6 +67,7 @@ public class PlaylistFragment extends ListFragment implements
     public void onViewCreated(View view, Bundle savedInstanceState) {
         Cursor cursor = new EpisodeDao(getActivity())
                 .getPlaylistEpisodesAsCursor();
+        getActivity().getActionBar().setBackgroundDrawable(new ColorDrawable(Color.argb(255, 86, 116, 185)));
         getListView().setOnItemClickListener(this);
         mAdapter = new PlaylistAdapter(getActivity(), cursor, 0);
         setListAdapter(mAdapter);

@@ -31,7 +31,7 @@ public class SearchActivity extends ListActivity implements OnTaskCompleted {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.search_layout);
+        setContentView(R.layout.activity_search);
 
         Button searchBtn = (Button) findViewById(R.id.search_btn);
         searchBtn.setOnClickListener(new android.view.View.OnClickListener() {

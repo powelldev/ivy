@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- File created by the Android Action Bar Style Generator
+<!--
+     File created by the Android Action Bar Style Generator
 
      Copyright (C) 2011 The Android Open Source Project
      Copyright (C) 2012 readyState Software Ltd
@@ -35,7 +36,13 @@
         <item name="android:background">@drawable/ab_solid_example</item>
         <item name="android:backgroundStacked">@drawable/ab_stacked_solid_example</item>
         <item name="android:backgroundSplit">@drawable/ab_bottom_solid_example</item>
+        <item name="android:actionMenuTextColor">@color/white</item>
+        <item name="android:titleTextStyle">@style/MyActionBarTitleText</item>
         <item name="android:progressBarStyle">@style/ProgressBar.Example</item>
+    </style>
+
+    <style name="MyActionBarTitleText" parent="@android:style/TextAppearance.Holo.Widget.ActionBar.Title">
+        <item name="android:textColor">@color/white</item>
     </style>
 
     <style name="ActionBar.Transparent.Example" parent="@android:style/Widget.Holo.Light.ActionBar">
@@ -44,7 +51,7 @@
     </style>
 
     <style name="PopupMenu.Example" parent="@android:style/Widget.Holo.Light.ListPopupWindow">
-        <item name="android:popupBackground">@drawable/menu_dropdown_panel_example</item>	
+        <item name="android:popupBackground">@drawable/menu_dropdown_panel_example</item>
     </style>
 
     <style name="DropDownListView.Example" parent="@android:style/Widget.Holo.Light.ListView.DropDown">
@@ -60,11 +67,11 @@
         <item name="android:popupBackground">@drawable/menu_dropdown_panel_example</item>
         <item name="android:dropDownSelector">@drawable/selectable_background_example</item>
     </style>
-    
+
     <style name="ProgressBar.Example" parent="@android:style/Widget.Holo.Light.ProgressBar.Horizontal">
         <item name="android:progressDrawable">@drawable/progress_horizontal_example</item>
     </style>
-    
+
     <style name="ActionButton.CloseMode.Example" parent="@android:style/Widget.Holo.Light.ActionButton.CloseMode">
         <item name="android:background">@drawable/btn_cab_done_example</item>
     </style>
