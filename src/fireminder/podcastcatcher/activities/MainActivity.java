@@ -14,12 +14,16 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.preference.PreferenceManager;
+import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.DrawerLayout.DrawerListener;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
@@ -69,7 +73,8 @@ public class MainActivity extends Activity implements OnTaskCompleted,
     static RecentFragment mRecentFragment;
     static PlaylistFragment mPlaylistFragment;
     ChannelFragment mChannelFragment;
-
+    DrawerLayout nav;
+    ActionBarDrawerToggle abdt;
     BroadcastReceiver mReceiver;
     private long mEpisodeId = -1;
 
@@ -173,11 +178,39 @@ public class MainActivity extends Activity implements OnTaskCompleted,
 
         this.startService(new Intent(this, PlaybackService.class));
 
-        final String[] navigationItems = new String[] { "Listen Now",
+        final String[] navigationItems = new String[] { "Recent",
                 "Library", "Playlist", "Find New", "Settings" };
         ListView mDrawerList = (ListView) findViewById(R.id.left_drawer);
-        final DrawerLayout nav = (DrawerLayout) findViewById(R.id.drawer_layout);
+        nav = (DrawerLayout) findViewById(R.id.drawer_layout);
 
+        abdt = new ActionBarDrawerToggle(this, nav, R.drawable.ic_drawer, R.string.app_name, R.string.app_name) {
+            @Override
+            public void onDrawerClosed(View arg0) {
+                super.onDrawerClosed(arg0);
+            }
+
+            @Override
+            public void onDrawerOpened(View arg0) {
+                super.onDrawerOpened(arg0);
+                
+            }
+
+            @Override
+            public void onDrawerSlide(View arg0, float slideOffset) {
+                int alpha = (int) (slideOffset * 255);
+                //getActionBar().setBackgroundDrawable(new ColorDrawable(Color.argb(alpha, 86, 116, 185)));
+            }
+
+            @Override
+            public void onDrawerStateChanged(int arg0) {
+            }
+            
+        };
+
+        getActionBar().setDisplayHomeAsUpEnabled(true);
+        getActionBar().setHomeButtonEnabled(true);
+        nav.setDrawerListener(abdt);
+        nav.setDrawerShadow(R.drawable.drawer_shadow, Gravity.LEFT);
         mDrawerList.setAdapter(new ArrayAdapter<String>(this,
                 android.R.layout.simple_list_item_1, navigationItems));
         mDrawerList.setOnItemClickListener(new OnItemClickListener() {
@@ -208,7 +241,11 @@ public class MainActivity extends Activity implements OnTaskCompleted,
         });
 
     }
-
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        abdt.syncState();
+    }
     @Override
     protected void onStart() {
         super.onStart();
@@ -322,6 +359,13 @@ public class MainActivity extends Activity implements OnTaskCompleted,
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
 
+        case android.R.id.home:
+            if (nav.isDrawerOpen(Gravity.LEFT)){
+                nav.closeDrawer(Gravity.LEFT);
+            } else {
+                nav.openDrawer(Gravity.LEFT);
+            }
+            return true;
         case R.id.subscribe_setting:
             podcastFragment.subscribe("http://");
             return true;
