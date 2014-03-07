@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.CursorAdapter;
 import android.widget.ImageButton;
@@ -24,11 +25,12 @@ import com.squareup.picasso.Picasso;
 import fireminder.podcastcatcher.R;
 import fireminder.podcastcatcher.db.EpisodeDao;
 import fireminder.podcastcatcher.db.PodcastDao;
+import fireminder.podcastcatcher.utils.Helper;
 import fireminder.podcastcatcher.utils.Utils;
 import fireminder.podcastcatcher.valueobjects.Episode;
 import fireminder.podcastcatcher.valueobjects.Podcast;
 
-public class RecentAdapter extends CursorAdapter {
+public class RecentAdapter extends CursorAdapter implements OnClickListener {
 
     private Context context;
     private Cursor cursor;
@@ -63,10 +65,22 @@ public class RecentAdapter extends CursorAdapter {
         episodeDate.setText(info.getDate());
         episodeTitle.setText(info.getTitle());
 
-        ImageView button = (ImageView) arg0
-                .findViewById(R.id.list_item_recent_menu_button);
-        PopupListener listener = new PopupListener(info.getId());
-        button.setOnClickListener(listener);
+        ImageView downloadOrPlayButton = (ImageView) arg0
+                .findViewById(R.id.list_item_recent_download_or_play);
+        ImageView queueButton = (ImageView) arg0
+                .findViewById(R.id.list_item_recent_queue);
+        
+        if (Helper.isDownloaded(episode, context)){
+            downloadOrPlayButton.setImageResource(R.drawable.ic_action_play_icon);
+            queueButton.setVisibility(View.VISIBLE);
+        } else {
+            downloadOrPlayButton.setImageResource(R.drawable.ic_action_download);
+            queueButton.setVisibility(View.GONE);
+        }
+
+        Listener listener = new Listener(episode.get_id());
+        downloadOrPlayButton.setOnClickListener(listener);
+        queueButton.setOnClickListener(listener);
 
         ImageView iv = (ImageView) arg0
                 .findViewById(R.id.list_item_recent_album_iv);
@@ -83,33 +97,27 @@ public class RecentAdapter extends CursorAdapter {
         }
     }
 
-    private class PopupListener implements View.OnClickListener,
-            OnMenuItemClickListener {
+    private class Listener implements View.OnClickListener {
 
         private long mId;
 
-        public PopupListener(long itemId) {
+        public Listener(long itemId) {
             mId = itemId;
         }
 
         @Override
-        public boolean onMenuItemClick(MenuItem menu) {
-            switch (menu.getItemId()) {
-            case R.id.menu_podcast_delete:
-                new EpisodeDao(context).clearDataOn(mId);
-                notifyDataSetChanged();
-                break;
-            }
-            return false;
-        }
-
-        @Override
         public void onClick(View v) {
-            PopupMenu menu = new PopupMenu(context, v);
-            menu.setOnMenuItemClickListener(this);
-            MenuInflater inflater = menu.getMenuInflater();
-            inflater.inflate(R.menu.menu_podcast, menu.getMenu());
-            menu.show();
+            if (v.getId() == R.id.list_item_recent_download_or_play) {
+                EpisodeDao eDao = new EpisodeDao(context);
+                Episode e = eDao.get(mId);
+                Helper.downloadEpisodeMp3(e, context);
+
+            } else if (v.getId() == R.id.list_item_recent_queue) {
+                EpisodeDao eDao = new EpisodeDao(context);
+                Episode e = eDao.get(mId);
+                e.setPlaylistRank(eDao.getNumberOfEpisodesInPlaylist() + 1);
+                eDao.update(e);
+            }
         }
 
     }
@@ -119,5 +127,9 @@ public class RecentAdapter extends CursorAdapter {
         View view = mLayoutInflater.inflate(R.layout.list_item_recent, arg2,
                 false);
         return view;
+    }
+
+    @Override
+    public void onClick(View view) {
     }
 }

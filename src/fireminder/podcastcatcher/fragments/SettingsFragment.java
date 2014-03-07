@@ -22,6 +22,7 @@ public class SettingsFragment extends PreferenceFragment implements
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
+        view.setPadding(0, 120, 0, 0);
         getActivity().getActionBar().setBackgroundDrawable(new ColorDrawable(Color.argb(255, 86, 116, 185)));
         super.onViewCreated(view, savedInstanceState);
     }

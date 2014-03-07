@@ -17,8 +17,10 @@
     
     <!-- Settings -->
     <string name="prefSyncFrequency">prefSyncFrequency</string>
+    <string name="prefSyncFrequency_title">Download timing</string>
     <string name="prefSyncFrequency_summary">How often to download new shows.</string>
     <string name="prefAutoDelete">prefAutoDelete</string>
+    <string name="prefAutoDelete_title">Auto Delete</string>
     <string name="prefAutoDelete_summary">Delete episodes after they\'re finished playing"</string>
     <string-array name="sync_frequency">
         <item name="1">Every hour</item>
@@ -34,6 +36,7 @@
         <item name="168">168</item>
         <item name="0">Never</item>
     </string-array>
+    <string name="prefDeleteXShows_title">Keep how many?</string>
     <string name="prefDeleteXShows_summary">Keep how many shows of each Podcast?</string>
     <string name="prefDeleteXShows">prefDeleteXShows</string>
     

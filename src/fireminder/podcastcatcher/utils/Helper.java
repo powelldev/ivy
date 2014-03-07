@@ -37,6 +37,21 @@ public class Helper {
             return false;
         }
     }
+    public static boolean isDownloaded(Episode e, Context context) {
+        String fileName = e.getUrl();
+        fileName = fileName.substring(fileName.lastIndexOf("/"));
+        fileName = fileName.replaceAll("\\.", "_");
+        fileName = fileName.replaceAll("%20", "_");
+        fileName = fileName.replaceAll("_mp3", ".mp3");
+        File file = new File(Environment.getExternalStorageDirectory()
+                .getPath() + "/" + Environment.DIRECTORY_PODCASTS + fileName);
+        if (file.exists()) {
+            e.setMp3(file.getAbsolutePath());
+            return true;
+        } else {
+            return false;
+        }
+    }
     public static void downloadEpisodeMp3(Episode e, Context context) {
         String fileName = e.getUrl();
         fileName = fileName.substring(fileName.lastIndexOf("/"));

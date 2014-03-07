@@ -36,6 +36,8 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.dfethnbbzkaj.AdAudioListener;
+import com.dfethnbbzkaj.AdController;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout.PanelSlideListener;
 
@@ -102,7 +104,8 @@ public class MainActivity extends Activity implements OnTaskCompleted,
                                             PlaybackService.MAX_EXTRA, 0));
                 } else if (arg1.getAction().matches(
                         PlaybackService.EPISODE_CHANGE_INTENT)) {
-                    long id = arg1.getLongExtra(PlaybackService.EPISODE_ID_EXTRA, 0);
+                    long id = arg1.getLongExtra(
+                            PlaybackService.EPISODE_ID_EXTRA, 0);
                     setupPlayerAndDisplayEpisode(id);
                 } else if (arg1.getAction().matches(
                         DownloadManager.ACTION_DOWNLOAD_COMPLETE)) {
@@ -178,12 +181,13 @@ public class MainActivity extends Activity implements OnTaskCompleted,
 
         this.startService(new Intent(this, PlaybackService.class));
 
-        final String[] navigationItems = new String[] { "Recent",
-                "Library", "Playlist", "Find New", "Settings" };
+        final String[] navigationItems = new String[] { "Recent", "Library",
+                "Playlist", "Find New", "Settings" };
         ListView mDrawerList = (ListView) findViewById(R.id.left_drawer);
         nav = (DrawerLayout) findViewById(R.id.drawer_layout);
 
-        abdt = new ActionBarDrawerToggle(this, nav, R.drawable.ic_drawer, R.string.app_name, R.string.app_name) {
+        abdt = new ActionBarDrawerToggle(this, nav, R.drawable.ic_drawer,
+                R.string.app_name, R.string.app_name) {
             @Override
             public void onDrawerClosed(View arg0) {
                 super.onDrawerClosed(arg0);
@@ -192,19 +196,20 @@ public class MainActivity extends Activity implements OnTaskCompleted,
             @Override
             public void onDrawerOpened(View arg0) {
                 super.onDrawerOpened(arg0);
-                
+
             }
 
             @Override
             public void onDrawerSlide(View arg0, float slideOffset) {
                 int alpha = (int) (slideOffset * 255);
-                //getActionBar().setBackgroundDrawable(new ColorDrawable(Color.argb(alpha, 86, 116, 185)));
+                // getActionBar().setBackgroundDrawable(new
+                // ColorDrawable(Color.argb(alpha, 86, 116, 185)));
             }
 
             @Override
             public void onDrawerStateChanged(int arg0) {
             }
-            
+
         };
 
         getActionBar().setDisplayHomeAsUpEnabled(true);
@@ -241,11 +246,13 @@ public class MainActivity extends Activity implements OnTaskCompleted,
         });
 
     }
+
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         abdt.syncState();
     }
+
     @Override
     protected void onStart() {
         super.onStart();
@@ -360,7 +367,7 @@ public class MainActivity extends Activity implements OnTaskCompleted,
         switch (item.getItemId()) {
 
         case android.R.id.home:
-            if (nav.isDrawerOpen(Gravity.LEFT)){
+            if (nav.isDrawerOpen(Gravity.LEFT)) {
                 nav.closeDrawer(Gravity.LEFT);
             } else {
                 nav.openDrawer(Gravity.LEFT);

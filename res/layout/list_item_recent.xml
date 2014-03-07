@@ -64,13 +64,24 @@
         android:layout_alignParentLeft="true"
         />
 
-	<ImageView 
-        android:id="@+id/list_item_recent_menu_button"
-	    android:layout_width="24dp"
-	    android:layout_height="24dp"
+	<ImageButton 
+        android:id="@+id/list_item_recent_download_or_play"
+	    android:layout_width="48dp"
+	    android:layout_height="48dp"
 	    android:layout_alignParentLeft="true"
 	    android:layout_above="@+id/list_item_recent_date_tv"
-	    android:src="@drawable/ic_action_menu_icon"
+	    android:src="@drawable/ic_action_download"
 	    android:background="@null"
 	    />
+
+	<ImageButton
+	    android:id="@+id/list_item_recent_queue"
+	    android:layout_width="48dp"
+	    android:layout_height="48dp"
+	    android:layout_above="@+id/list_item_recent_star"
+	    android:layout_toRightOf="@+id/list_item_recent_download_or_play"
+	    android:background="@null"
+	    android:visibility="gone"
+	    android:src="@drawable/ic_action_add_to_queue" />
+
 </RelativeLayout>
