@@ -14,8 +14,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.graphics.Color;
-import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -23,7 +21,6 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v4.widget.DrawerLayout.DrawerListener;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
@@ -32,12 +29,9 @@ import android.view.View;
 import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.dfethnbbzkaj.AdAudioListener;
-import com.dfethnbbzkaj.AdController;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout.PanelSlideListener;
 
@@ -57,6 +51,7 @@ import fireminder.podcastcatcher.fragments.SettingsFragment;
 import fireminder.podcastcatcher.services.ADownloadService;
 import fireminder.podcastcatcher.services.BootService;
 import fireminder.podcastcatcher.services.PlaybackService;
+import fireminder.podcastcatcher.ui.NavAdapter;
 import fireminder.podcastcatcher.utils.Helper;
 import fireminder.podcastcatcher.utils.Utils;
 import fireminder.podcastcatcher.valueobjects.Episode;
@@ -216,12 +211,15 @@ public class MainActivity extends Activity implements OnTaskCompleted,
         getActionBar().setHomeButtonEnabled(true);
         nav.setDrawerListener(abdt);
         nav.setDrawerShadow(R.drawable.drawer_shadow, Gravity.LEFT);
-        mDrawerList.setAdapter(new ArrayAdapter<String>(this,
-                android.R.layout.simple_list_item_1, navigationItems));
+        final NavAdapter navAdapter = new NavAdapter(this, R.layout.list_item_nav, navigationItems); 
+        mDrawerList.setAdapter(navAdapter);
+        //mDrawerList.setAdapter(new ArrayAdapter<String>(this,
+        //        android.R.layout.simple_list_item_1, navigationItems));
         mDrawerList.setOnItemClickListener(new OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> arg0, View view,
                     int position, long id) {
+                navAdapter.setBold(position);
                 switch (position) {
                 case 0:
                     setRecentFragment();
@@ -274,7 +272,9 @@ public class MainActivity extends Activity implements OnTaskCompleted,
     protected void onStop() {
         Intent intent = new Intent(this, PlaybackService.class);
         intent.setAction(PlaybackService.FOREGROUND_OFF_ACTION);
+        Log.e(Utils.TAG, "Sending foreground off");
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mReceiver);
+        unregisterReceiver(mReceiver);
 
         super.onStop();
     }

@@ -208,6 +208,7 @@ public class PlaybackService extends Service implements Target,
         mPlayer.pause();
         mHandler.removeCallbacksAndMessages(null);
         mLockscreen.setLockscreenPaused();
+        this.stopSelf();
     }
 
     private void updateEpisodeElapsed() {
@@ -222,6 +223,7 @@ public class PlaybackService extends Service implements Target,
     }
 
     private void setForeground(boolean on) {
+        Log.e(Utils.TAG, "setForeground" + on);
         if (on) {
             Episode episode = pullCurrentEpisode();
             Intent notificationIntent = new Intent(this, MainActivity.class);
@@ -257,6 +259,7 @@ public class PlaybackService extends Service implements Target,
 
         @Override
         public void run() {
+            Log.e(Utils.TAG, "Time update Runnable running");
             try {
                 mElapsed = mPlayer.getCurrentPosition();
                 Intent intent = new Intent(TIME_INTENT);
