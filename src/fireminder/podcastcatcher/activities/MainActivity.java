@@ -295,11 +295,22 @@ public class MainActivity extends Activity implements OnTaskCompleted,
         if (mEpisodeId != -1) {
             setupPlayerAndDisplayEpisode(mEpisodeId);
         }
+//        getActionBar().setDisplayUseLogoEnabled(true);
+ //       getActionBar().setLogo(R.drawable.ic_white_icon);
+
         // Stop notification
         Intent intent = new Intent(this, PlaybackService.class);
         intent.setAction(PlaybackService.FOREGROUND_OFF_ACTION);
         startService(intent);
 
+    }
+    
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Intent intent = new Intent(this, PlaybackService.class);
+        intent.setAction(PlaybackService.STOP_ACTION);
+        startService(intent);
     }
 
     @Override
@@ -315,6 +326,9 @@ public class MainActivity extends Activity implements OnTaskCompleted,
         intent.setAction(PlaybackService.FOREGROUND_ON_ACTION);
         startService(intent);
 
+        Intent intent2 = new Intent(this, PlaybackService.class);
+        intent2.setAction(PlaybackService.STOP_ACTION);
+        startService(intent2);
         super.onPause();
     }
 

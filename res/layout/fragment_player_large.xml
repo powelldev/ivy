@@ -2,7 +2,12 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
-
+    <ImageView
+        android:id="@+id/fragment_player_large_album"
+        android:clickable="true"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        />
     <!-- Header -->
 
     <ImageView
@@ -12,15 +17,7 @@
         android:layout_height="1dp"
         android:background="#000000"
         />
-    <!--
-    <ImageView
-        android:id="@+id/fragment_player_header_grad"
-        android:layout_alignParentTop="true"
-        android:layout_width="match_parent"
-        android:layout_height="3dp"
-        android:background="#00FFFFFF"
-        android:src="@drawable/divider_gradient" />
-  -->
+
     <RelativeLayout
         android:id="@+id/fragment_player_header_up"
         android:layout_below="@id/fragment_player_header_grad"
@@ -74,11 +71,11 @@
                 android:id="@+id/fragment_player_header_playpause_icon"
                 android:layout_width="@dimen/header_height"
                 android:layout_height="match_parent"
-                android:src="@drawable/ic_action_play_icon"
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentTop="true"
                 android:background="@null"
-                />
+                android:src="@drawable/ic_action_play_icon" />
+
         </RelativeLayout>
     </RelativeLayout>
     <!-- Footer -->
@@ -88,7 +85,7 @@
         android:layout_width="match_parent"
         android:layout_height="68dp"
         android:layout_alignParentBottom="true"
-        android:background="#eee" >
+        android:background="#f2eeeeee" >
 
         <ImageButton
             android:id="@+id/fragment_player_playpause_icon"
@@ -99,7 +96,7 @@
             android:layout_marginLeft="10dp"
             android:src="@drawable/ic_action_play_icon"
             android:layout_marginRight="10dp"
-            android:background="@null"
+            android:background="@drawable/selector_blue_background"
             />
 
         <ImageButton
@@ -109,7 +106,7 @@
             android:src="@drawable/seek_rwd"
             android:layout_centerVertical="true"
             android:layout_toLeftOf="@id/fragment_player_playpause_icon"
-            android:background="@null"
+            android:background="@drawable/selector_blue_background"
             />
 
         <ImageButton
@@ -119,18 +116,10 @@
             android:layout_centerVertical="true"
             android:src="@drawable/ic_action_seek_fwd"
             android:layout_toRightOf="@id/fragment_player_playpause_icon"
-            android:background="@null"
+            android:background="@drawable/selector_blue_background"
             />
     </RelativeLayout>
 
-    <ImageView
-        android:id="@+id/fragment_player_large_album"
-        android:clickable="true"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_above="@id/fragment_player_footer"
-        android:layout_below="@id/fragment_player_header_up"
-        android:src="#93f" />
 
     <SeekBar
         android:id="@+id/fragment_player_seek_bar"

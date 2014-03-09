@@ -4,6 +4,8 @@ import java.util.concurrent.TimeUnit;
 
 import android.app.Fragment;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -76,6 +78,7 @@ public class PlayerLargeFragment extends Fragment implements OnClickListener,
                 .findViewById(R.id.fragment_player_small_author);
         ViewHolder.albumCoverIv = (ImageView) rootView
                 .findViewById(R.id.fragment_player_small_album_cover);
+
         ViewHolder.largeAlbumIv = (ImageView) rootView
                 .findViewById(R.id.fragment_player_large_album);
         return rootView;

@@ -66,6 +66,8 @@ public class PlaybackService extends Service implements Target,
 
     public static final long NO_EPISODE = -1;
 
+    public static final String STOP_ACTION = "STOP";
+
     private int mElapsed;
     private StatefulMediaPlayer mPlayer;
     private LocalBroadcastManager mBroadcaster;
@@ -98,7 +100,7 @@ public class PlaybackService extends Service implements Target,
     public int onStartCommand(Intent intent, int flags, int startId) {
         String action = intent.getAction();
         if (null == action) {
-            return Service.START_STICKY;
+            return Service.START_NOT_STICKY;
         }
         if (action == START_ACTION) {
             prepare(intent);
@@ -123,8 +125,12 @@ public class PlaybackService extends Service implements Target,
 
         } else if (action == FOREGROUND_OFF_ACTION) {
             setForeground(false);
+        } else if (action == STOP_ACTION) {
+            if (!mPlayer.isPlaying()) {
+                this.stopSelf();
+            }
         }
-        return Service.START_STICKY;
+        return Service.START_NOT_STICKY;
     }
 
     private void prepare(Intent intent) {
@@ -208,7 +214,6 @@ public class PlaybackService extends Service implements Target,
         mPlayer.pause();
         mHandler.removeCallbacksAndMessages(null);
         mLockscreen.setLockscreenPaused();
-        this.stopSelf();
     }
 
     private void updateEpisodeElapsed() {
@@ -229,7 +234,7 @@ public class PlaybackService extends Service implements Target,
             Intent notificationIntent = new Intent(this, MainActivity.class);
             NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(
                     this)
-                    .setSmallIcon(R.drawable.ic_launcher)
+                    .setSmallIcon(R.drawable.ic_white_icon)
                     .setContentTitle(episode.getTitle())
                     .setContentText(episode.getDescription())
                     .setContentIntent(
@@ -244,6 +249,9 @@ public class PlaybackService extends Service implements Target,
             startForeground(42, noti);
         } else {
             stopForeground(true);
+            if (!mPlayer.isPlaying()) {
+                this.stopSelf();
+            }
         }
 
     }

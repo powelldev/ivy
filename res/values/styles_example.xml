@@ -39,6 +39,12 @@
         <item name="android:actionMenuTextColor">@color/white</item>
         <item name="android:titleTextStyle">@style/MyActionBarTitleText</item>
         <item name="android:progressBarStyle">@style/ProgressBar.Example</item>
+        <item name="android:icon">@drawable/ic_white_icon</item>
+        <item name="android:actionOverflowButtonStyle">@style/MyActionButtonOverflow</item>
+    </style>
+
+    <style name="MyActionButtonOverflow" parent="android:style/Widget.Holo.ActionButton.Overflow">
+        <item name="android:src">@drawable/ic_action_overflow</item>
     </style>
 
     <style name="MyActionBarTitleText" parent="@android:style/TextAppearance.Holo.Widget.ActionBar.Title">
