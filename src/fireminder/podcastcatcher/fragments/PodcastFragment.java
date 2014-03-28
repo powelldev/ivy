@@ -83,6 +83,7 @@ public class PodcastFragment extends ListFragment implements LoaderManager.Loade
     public void onResume() {
         super.onResume();
         getActivity().getActionBar().setTitle("Library");
+
     }
     private void subscribeIfIntent(){
         try {

@@ -394,19 +394,8 @@ public class MainActivity extends Activity implements OnTaskCompleted,
             Intent intent = new Intent(this, ADownloadService.class);
             this.startService(intent);
             return true;
-        case R.id.get_new:
-            BackgroundThread bt = new BackgroundThread(this);
-            bt.getNewEpisodes();
-            return true;
-        case R.id.search:
-            Intent i = new Intent(this, SearchActivity.class);
-            startActivityForResult(i, 42);
-            return true;
         case R.id.import_opml:
             importFromOpml();
-            return true;
-        case R.id.settings:
-            this.startPreferenceFragment();
             return true;
         default:
             return super.onOptionsItemSelected(item);
