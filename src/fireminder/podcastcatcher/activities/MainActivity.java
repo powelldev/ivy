@@ -378,8 +378,8 @@ public class MainActivity extends Activity implements OnTaskCompleted,
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
 
+        switch (item.getItemId()) {
         case android.R.id.home:
             if (nav.isDrawerOpen(Gravity.LEFT)) {
                 nav.closeDrawer(Gravity.LEFT);
@@ -405,6 +405,7 @@ public class MainActivity extends Activity implements OnTaskCompleted,
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == 42 && resultCode == RESULT_OK) {
             BackgroundThread bt = new BackgroundThread(this);
+            Log.e("MainActivity", "Loading podcast: " + data.getStringArrayExtra("result"));
             String[] podcasts = data.getStringArrayExtra("result");
             for (String p : podcasts) {
                 bt.subscribeToPodcast(p, this);

@@ -17,7 +17,7 @@
         android:id="@+id/podcast_tv"
         android:layout_width="wrap_content"
         android:layout_toLeftOf="@id/podcast_iv"
-        android:text="Title"
+        android:text="Add a podcast"
         android:fontFamily="sans-serif-light"
         android:textSize="18sp"
         android:textStyle="normal"
@@ -29,7 +29,7 @@
     <TextView
         android:id="@+id/descrip"
         android:layout_width="wrap_content"
-        android:text="subtitle"
+        android:text=""
         android:textSize="12sp"
         android:fontFamily="sans-serif"
         android:textColor="@color/light_grey"

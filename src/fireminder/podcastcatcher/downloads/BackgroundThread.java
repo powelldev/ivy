@@ -55,6 +55,13 @@ public class BackgroundThread {
         new SubscribeAsyncTask(listener).execute(new String[] { url });
     }
 
+    private Podcast addPodcastToDb(Podcast podcast) {
+        // TODO: check for duplicates
+        long id = pdao.insert(podcast);
+        podcast = pdao.get(id);
+        return podcast;
+    }
+
     private class SubscribeAsyncTask extends AsyncTask<String, Void, Podcast> {
 
         private OnTaskCompleted listener;
@@ -84,9 +91,7 @@ public class BackgroundThread {
         @Override
         protected void onPostExecute(Podcast result) {
             if (result != null) {
-                // TODO: check for duplicates
-                long id = pdao.insert(result);
-                Podcast podcast = pdao.get(id);
+                Podcast podcast = addPodcastToDb(result);
                 getEpisodesFromBackgroundThread(podcast);
                 listener.onTaskCompleted(null);
             } else {
@@ -110,21 +115,22 @@ public class BackgroundThread {
         @Override
         protected Void doInBackground(String... urls) {
             try {
-            idForQuery = Long.parseLong(urls[1]);
-            BufferedReader reader = null;
-            List<Episode> episodes = null;
-            URL url = new URL(urls[0]);
-            HttpURLConnection con = (HttpURLConnection) url.openConnection();
-            InputStream is = con.getInputStream();
-            reader = new BufferedReader(new InputStreamReader(is));
-            Log.d("EpisodeParsing", "here: " + urls[0] + " " + urls[1]);
-            episodes = RssParser.parseEpisodesFromXml(is, idForQuery);
-            edao.insertLargeNumberOfEpisodes(episodes);
-            for (Episode episode : episodes) {
-                Helper.updateIfDownloadedAlready(episode, context);
-            }
+                idForQuery = Long.parseLong(urls[1]);
+                BufferedReader reader = null;
+                List<Episode> episodes = null;
+                URL url = new URL(urls[0]);
+                HttpURLConnection con = (HttpURLConnection) url
+                        .openConnection();
+                InputStream is = con.getInputStream();
+                reader = new BufferedReader(new InputStreamReader(is));
+                Log.d("EpisodeParsing", "here: " + urls[0] + " " + urls[1]);
+                episodes = RssParser.parseEpisodesFromXml(is, idForQuery);
+                edao.insertLargeNumberOfEpisodes(episodes);
+                for (Episode episode : episodes) {
+                    Helper.updateIfDownloadedAlready(episode, context);
+                }
             } catch (MalformedURLException e) {
-               e.printStackTrace(); 
+                e.printStackTrace();
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (XmlPullParserException e) {

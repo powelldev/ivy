@@ -20,11 +20,10 @@
         android:divider="@android:color/transparent"
         android:dividerHeight="8dp"
         />
-    <TextView
+    <include layout="@layout/list_item_podcast"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="128dp"
 		android:id="@android:id/empty"
-		android:text="No data"
 		/>
    
 </LinearLayout>
