@@ -1,16 +1,19 @@
 package fireminder.podcastcatcher.utils;
 
-import android.database.Cursor;
-import android.os.Environment;
-import android.util.Log;
-
 import java.io.File;
 import java.io.FileWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import android.database.Cursor;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
+import android.os.Environment;
+import android.util.Log;
+
 public class Utils {
 
+    public static final ColorDrawable action_bar_blue = new ColorDrawable(Color.argb(255, 86, 116, 185));
     private static final String LOGFILE = Environment
             .getExternalStorageDirectory() + File.separator + "creek.txt";
     public static final String TAG = "PodcastCatcher";

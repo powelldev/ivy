@@ -223,7 +223,6 @@ public class PlaybackService extends Service implements Target,
                     .get(getSharedPreferenceEpisodePlaying(getApplicationContext()));
             episode.setElapsed(mElapsed);
             long id = mEdao.update(episode);
-            Log.e(Utils.TAG, id + " Elapsed after insert: " + mEdao.get(id));
         }
     }
 
