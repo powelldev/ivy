@@ -405,9 +405,9 @@ public class MainActivity extends Activity implements OnTaskCompleted,
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == 42 && resultCode == RESULT_OK) {
             BackgroundThread bt = new BackgroundThread(this);
-            Log.e("MainActivity", "Loading podcast: " + data.getStringArrayExtra("result"));
             String[] podcasts = data.getStringArrayExtra("result");
             for (String p : podcasts) {
+                Log.e("MainActivity", "Loading podcast: " + p);
                 bt.subscribeToPodcast(p, this);
             }
             podcastFragment.updateListAdapter();

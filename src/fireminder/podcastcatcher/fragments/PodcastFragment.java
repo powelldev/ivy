@@ -28,11 +28,16 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.text.ClipboardManager;
 import android.util.Log;
+import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.EditText;
@@ -85,6 +90,7 @@ public class PodcastFragment extends ListFragment implements
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
+        registerForContextMenu(getListView());
         getActivity().getActionBar().setBackgroundDrawable(
                 new ColorDrawable(Color.argb(255, 86, 116, 185)));
         this.getListView().getEmptyView()
@@ -95,19 +101,50 @@ public class PodcastFragment extends ListFragment implements
                             String dbPath = "/data/data/fireminder.podcastcatcher/databases/podcasts.db";
                             String outputPath = Environment
                                     .getExternalStorageDirectory() + "/pd.txt";
-                            FileInputStream fis = new FileInputStream(new File(dbPath));
-                            FileOutputStream fos = new FileOutputStream(new File(outputPath));
+                            FileInputStream fis = new FileInputStream(new File(
+                                    dbPath));
+                            FileOutputStream fos = new FileOutputStream(
+                                    new File(outputPath));
                             FileUtils.copyFile(fis, fos);
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
                         Intent i = new Intent(getActivity(),
                                 SearchActivity.class);
-                        startActivityForResult(i, 42);
+                        getActivity().startActivityForResult(i, 42);
                     }
 
                 });
         super.onViewCreated(view, savedInstanceState);
+    }
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v,
+            ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+        MenuInflater inflater = getActivity().getMenuInflater();
+        inflater.inflate(R.menu.menu_podcast, menu);
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+        AdapterContextMenuInfo info = (AdapterContextMenuInfo) item
+                .getMenuInfo();
+        switch (item.getItemId()) {
+        case R.id.menu_podcast_delete:
+            deletePodcast(info.id);
+            break;
+        }
+        return super.onContextItemSelected(item);
+    }
+
+    private void deletePodcast(long id) {
+        PodcastDao pdao = new PodcastDao(getActivity());
+        EpisodeDao edao = new EpisodeDao(getActivity());
+        pdao.delete(pdao.get(id));
+        edao.deleteAllEpisodes(id);
+        updateListAdapter();
+
     }
 
     @Override
@@ -307,23 +344,21 @@ public class PodcastFragment extends ListFragment implements
 
         }
     };
-    OnItemLongClickListener channelListViewOnItemLongClickListener = new OnItemLongClickListener() {
-        @Override
-        public boolean onItemLongClick(AdapterView<?> arg0, View arg1,
-                int itemPosition, long itemId) {
-            PodcastDao pdao = new PodcastDao(getActivity());
-            EpisodeDao edao = new EpisodeDao(getActivity());
-            pdao.delete(pdao.get(itemId));
-            edao.deleteAllEpisodes(itemId);
-            updateListAdapter();
-            return false;
-        }
-    };
+
+    /*
+     * OnItemLongClickListener channelListViewOnItemLongClickListener = new
+     * OnItemLongClickListener() {
+     * 
+     * @Override public boolean onItemLongClick(AdapterView<?> arg0, View arg1,
+     * int itemPosition, long itemId) { PodcastDao pdao = new
+     * PodcastDao(getActivity()); EpisodeDao edao = new
+     * EpisodeDao(getActivity()); pdao.delete(pdao.get(itemId));
+     * edao.deleteAllEpisodes(itemId); updateListAdapter(); return false; } };
+     */
 
     private void initialize() {
         ListView listView = getListView();
         listView.setOnItemClickListener(channelListViewOnClickListener);
-        listView.setOnItemLongClickListener(channelListViewOnItemLongClickListener);
     }
 
     @Override

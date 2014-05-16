@@ -11,6 +11,7 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -106,6 +107,8 @@ public class SearchActivity extends ListActivity implements OnTaskCompleted {
                             String[] podcasts = new String[mSelectedPodcasts.size()];
                             for (int i = 0;i <  mSelectedPodcasts.size(); i++) {
                                 podcasts[i] = mSelectedPodcasts.get(i);
+                                Log.e("MainActivity", "Loading podcast "
+                                        + podcasts[i]);
                             }
                             Bundle b = new Bundle();
                             b.putStringArray("result", podcasts);

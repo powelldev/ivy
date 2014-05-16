@@ -55,12 +55,30 @@ public class BackgroundThread {
         new SubscribeAsyncTask(listener).execute(new String[] { url });
     }
 
+    private Podcast parseAndAddPodcastFromUrl(URL url) throws IOException,
+            XmlPullParserException {
+        Podcast podcast;
+        podcast = parsePodcastFromUrl(url);
+        podcast = addPodcastToDb(podcast);
+        return podcast;
+    }
+
+    private Podcast parsePodcastFromUrl(URL url) throws IOException,
+            XmlPullParserException {
+        HttpURLConnection con = (HttpURLConnection) url.openConnection();
+        InputStream is = con.getInputStream();
+        Podcast podcast = RssParser.parsePodcastFromXml(is);
+        podcast.setLink(url.toString());
+        return podcast;
+    }
+
     private Podcast addPodcastToDb(Podcast podcast) {
         // TODO: check for duplicates
         long id = pdao.insert(podcast);
         podcast = pdao.get(id);
         return podcast;
     }
+
 
     private class SubscribeAsyncTask extends AsyncTask<String, Void, Podcast> {
 
@@ -74,11 +92,8 @@ public class BackgroundThread {
         protected Podcast doInBackground(String... urls) {
             try {
                 URL url = new URL(urls[0]);
-                HttpURLConnection con = (HttpURLConnection) url
-                        .openConnection();
-                InputStream is = con.getInputStream();
-                Podcast podcast = RssParser.parsePodcastFromXml(is);
-                podcast.setLink(urls[0]);
+                Podcast podcast;
+                podcast = parseAndAddPodcastFromUrl(url);
                 return podcast;
             } catch (Exception e) {
                 Log.e(Utils.TAG, "Error in SubscribeAsyncTask doInBackground: "
@@ -91,8 +106,7 @@ public class BackgroundThread {
         @Override
         protected void onPostExecute(Podcast result) {
             if (result != null) {
-                Podcast podcast = addPodcastToDb(result);
-                getEpisodesFromBackgroundThread(podcast);
+                getEpisodesFromBackgroundThread(result);
                 listener.onTaskCompleted(null);
             } else {
                 Toast.makeText(context,
@@ -110,14 +124,15 @@ public class BackgroundThread {
     }
 
     private class EpisodeRetrieveAsync extends AsyncTask<String, Void, Void> {
+
         long idForQuery;
 
         @Override
         protected Void doInBackground(String... urls) {
+            idForQuery = Long.parseLong(urls[1]);
+            BufferedReader reader = null;
+            List<Episode> episodes = null;
             try {
-                idForQuery = Long.parseLong(urls[1]);
-                BufferedReader reader = null;
-                List<Episode> episodes = null;
                 URL url = new URL(urls[0]);
                 HttpURLConnection con = (HttpURLConnection) url
                         .openConnection();
@@ -129,13 +144,7 @@ public class BackgroundThread {
                 for (Episode episode : episodes) {
                     Helper.updateIfDownloadedAlready(episode, context);
                 }
-            } catch (MalformedURLException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (XmlPullParserException e) {
-                e.printStackTrace();
-            } catch (ParseException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
 
