@@ -78,7 +78,7 @@ public class SearchActivity extends ListActivity implements Searcher.OnSearchCom
         String[] podcasts = new String[mSelectedPodcasts.size()];
         for (int i = 0; i < mSelectedPodcasts.size(); i++) {
             podcasts[i] = mSelectedPodcasts.get(i);
-            Log.e("MainActivity", "Loading podcast " + podcasts[i]);
+            Log.d("PodcastCatcher", "Loading podcast " + podcasts[i]);
         }
         Bundle b = new Bundle();
         b.putStringArray("result", podcasts);
