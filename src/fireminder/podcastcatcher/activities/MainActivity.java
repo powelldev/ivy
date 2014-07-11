@@ -1,14 +1,11 @@
 package fireminder.podcastcatcher.activities;
 
 import java.io.File;
-import java.util.Calendar;
 import java.util.List;
 
 import android.app.Activity;
-import android.app.AlarmManager;
 import android.app.DownloadManager;
 import android.app.FragmentTransaction;
-import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -21,6 +18,7 @@ import android.preference.PreferenceManager;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.SlidingPaneLayout.PanelSlideListener;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
@@ -33,7 +31,6 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
-import com.sothree.slidinguppanel.SlidingUpPanelLayout.PanelSlideListener;
 
 import fireminder.podcastcatcher.OnTaskCompleted;
 import fireminder.podcastcatcher.R;
@@ -58,7 +55,7 @@ import fireminder.podcastcatcher.valueobjects.Episode;
 import fireminder.podcastcatcher.valueobjects.Podcast;
 
 public class MainActivity extends Activity implements OnTaskCompleted,
-        PanelSlideListener {
+        com.sothree.slidinguppanel.SlidingUpPanelLayout.PanelSlideListener {
 
     private Uri data = null;
 
@@ -78,66 +75,13 @@ public class MainActivity extends Activity implements OnTaskCompleted,
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         getWindow().requestFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
-
         setContentView(R.layout.activity_main);
+        wireReceiver();
 
-        mReceiver = new BroadcastReceiver() {
-
-            @Override
-            public void onReceive(Context arg0, Intent arg1) {
-                if (arg1.getAction().matches(PlaybackService.TIME_INTENT)) {
-                    playerLargeFragment.updateTime(arg1.getIntExtra(
-                            PlaybackService.TIME_EXTRA, 0));
-                } else if (arg1.getAction().matches(PlaybackService.MAX_INTENT)) {
-                    playerLargeFragment.setMaxTime(arg1.getIntExtra(
-                            PlaybackService.MAX_EXTRA, 0));
-                    Log.e("HAPT",
-                            "sentEpisodeMax ACTIVITY "
-                                    + arg1.getIntExtra(
-                                            PlaybackService.MAX_EXTRA, 0));
-                } else if (arg1.getAction().matches(
-                        PlaybackService.EPISODE_CHANGE_INTENT)) {
-                    long id = arg1.getLongExtra(
-                            PlaybackService.EPISODE_ID_EXTRA, 0);
-                    setupPlayerAndDisplayEpisode(id);
-                } else if (arg1.getAction().matches(
-                        DownloadManager.ACTION_DOWNLOAD_COMPLETE)) {
-                    Utils.log("Download of "
-                            + arg1.getLongExtra(
-                                    DownloadManager.EXTRA_DOWNLOAD_ID, -1)
-                            + "complete");
-                    try {
-                        mChannelFragment.notifyDataSetChanged();
-                    } catch (Exception e) { // may not be active
-                    }
-                } else if (arg1.getAction().matches(
-                        DownloadManager.ACTION_NOTIFICATION_CLICKED)) {
-                    DownloadManager dm = (DownloadManager) arg0
-                            .getSystemService(DOWNLOAD_SERVICE);
-                    for (int i = 0; i < 1500; i++) {
-                        try {
-                            dm.remove(i);
-                        } catch (Exception e) {
-                        }
-                    }
-                }
-            }
-
-        };
-
-        // Initialize child fragments
         Uri data = getIntent().getData();
 
-        if (data != null) {
-            Bundle bundle = new Bundle();
-            bundle.putString("uri", data.toString());
-            podcastFragment = new PodcastFragment();
-            podcastFragment.setArguments(bundle);
-        } else {
-            podcastFragment = new PodcastFragment();
-        }
+        wirePodcastFragment(data);
 
         playerFragment = new PlayerFragment();
         playerLargeFragment = new PlayerLargeFragment();
@@ -148,41 +92,25 @@ public class MainActivity extends Activity implements OnTaskCompleted,
         trans.commit();
 
         findViewById(R.id.lower_container).setVisibility(View.GONE);
-        // UI Listeners
-        ((SlidingUpPanelLayout) findViewById(R.id.sliding_layout))
-                .setPanelSlideListener(this);
-        // DrawerListener
+
+        ((SlidingUpPanelLayout) findViewById(R.id.sliding_layout)).setPanelSlideListener(this);
 
         Intent updateIntent = new Intent(MainActivity.this, BootService.class);
         startService(updateIntent);
 
-        AlarmManager alarmManager = (AlarmManager) this
-                .getSystemService(Context.ALARM_SERVICE);
-        Intent i = new Intent(this, ADownloadService.class);
-        PendingIntent pi = PendingIntent.getActivity(this, 0, i,
-                PendingIntent.FLAG_CANCEL_CURRENT);
-        alarmManager.cancel(pi);
-        alarmManager.set(AlarmManager.ELAPSED_REALTIME, 10000, pi);
+        int hoursBetweenUpdates = Integer.parseInt(PreferenceManager.getDefaultSharedPreferences(
+                getApplicationContext()).getString(getResources().getString(R.string.prefSyncFrequency),
+                Utils.DEFUALT_UPDATE));
 
-        int hoursBetweenUpdates = Integer.parseInt(PreferenceManager
-                .getDefaultSharedPreferences(getApplicationContext())
-                .getString(
-                        getResources().getString(R.string.prefSyncFrequency),
-                        Utils.DEFUALT_UPDATE));
-
-        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, Calendar
-                .getInstance().getTimeInMillis(),
-                hoursBetweenUpdates * 60 * 60 * 1000, pi);
+        Utils.setDownloadSchedulerToRunEvery(this, hoursBetweenUpdates * 60 * 60 * 1000);
 
         this.startService(new Intent(this, PlaybackService.class));
 
-        final String[] navigationItems = new String[] { "Recent", "Library",
-                "Playlist", "Find New", "Settings" };
+        final String[] navigationItems = new String[] { "Recent", "Library", "Playlist", "Find New", "Settings" };
         ListView mDrawerList = (ListView) findViewById(R.id.left_drawer);
         nav = (DrawerLayout) findViewById(R.id.drawer_layout);
 
-        abdt = new ActionBarDrawerToggle(this, nav, R.drawable.ic_drawer,
-                R.string.app_name, R.string.app_name) {
+        abdt = new ActionBarDrawerToggle(this, nav, R.drawable.ic_drawer, R.string.app_name, R.string.app_name) {
             @Override
             public void onDrawerClosed(View arg0) {
                 super.onDrawerClosed(arg0);
@@ -211,14 +139,13 @@ public class MainActivity extends Activity implements OnTaskCompleted,
         getActionBar().setHomeButtonEnabled(true);
         nav.setDrawerListener(abdt);
         nav.setDrawerShadow(R.drawable.drawer_shadow, Gravity.LEFT);
-        final NavAdapter navAdapter = new NavAdapter(this, R.layout.list_item_nav, navigationItems); 
+        final NavAdapter navAdapter = new NavAdapter(this, R.layout.list_item_nav, navigationItems);
         mDrawerList.setAdapter(navAdapter);
-        //mDrawerList.setAdapter(new ArrayAdapter<String>(this,
-        //        android.R.layout.simple_list_item_1, navigationItems));
+        // mDrawerList.setAdapter(new ArrayAdapter<String>(this,
+        // android.R.layout.simple_list_item_1, navigationItems));
         mDrawerList.setOnItemClickListener(new OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> arg0, View view,
-                    int position, long id) {
+            public void onItemClick(AdapterView<?> arg0, View view, int position, long id) {
                 navAdapter.setBold(position);
                 switch (position) {
                 case 0:
@@ -231,8 +158,7 @@ public class MainActivity extends Activity implements OnTaskCompleted,
                     setPlaylistFragment();
                     break;
                 case 3:
-                    Intent i = new Intent(getApplicationContext(),
-                            SearchActivity.class);
+                    Intent i = new Intent(getApplicationContext(), SearchActivity.class);
                     startActivityForResult(i, 42);
                     break;
                 case 4:
@@ -245,6 +171,44 @@ public class MainActivity extends Activity implements OnTaskCompleted,
 
     }
 
+    private void wirePodcastFragment(Uri data) {
+        if (data != null) {
+            Bundle bundle = new Bundle();
+            bundle.putString("uri", data.toString());
+            podcastFragment = new PodcastFragment();
+            podcastFragment.setArguments(bundle);
+        } else {
+            podcastFragment = new PodcastFragment();
+        }
+    }
+
+    private void wireReceiver() {
+        mReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                String action = intent.getAction();
+                if (action.matches(PlaybackService.TIME_INTENT)) {
+                    playerLargeFragment.updateTime(intent.getIntExtra(PlaybackService.TIME_EXTRA, 0));
+
+                } else if (action.matches(PlaybackService.MAX_INTENT)) {
+                    playerLargeFragment.setMaxTime(intent.getIntExtra(PlaybackService.MAX_EXTRA, 0));
+
+                } else if (action.matches(PlaybackService.EPISODE_CHANGE_INTENT)) {
+                    long id = intent.getLongExtra(PlaybackService.EPISODE_ID_EXTRA, 0);
+                    setupPlayerAndDisplayEpisode(id);
+
+                } else if (action.matches(DownloadManager.ACTION_DOWNLOAD_COMPLETE)) {
+                    notifyDownloadOfEpisodeComplete();
+
+                } else if (action.matches(DownloadManager.ACTION_NOTIFICATION_CLICKED)) {
+                    stopDownloads(context);
+
+                }
+            }
+
+        };
+    }
+
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
@@ -254,29 +218,35 @@ public class MainActivity extends Activity implements OnTaskCompleted,
     @Override
     protected void onStart() {
         super.onStart();
+        IntentFilter ifi = setupIntentFilter();
+        LocalBroadcastManager.getInstance(this).registerReceiver(mReceiver, ifi);
+        registerReceiver(mReceiver, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
+    }
+
+    private IntentFilter setupIntentFilter() {
         IntentFilter ifi = new IntentFilter();
         ifi.addAction(PlaybackService.TIME_INTENT);
         ifi.addAction(PlaybackService.MAX_INTENT);
         ifi.addAction(PlaybackService.EPISODE_CHANGE_INTENT);
-        LocalBroadcastManager.getInstance(this)
-                .registerReceiver(mReceiver, ifi);
-        registerReceiver(mReceiver, new IntentFilter(
-                DownloadManager.ACTION_DOWNLOAD_COMPLETE));
-        SharedPreferences preferences = PreferenceManager
-                .getDefaultSharedPreferences(getApplicationContext());
-        String s = preferences.getString("prefSyncFrequency", "");
-        Log.e(Utils.TAG, "Prerfences: " + s);
+        return ifi;
     }
 
     @Override
     protected void onStop() {
+        stopForeground();
+        unregisterReceivers();
+        super.onStop();
+    }
+
+    private void stopForeground() {
         Intent intent = new Intent(this, PlaybackService.class);
         intent.setAction(PlaybackService.FOREGROUND_OFF_ACTION);
         Log.e(Utils.TAG, "Sending foreground off");
+    }
+
+    private void unregisterReceivers() {
         LocalBroadcastManager.getInstance(this).unregisterReceiver(mReceiver);
         unregisterReceiver(mReceiver);
-
-        super.onStop();
     }
 
     @Override
@@ -288,23 +258,19 @@ public class MainActivity extends Activity implements OnTaskCompleted,
     @Override
     protected void onResume() {
         super.onResume();
-        SharedPreferences settings = PreferenceManager
-                .getDefaultSharedPreferences(getApplicationContext());
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
 
         mEpisodeId = settings.getLong(EPISODE_PLAYING, -1);
         if (mEpisodeId != -1) {
             setupPlayerAndDisplayEpisode(mEpisodeId);
         }
-//        getActionBar().setDisplayUseLogoEnabled(true);
- //       getActionBar().setLogo(R.drawable.ic_white_icon);
 
-        // Stop notification
         Intent intent = new Intent(this, PlaybackService.class);
         intent.setAction(PlaybackService.FOREGROUND_OFF_ACTION);
         startService(intent);
 
     }
-    
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -315,8 +281,7 @@ public class MainActivity extends Activity implements OnTaskCompleted,
 
     @Override
     protected void onPause() {
-        SharedPreferences settings = PreferenceManager
-                .getDefaultSharedPreferences(getApplicationContext());
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         SharedPreferences.Editor editor = settings.edit();
         editor.putLong(EPISODE_PLAYING, playerLargeFragment.getCurrentEpisode());
         editor.commit();
@@ -371,7 +336,8 @@ public class MainActivity extends Activity implements OnTaskCompleted,
     public void setChannelFragment(long channelId) {
         mChannelFragment = ChannelFragment.newInstance(channelId);
         FragmentTransaction trans = getFragmentManager().beginTransaction();
-        trans.replace(R.id.fragment_container, mChannelFragment);
+        trans.add(R.id.fragment_container, mChannelFragment);
+        trans.remove(podcastFragment);
         trans.addToBackStack(null);
         trans.commit();
     }
@@ -428,8 +394,7 @@ public class MainActivity extends Activity implements OnTaskCompleted,
     private void setupPlayerAndDisplayEpisode(long episodeId) {
         try {
             Episode episode = new EpisodeDao(MainActivity.this).get(episodeId);
-            Podcast podcast = new PodcastDao(MainActivity.this).get(episode
-                    .getPodcast_id());
+            Podcast podcast = new PodcastDao(MainActivity.this).get(episode.getPodcast_id());
             playerLargeFragment.setEpisode(episode, podcast);
             findViewById(R.id.lower_container).setVisibility(View.VISIBLE);
 
@@ -463,33 +428,51 @@ public class MainActivity extends Activity implements OnTaskCompleted,
 
     }
 
+    public void onSharedPreferenceChanged(SharedPreferences preference, String key) {
+        SettingsManager.onSettingsChangeListener(this, preference, key);
+    }
+
+    private void importFromOpml() {
+        File file = new File(Environment.getExternalStorageDirectory(), "podkicker_backup.opml");
+        Helper.parseOpmlForPodcasts(file, this);
+    }
+
+    private void notifyDownloadOfEpisodeComplete() {
+        try {
+            mChannelFragment.notifyDataSetChanged();
+        } catch (Exception e) {
+            // may not be visible
+        }
+
+    }
+
+    private void stopDownloads(Context context) {
+        DownloadManager dm = (DownloadManager) context.getSystemService(DOWNLOAD_SERVICE);
+        for (int i = 0; i < 1500; i++) {
+            try {
+                dm.remove(i);
+            } catch (Exception e) {
+            }
+        }
+    }
+
     @Override
     public void onPanelCollapsed(View panel) {
         playerLargeFragment.setHeaderVisible(true);
+        // TODO Auto-generated method stub
 
     }
 
     @Override
     public void onPanelExpanded(View panel) {
-        ((SlidingUpPanelLayout) findViewById(R.id.sliding_layout))
-                .setDragView(playerLargeFragment.header);
+        ((SlidingUpPanelLayout) findViewById(R.id.sliding_layout)).setDragView(playerLargeFragment.header);
         playerLargeFragment.setHeaderVisible(false);
+
     }
 
     @Override
     public void onPanelAnchored(View panel) {
-        showToast("Panel Anchored");
+        // TODO Auto-generated method stub
 
-    }
-
-    public void onSharedPreferenceChanged(SharedPreferences preference,
-            String key) {
-        SettingsManager.onSettingsChangeListener(this, preference, key);
-    }
-
-    private void importFromOpml() {
-        File file = new File(Environment.getExternalStorageDirectory(),
-                "podkicker_backup.opml");
-        Helper.parseOpmlForPodcasts(file, this);
     }
 }

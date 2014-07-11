@@ -20,41 +20,40 @@ import fireminder.podcastcatcher.utils.Utils;
 import fireminder.podcastcatcher.valueobjects.Episode;
 
 public class ADownloadService extends IntentService {
-    
+
     public ADownloadService() {
         super("DownloadService");
     }
-    
 
     @Override
     protected void onHandleIntent(Intent intent) {
 
-
-        Utils.log("HAPT", "DownloadService started at " + System.currentTimeMillis() + "");
+        Utils.log("ADownloadService.class", "DownloadService started at " + System.currentTimeMillis() + "");
         BackgroundThread bt = new BackgroundThread(this);
         bt.getNewEpisodes();
-//        
-//        BroadcastReceiver receiver = new BroadcastReceiver() {
-//            @Override
-//            public void onReceive(Context context, Intent intent) {
-//                Intent i = new Intent();
-//                i.setAction(DownloadManager.ACTION_VIEW_DOWNLOADS);
-//                startActivity(i);
-//            }
-//        };
-//        
-//        registerReceiver(receiver, new IntentFilter(DownloadManager.ACTION_NOTIFICATION_CLICKED));
-//        Log.e("DOWNLOADSERVICE", "From dls");
-//        PowerManager pm = (PowerManager) this.getSystemService(Context.POWER_SERVICE);
-//        PowerManager.WakeLock wl = pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "");
-//        wl.acquire();
-//        List<Episode> result = doInBackground();
-//        onPostExecute(result);
-//        wl.release();
+        //
+        // BroadcastReceiver receiver = new BroadcastReceiver() {
+        // @Override
+        // public void onReceive(Context context, Intent intent) {
+        // Intent i = new Intent();
+        // i.setAction(DownloadManager.ACTION_VIEW_DOWNLOADS);
+        // startActivity(i);
+        // }
+        // };
+        //
+        // registerReceiver(receiver, new
+        // IntentFilter(DownloadManager.ACTION_NOTIFICATION_CLICKED));
+        // Log.e("DOWNLOADSERVICE", "From dls");
+        // PowerManager pm = (PowerManager)
+        // this.getSystemService(Context.POWER_SERVICE);
+        // PowerManager.WakeLock wl =
+        // pm.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "");
+        // wl.acquire();
+        // List<Episode> result = doInBackground();
+        // onPostExecute(result);
+        // wl.release();
 
     }
-
-
 
     protected List<Episode> doInBackground() {
 
@@ -69,25 +68,18 @@ public class ADownloadService extends IntentService {
         List<Episode> episodes = new ArrayList<Episode>();
         do {
             Episode e = null;
-            e = edao.getLatestEpisode(cursor.getLong(cursor
-                    .getColumnIndex(PodcastDao.COLUMN_ID)));
-            Log.e("IntentService",
-                    ""
-                            + cursor.getString(cursor
-                                    .getColumnIndex(PodcastDao.COLUMN_LINK)));
+            e = edao.getLatestEpisode(cursor.getLong(cursor.getColumnIndex(PodcastDao.COLUMN_ID)));
+            Log.e("IntentService", "" + cursor.getString(cursor.getColumnIndex(PodcastDao.COLUMN_LINK)));
 
             try {
-                URL url = new URL(cursor.getString(cursor
-                        .getColumnIndex(PodcastDao.COLUMN_LINK)));
-                HttpURLConnection urlConn = (HttpURLConnection) url
-                        .openConnection();
+                URL url = new URL(cursor.getString(cursor.getColumnIndex(PodcastDao.COLUMN_LINK)));
+                HttpURLConnection urlConn = (HttpURLConnection) url.openConnection();
                 InputStream is = urlConn.getInputStream();
 
-                indivEpisodes = RssParser.parseNewEpisodesFromXml(is, cursor
-                        .getInt(cursor
-                                .getColumnIndex(PodcastDao.COLUMN_ID)), e
-                        .getPubDate());
+                indivEpisodes = RssParser.parseNewEpisodesFromXml(is,
+                        cursor.getInt(cursor.getColumnIndex(PodcastDao.COLUMN_ID)), e.getPubDate());
             } catch (Exception ex) {
+                Log.e("Error in ADOwnloadservice", ex.toString());
                 ex.printStackTrace();
             }
             if (indivEpisodes.size() != 0) {
@@ -104,37 +96,33 @@ public class ADownloadService extends IntentService {
     }
 
     protected void onPostExecute(List<Episode> result) {
-        if (result == null) { 
+        if (result == null) {
             Log.e("DLs", "No New episodes");
-            return; 
-            }
+            return;
+        }
         for (Episode e : result) {
             Helper.downloadEpisodeMp3(e, getApplicationContext());
         }
         this.stopSelf();
     }
 
-
-    
-    /*public void downloadEpisodeMp3(Episode e) {
-        String fileName = e.getUrl();
-        fileName = fileName.substring(fileName.lastIndexOf("/"));
-        Log.d("Downloading...", fileName);
-        // TODO Make download notification point back at app - or allow
-        // cessation of download
-        final DownloadManager dm = (DownloadManager) this
-                .getSystemService(Context.DOWNLOAD_SERVICE);
-        
-        Request request = new Request(Uri.parse(e.getUrl()));
-        request.setTitle(e.getTitle())
-                .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
-                .setDescription("Touch to cancel")
-                .setDestinationInExternalPublicDir(
-                        Environment.DIRECTORY_PODCASTS, fileName);
-        long enqueue = dm.enqueue(request);
-        e.setMp3(Environment.getExternalStorageDirectory().getPath() + "/" + Environment.DIRECTORY_PODCASTS + fileName);
-        edao.update(e);
-    }
-    */
+    /*
+     * public void downloadEpisodeMp3(Episode e) { String fileName = e.getUrl();
+     * fileName = fileName.substring(fileName.lastIndexOf("/"));
+     * Log.d("Downloading...", fileName); // TODO Make download notification
+     * point back at app - or allow // cessation of download final
+     * DownloadManager dm = (DownloadManager) this
+     * .getSystemService(Context.DOWNLOAD_SERVICE);
+     * 
+     * Request request = new Request(Uri.parse(e.getUrl()));
+     * request.setTitle(e.getTitle())
+     * .setNotificationVisibility(DownloadManager.
+     * Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+     * .setDescription("Touch to cancel") .setDestinationInExternalPublicDir(
+     * Environment.DIRECTORY_PODCASTS, fileName); long enqueue =
+     * dm.enqueue(request);
+     * e.setMp3(Environment.getExternalStorageDirectory().getPath() + "/" +
+     * Environment.DIRECTORY_PODCASTS + fileName); edao.update(e); }
+     */
 
 }
