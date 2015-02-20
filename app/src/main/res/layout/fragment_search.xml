@@ -1,0 +1,33 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="com.fireminder.podcastcatcher.ui.fragments.SearchFragment">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="56dp">
+        <EditText
+            android:id="@+id/fragment_search_search_edittext"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:hint="Search by Name or Subject"
+            >
+            <requestFocus />
+        </EditText>
+
+        <Button
+            android:layout_alignParentRight="true"
+            android:id="@+id/fragment_search_search_button"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="Search" />
+    </RelativeLayout>
+
+    <ListView
+        android:id="@id/android:list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+</LinearLayout>

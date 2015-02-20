@@ -1,0 +1,779 @@
+--------- beginning of main
+D/Finsky  (17224): [1] 5.onFinished: Installation state replication succeeded.
+D/LocationFilter( 1777): Forcing stable location. Original location:Location[fused 37.345343,-121.948547 acc=20 et=+20h0m52s428ms] because connected WiFi network is the same, bssid=88:f7:c7:2f:88:ca
+--------- beginning of system
+D/WifiService(  721): releaseWifiLockLocked: WifiLock{NlpWifiLock type=2 binder=android.os.BinderProxy@36e16fc3}
+I/GCoreUlr( 1777): Successfully inserted location
+I/GCoreUlr( 1777): Not calling LocationReporter, hasMoved: false, elapsed millis: 2195890, request: Stationary(3600000)
+I/art     (  721): Explicit concurrent mark sweep GC freed 58337(3MB) AllocSpace objects, 5(2MB) LOS objects, 24% free, 49MB/65MB, paused 1.216ms total 98.392ms
+W/ResourceType(  896): No package identifier when getting value for resource number 0x00000000
+W/PackageManager(  896): Failure retrieving resources for com.fireminder.podcastcatcher: Resource ID #0x0
+I/ActivityManager(  721): START u0 {act=com.android.systemui.recents.SHOW_RECENTS flg=0x10804000 cmp=com.android.systemui/.recents.RecentsActivity (has extras)} from uid 10012 on display 0
+W/ResourceType(  896): No package identifier when getting value for resource number 0x00000000
+W/PackageManager(  896): Failure retrieving resources for com.fireminder.podcastcatcher: Resource ID #0x0
+I/art     (  721): Explicit concurrent mark sweep GC freed 12026(601KB) AllocSpace objects, 4(1994KB) LOS objects, 23% free, 50MB/66MB, paused 839us total 70.142ms
+I/art     ( 1737): Explicit concurrent mark sweep GC freed 10529(627KB) AllocSpace objects, 0(0B) LOS objects, 39% free, 20MB/34MB, paused 556us total 18.749ms
+W/art     ( 1737): Attempt to remove local handle scope entry from IRT, ignoring
+I/ActivityManager(  721): START u0 {act=android.intent.action.VIEW cat=[android.intent.category.BROWSABLE] dat=http://www.theskepticsguide.org/feed/sgu flg=0x10000000 cmp=android/com.android.internal.app.ResolverActivity (has extras)} from uid 10032 on display 0
+D/ResolverActivity( 6382): sinceTime=1423027732321
+W/m       ( 1737): [TiclService] Ticl being stopped: Client: <ApplicationClientIdP: client_type=1018 client_name=5104da88-d856-42c9-9ccc-4111532bd850>, \n\006\n\004\010\003\020\001\022\022\t\260\246$x\335\260\206\206\021.L\303d\374uh\211\032\007\010\213,\020\003\030\001, <RunState: 2>
+W/ResourcesManager( 6382): Asset path '/system/framework/com.google.android.maps.jar' does not exist or contains no resources.
+I/ActivityManager(  721): Displayed android/com.android.internal.app.ResolverActivity: +122ms
+W/IInputConnectionWrapper( 1737): showStatusIcon on inactive InputConnection
+W/ProcessCpuTracker(  721): Skipping unknown process pid 7253
+W/ProcessCpuTracker(  721): Skipping unknown process pid 7254
+W/ProcessCpuTracker(  721): Skipping unknown process pid 7256
+W/ProcessCpuTracker(  721): Skipping unknown process pid 7261
+W/ProcessCpuTracker(  721): Skipping unknown process pid 7262
+W/ProcessCpuTracker(  721): Skipping unknown process pid 7265
+W/ProcessCpuTracker(  721): Skipping unknown process pid 7267
+W/ProcessCpuTracker(  721): Skipping unknown process pid 7268
+W/ProcessCpuTracker(  721): Skipping unknown process pid 7271
+W/ProcessCpuTracker(  721): Skipping unknown process pid 7272
+W/ProcessCpuTracker(  721): Skipping unknown process pid 7273
+W/ProcessCpuTracker(  721): Skipping unknown process pid 7276
+W/AndroidInternalSchedule( 1737): [TiclService] Ignoring event with wrong ticl id (not 1424237332363): <AndroidSchedulerEvent: version=<Version: major_version=1 minor_version=0> event_name=InitialPersistentHeartbeat ticl_id=1424237331494>
+I/PackageManager(  721): Setting last chosen activity com.fireminder.podcastcatcher/.ui.PodcastsActivity for user 0:
+I/PackageManager(  721):   Action: "android.intent.action.VIEW"
+I/PackageManager(  721):   Category: "android.intent.category.BROWSABLE"
+I/PackageManager(  721):   Category: "android.intent.category.DEFAULT"
+I/PackageManager(  721):   Scheme: "http"
+I/PackageManager(  721):   Authority: "": -1 WILD
+I/PackageManager(  721):   Path: "PatternMatcher{GLOB: .*feed.*}"
+I/ActivityManager(  721): START u0 {act=android.intent.action.VIEW cat=[android.intent.category.BROWSABLE] dat=http://www.theskepticsguide.org/feed/sgu flg=0x13000000 cmp=com.fireminder.podcastcatcher/.ui.PodcastsActivity (has extras)} from uid 10032 on display 0
+I/ActivityManager(  721): Process ch.bitspin.timely (pid 4052) has died
+I/PodcastCatcher SelectionBuilder( 7064): query(columns=null, distinct=false) SelectionBuilder[table=podcasts, selection=, selectionArgs=[]projectionMap = {} ]
+I/ActivityManager(  721): Displayed com.fireminder.podcastcatcher/.ui.PodcastsActivity: +315ms
+W/ActivityManager(  721): Duplicate finish request for ActivityRecord{396cd315 u0 android/com.android.internal.app.ResolverActivity t3852 f}
+W/m       ( 1737): [TiclService] Ticl being stopped: Client: <ApplicationClientIdP: client_type=1018 client_name=5104da88-d856-42c9-9ccc-4111532bd850>, \n\006\n\004\010\003\020\001\022\022\t\260\246$x\335\260\206\206\021.L\303d\374uh\211\032\007\010\213,\020\003\030\001, <RunState: 2>
+I/GCM     ( 1347): GCM message com.android.chrome 0:1424237337079190%0f493ae6f9fd7ecd
+V/GCMBroadcastReceiver( 1737): onReceive: com.google.android.c2dm.intent.RECEIVE
+V/GCMBroadcastReceiver( 1737): GCM IntentService class: com.google.ipc.invalidation.external.client.contrib.MultiplexingGcmListener
+V/GCMBaseIntentService( 1737): Acquiring wakelock
+V/GCMBaseIntentService( 1737): Intent service name: GCMIntentService-DynamicSenderIds-13
+V/GCMBaseIntentService( 1737): Releasing wakelock
+I/PodcastCatcher SubscriptionService( 7064): handleSubscription: http://www.theskepticsguide.org/feed/sgu
+D/TaskPersister(  721): removeObsoleteFile: deleting file=3852_task_thumbnail.png
+E/PodcastCatcher SubscriptionService( 7064): error in: handleSubscriptionResponse: Unexpected token (position:TEXT Ã¯Â»¿@1:6 in java.io.InputStreamReader@1bb79fcc) 
+W/System.err( 7064): org.xmlpull.v1.XmlPullParserException: Unexpected token (position:TEXT Ã¯Â»¿@1:6 in java.io.InputStreamReader@1bb79fcc) 
+W/System.err( 7064): 	at org.kxml2.io.KXmlParser.next(KXmlParser.java:432)
+W/System.err( 7064): 	at org.kxml2.io.KXmlParser.next(KXmlParser.java:313)
+W/System.err( 7064): 	at com.fireminder.podcastcatcher.models.PodcastHandler.parsePodcast(PodcastHandler.java:69)
+W/System.err( 7064): 	at com.fireminder.podcastcatcher.utils.RssParseHelper.parsePodcastFromXml(RssParseHelper.java:42)
+W/System.err( 7064): 	at com.fireminder.podcastcatcher.services.SubscriptionService.handleResponse(SubscriptionService.java:78)
+W/System.err( 7064): 	at com.fireminder.podcastcatcher.services.SubscriptionService.onResponse(SubscriptionService.java:103)
+W/System.err( 7064): 	at com.fireminder.podcastcatcher.services.SubscriptionService.onResponse(SubscriptionService.java:26)
+W/System.err( 7064): 	at com.android.volley.toolbox.StringRequest.deliverResponse(StringRequest.java:60)
+W/System.err( 7064): 	at com.android.volley.toolbox.StringRequest.deliverResponse(StringRequest.java:30)
+W/System.err( 7064): 	at com.android.volley.ExecutorDelivery$ResponseDeliveryRunnable.run(ExecutorDelivery.java:99)
+W/System.err( 7064): 	at android.os.Handler.handleCallback(Handler.java:739)
+W/System.err( 7064): 	at android.os.Handler.dispatchMessage(Handler.java:95)
+W/System.err( 7064): 	at android.os.Looper.loop(Looper.java:135)
+W/System.err( 7064): 	at android.app.ActivityThread.main(ActivityThread.java:5221)
+W/System.err( 7064): 	at java.lang.reflect.Method.invoke(Native Method)
+W/System.err( 7064): 	at java.lang.reflect.Method.invoke(Method.java:372)
+W/System.err( 7064): 	at com.android.internal.os.ZygoteInit$MethodAndArgsCaller.run(ZygoteInit.java:899)
+W/System.err( 7064): 	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:694)
+D/PodcastCatcher SubscriptionService( 7064): onResponse
+E/WifiStateMachine(  721): WifiStateMachine CMD_START_SCAN source -2 txSuccessRate=102.20 rxSuccessRate=111.57 targetRoamBSSID=88:f7:c7:2f:88:ca RSSI=-32
+I/ActivityManager(  721): Start proc ch.bitspin.timely for broadcast ch.bitspin.timely/.widget.WidgetProvider_: pid=7350 uid=10081 gids={50081, 9997, 3003} abi=armeabi-v7a
+W/ResourcesManager( 7350): Asset path '/system/framework/com.android.media.remotedisplay.jar' does not exist or contains no resources.
+W/ResourcesManager( 7350): Asset path '/system/framework/com.android.location.provider.jar' does not exist or contains no resources.
+V/JNIHelp ( 7350): Registering com/google/android/gms/org/conscrypt/NativeCrypto's 235 native methods...
+I/ProviderInstaller( 7350): Installed default security provider GmsCore_OpenSSL
+W/GAV2    ( 7350): Thread[main,5,main]: Need to call initialize() and be in fallback mode to start dispatch.
+I/Timely  ( 7350): Starting broadcast listening thread.
+I/ActivityManager(  721): Killing 6487:com.android.cellbroadcastreceiver/u0a30 (adj 15): empty #17
+W/libprocessgroup(  721): failed to open /acct/uid_10030/pid_6487/cgroup.procs: No such file or directory
+W/GAV4    ( 1337): Thread[Thread-117,5,main]: Exception sending hit: HttpHostConnectException
+W/GAV4    ( 1337): Thread[Thread-117,5,main]: Connection to https://ssl.google-analytics.com refused
+W/GAV4    ( 1337): Thread[Thread-117,5,main]: Empty hitIds passed to deleteHits.
+D/TimelyDebug( 7350): AlarmManager.registerAlarms: reason = delayed init.
+V/Timely  ( 7350): Registering AlarmClocks.
+V/Timely  ( 7350): Registering System Alarm for alarm at 2015-02-18T07:29:58.000-08:00
+V/Timely  ( 7350): Registering System Alarm for finetune at 2015-02-18T07:29:53.000-08:00
+V/Timely  ( 7350): Registering System Alarm for presync at 2015-02-18T07:26:58.000-08:00
+V/Timely  ( 7350): Registering System Alarm for dismiss at 2015-02-18T07:34:58.000-08:00
+W/ContextImpl( 7350): Implicit intents with startService are not safe: Intent { act=com.google.android.gms.analytics.service.START (has extras) } android.content.ContextWrapper.bindService:538 com.google.analytics.tracking.android.d.b:82 com.google.analytics.tracking.android.x.j:279 
+I/GAV2    ( 7350): Thread[GAThread,1,main]: No campaign data found.
+W/GAV4    ( 1337): Thread[Thread-117,5,main]: Exception sending hit: HttpHostConnectException
+W/GAV4    ( 1337): Thread[Thread-117,5,main]: Connection to https://ssl.google-analytics.com refused
+W/GAV4    ( 1337): Thread[Thread-117,5,main]: Empty hitIds passed to deleteHits.
+E/WifiStateMachine(  721): WifiStateMachine CMD_START_SCAN source -2 txSuccessRate=0.89 rxSuccessRate=0.97 targetRoamBSSID=88:f7:c7:2f:88:ca RSSI=-51
+E/WifiStateMachine(  721): WifiStateMachine starting scan for "SurrenderNowOrPrepareToFi"WPA_PSK with 2412
+I/wpa_supplicant(  863): wlan0: CTRL-EVENT-SCAN-STARTED 
+I/ActivityManager(  721): Killing 6711:com.android.keychain/1000 (adj 15): empty #17
+W/libprocessgroup(  721): failed to open /acct/uid_1000/pid_6711/cgroup.procs: No such file or directory
+E/WifiStateMachine(  721): WifiStateMachine CMD_START_SCAN source -2 txSuccessRate=0.76 rxSuccessRate=0.64 targetRoamBSSID=88:f7:c7:2f:88:ca RSSI=-25
+E/WifiStateMachine(  721): WifiStateMachine starting scan for "SurrenderNowOrPrepareToFi"WPA_PSK with 2412
+I/wpa_supplicant(  863): wlan0: CTRL-EVENT-SCAN-STARTED 
+I/ActivityManager(  721): Start proc com.android.providers.calendar for content provider com.android.providers.calendar/.CalendarProvider2: pid=7419 uid=10001 gids={50001, 9997, 3003, 1028, 1015} abi=armeabi-v7a
+W/ResourcesManager( 7419): Asset path '/system/framework/android.test.runner.jar' does not exist or contains no resources.
+I/CalendarProvider2( 7419): Created com.android.providers.calendar.CalendarAlarmManager@1ecf1b7b(com.android.providers.calendar.CalendarProvider2@34b05d98)
+I/Metrics:BatchTransmitte(29801): QueuePusher.sendBatches - Drained batch queue.; Number of batches sent: 0
+I/CalendarProvider2( 7419): Sending notification intent: Intent { act=android.intent.action.PROVIDER_CHANGED dat=content://com.android.calendar }
+W/ContentResolver( 7419): Failed to get type for: content://com.android.calendar (Unknown URL content://com.android.calendar)
+I/ActivityManager(  721): Start proc com.google.android.calendar for broadcast com.google.android.calendar/com.android.calendar.alerts.AlertReceiver: pid=7449 uid=10029 gids={50029, 9997, 3003, 1028, 1015} abi=armeabi-v7a
+I/ActivityManager(  721): Killing 6732:com.google.android.gms.ui/u0a7 (adj 15): empty #17
+W/libprocessgroup(  721): failed to open /acct/uid_10007/pid_6732/cgroup.procs: No such file or directory
+E/SQLiteLog( 7449): (283) recovered 15 frames from WAL file /data/data/com.google.android.calendar/databases/timelydata.db-wal
+I/art     (  721): Explicit concurrent mark sweep GC freed 50242(3MB) AllocSpace objects, 16(6MB) LOS objects, 24% free, 50MB/66MB, paused 1.059ms total 78.533ms
+I/AnalyticsLogBase( 7449): PlayLogger.onLoggerConnected
+I/AnalyticsLogBase( 7449): PlayLogger.onLoggerConnected
+E/SQLiteLog( 2791): (284) automatic index on sqlite_sq_AF52EEC0(STAT_DATA_ID)
+D/WifiService(  721): acquireWifiLockLocked: WifiLock{NlpWifiLock type=2 binder=android.os.BinderProxy@36c8fa7}
+E/WifiStateMachine(  721): WifiStateMachine CMD_START_SCAN source 10007 txSuccessRate=0.38 rxSuccessRate=0.32 targetRoamBSSID=88:f7:c7:2f:88:ca RSSI=-24
+I/wpa_supplicant(  863): wlan0: CTRL-EVENT-SCAN-STARTED 
+I/GCoreUlr( 1777): BLE: ALARM_WAKEUP_LOCATOR: scannerActive=false, enoughTimeElapsed=false; scan not started.
+I/AmazonVideo.util(32259): ConfigManager.updateFromServerIfNecessary: Requesting update for 2611136 millis from now
+I/AmazonVideo.util(32259): ConfigTaskScheduler.schedule: Scheduling refresh after 2611136 millis
+I/AmazonVideo.syncservice(32259): SyncDispatcher.sync: Skipping sync component: EventManager
+D/WifiService(  721): releaseWifiLockLocked: WifiLock{NlpWifiLock type=2 binder=android.os.BinderProxy@36c8fa7}
+D/LocationFilter( 1777): Forcing stable location. Original location:Location[fused 37.345345,-121.948549 acc=20 et=+20h1m54s558ms] because connected WiFi network is the same, bssid=88:f7:c7:2f:88:ca
+I/GCoreUlr( 1777): Successfully inserted location
+I/GCoreUlr( 1777): Not calling LocationReporter, hasMoved: false, elapsed millis: 2257974, request: Stationary(3600000)
+D/HeadsetStateMachine( 2986): Disconnected process message: 10, size: 0
+I/GAV2    ( 7449): Thread[GAThread,5,main]: No campaign data found.
+I/ActivityManager(  721): Killing 5868:com.facebook.katana:dash/u0a97 (adj 15): empty #17
+D/WifiService(  721): Client connection lost with reason: 4
+W/libprocessgroup(  721): failed to open /acct/uid_10097/pid_5868/cgroup.procs: No such file or directory
+E/WifiStateMachine(  721): WifiStateMachine CMD_START_SCAN source -2 txSuccessRate=0.29 rxSuccessRate=0.01 targetRoamBSSID=88:f7:c7:2f:88:ca RSSI=-25
+E/WifiStateMachine(  721): WifiStateMachine starting scan for "SurrenderNowOrPrepareToFi"WPA_PSK with 2412
+I/wpa_supplicant(  863): wlan0: CTRL-EVENT-SCAN-STARTED 
+I/ActivityManager(  721): Start proc com.google.android.deskclock for broadcast com.google.android.deskclock/com.android.alarmclock.DigitalAppWidgetProvider: pid=7560 uid=10035 gids={50035, 9997, 1028} abi=armeabi-v7a
+I/ActivityManager(  721): Killing 5908:com.google.android.partnersetup/u0a11 (adj 15): empty #17
+W/libprocessgroup(  721): failed to open /acct/uid_10011/pid_5908/cgroup.procs: No such file or directory
+I/com.amazon.venezia/com.amazon.identity.auth.device.framework.RemoteMapInfo( 3097): Querying the device type without querying the remote content provider.
+E/com.amazon.venezia/com.amazon.identity.auth.device.utils.DeviceTypeHelpers( 3097): Device code is invalid. Device appears to be configured incorrectly.
+I/com.amazon.venezia/com.amazon.identity.auth.device.framework.RemoteMapInfo( 3097): Override DSN is not supported on this platform. Returning null
+I/com.amazon.venezia/com.amazon.identity.auth.accounts.AccountManagerLogic( 3097): registerChildApplication device type:A3GFS040JDOGQR
+I/com.amazon.venezia/com.amazon.identity.auth.device.framework.RemoteMapInfo( 3097): Querying the device type without querying the remote content provider.
+E/com.amazon.venezia/com.amazon.identity.auth.device.utils.DeviceTypeHelpers( 3097): Device code is invalid. Device appears to be configured incorrectly.
+I/com.amazon.venezia/com.amazon.identity.auth.device.framework.RemoteMapInfo( 3097): Querying the device type without querying the remote content provider.
+E/com.amazon.venezia/com.amazon.identity.auth.device.utils.DeviceTypeHelpers( 3097): Device code is invalid. Device appears to be configured incorrectly.
+I/com.amazon.venezia/com.amazon.identity.auth.accounts.RegisterChildApplicationAction( 3097): Registering child application with device type A3GFS040JDOGQR, version 638000510, and component id com.amazon.venezia
+I/com.amazon.venezia/com.amazon.identity.auth.accounts.DMSSubAuthenticator( 3097): Child Application device type A3GFS040JDOGQR is already registered
+I/com.amazon.venezia/com.amazon.identity.auth.device.framework.RemoteMapInfo( 3097): Querying the device type without querying the remote content provider.
+E/com.amazon.venezia/com.amazon.identity.auth.device.utils.DeviceTypeHelpers( 3097): Device code is invalid. Device appears to be configured incorrectly.
+I/com.amazon.venezia/com.amazon.identity.auth.device.framework.RemoteMapInfo( 3097): Override DSN is not supported on this platform. Returning null
+I/com.amazon.venezia/com.amazon.identity.auth.accounts.AccountManagerLogic( 3097): registerChildApplication device type:A3GFS040JDOGQR
+I/com.amazon.venezia/com.amazon.identity.auth.device.framework.RemoteMapInfo( 3097): Querying the device type without querying the remote content provider.
+E/com.amazon.venezia/com.amazon.identity.auth.device.utils.DeviceTypeHelpers( 3097): Device code is invalid. Device appears to be configured incorrectly.
+I/com.amazon.venezia/com.amazon.identity.auth.device.framework.RemoteMapInfo( 3097): Querying the device type without querying the remote content provider.
+E/com.amazon.venezia/com.amazon.identity.auth.device.utils.DeviceTypeHelpers( 3097): Device code is invalid. Device appears to be configured incorrectly.
+I/com.amazon.venezia/com.amazon.identity.auth.accounts.RegisterChildApplicationAction( 3097): Registering child application with device type A3GFS040JDOGQR, version 638000510, and component id com.amazon.venezia
+I/com.amazon.venezia/com.amazon.identity.auth.accounts.DMSSubAuthenticator( 3097): Child Application device type A3GFS040JDOGQR is already registered
+I/com.amazon.venezia/com.amazon.identity.auth.device.framework.RemoteMapInfo( 3097): Querying the device type without querying the remote content provider.
+E/com.amazon.venezia/com.amazon.identity.auth.device.utils.DeviceTypeHelpers( 3097): Device code is invalid. Device appears to be configured incorrectly.
+I/com.amazon.venezia/com.amazon.identity.auth.device.framework.RemoteMapInfo( 3097): Override DSN is not supported on this platform. Returning null
+I/com.amazon.venezia/com.amazon.identity.auth.accounts.AccountManagerLogic( 3097): registerChildApplication device type:A3GFS040JDOGQR
+I/com.amazon.venezia/com.amazon.identity.auth.device.framework.RemoteMapInfo( 3097): Querying the device type without querying the remote content provider.
+E/com.amazon.venezia/com.amazon.identity.auth.device.utils.DeviceTypeHelpers( 3097): Device code is invalid. Device appears to be configured incorrectly.
+I/com.amazon.venezia/com.amazon.identity.auth.device.framework.RemoteMapInfo( 3097): Querying the device type without querying the remote content provider.
+E/com.amazon.venezia/com.amazon.identity.auth.device.utils.DeviceTypeHelpers( 3097): Device code is invalid. Device appears to be configured incorrectly.
+I/com.amazon.venezia/com.amazon.identity.auth.accounts.RegisterChildApplicationAction( 3097): Registering child application with device type A3GFS040JDOGQR, version 638000510, and component id com.amazon.venezia
+I/com.amazon.venezia/com.amazon.identity.auth.accounts.DMSSubAuthenticator( 3097): Child Application device type A3GFS040JDOGQR is already registered
+E/WifiStateMachine(  721): WifiStateMachine CMD_START_SCAN source -2 txSuccessRate=1.44 rxSuccessRate=0.00 targetRoamBSSID=88:f7:c7:2f:88:ca RSSI=-30
+E/WifiStateMachine(  721): WifiStateMachine starting scan for "SurrenderNowOrPrepareToFi"WPA_PSK with 2412
+I/wpa_supplicant(  863): wlan0: CTRL-EVENT-SCAN-STARTED 
+I/AmazonAppstore.BackoffRetryHandler( 3097): Got a retry request
+I/AmazonAppstore.BackoffRetryHandler( 3097): Backing off for: 50
+I/AmazonAppstore.BackoffRetryHandler( 3097): Retrying request? true
+I/com.amazon.venezia/com.amazon.identity.auth.device.framework.RemoteMapInfo( 3097): Querying the device type without querying the remote content provider.
+E/com.amazon.venezia/com.amazon.identity.auth.device.utils.DeviceTypeHelpers( 3097): Device code is invalid. Device appears to be configured incorrectly.
+I/com.amazon.venezia/com.amazon.identity.auth.device.framework.RemoteMapInfo( 3097): Override DSN is not supported on this platform. Returning null
+I/com.amazon.venezia/com.amazon.identity.auth.accounts.AccountManagerLogic( 3097): registerChildApplication device type:A3GFS040JDOGQR
+I/com.amazon.venezia/com.amazon.identity.auth.device.framework.RemoteMapInfo( 3097): Querying the device type without querying the remote content provider.
+E/com.amazon.venezia/com.amazon.identity.auth.device.utils.DeviceTypeHelpers( 3097): Device code is invalid. Device appears to be configured incorrectly.
+I/com.amazon.venezia/com.amazon.identity.auth.device.framework.RemoteMapInfo( 3097): Querying the device type without querying the remote content provider.
+E/com.amazon.venezia/com.amazon.identity.auth.device.utils.DeviceTypeHelpers( 3097): Device code is invalid. Device appears to be configured incorrectly.
+I/com.amazon.venezia/com.amazon.identity.auth.accounts.RegisterChildApplicationAction( 3097): Registering child application with device type A3GFS040JDOGQR, version 638000510, and component id com.amazon.venezia
+I/com.amazon.venezia/com.amazon.identity.auth.accounts.DMSSubAuthenticator( 3097): Child Application device type A3GFS040JDOGQR is already registered
+I/com.amazon.venezia/com.amazon.identity.auth.device.framework.RemoteMapInfo( 3097): Querying the device type without querying the remote content provider.
+E/com.amazon.venezia/com.amazon.identity.auth.device.utils.DeviceTypeHelpers( 3097): Device code is invalid. Device appears to be configured incorrectly.
+I/com.amazon.venezia/com.amazon.identity.auth.device.framework.RemoteMapInfo( 3097): Override DSN is not supported on this platform. Returning null
+I/com.amazon.venezia/com.amazon.identity.auth.accounts.AccountManagerLogic( 3097): registerChildApplication device type:A3GFS040JDOGQR
+I/com.amazon.venezia/com.amazon.identity.auth.device.framework.RemoteMapInfo( 3097): Querying the device type without querying the remote content provider.
+E/com.amazon.venezia/com.amazon.identity.auth.device.utils.DeviceTypeHelpers( 3097): Device code is invalid. Device appears to be configured incorrectly.
+I/com.amazon.venezia/com.amazon.identity.auth.device.framework.RemoteMapInfo( 3097): Querying the device type without querying the remote content provider.
+E/com.amazon.venezia/com.amazon.identity.auth.device.utils.DeviceTypeHelpers( 3097): Device code is invalid. Device appears to be configured incorrectly.
+I/com.amazon.venezia/com.amazon.identity.auth.accounts.RegisterChildApplicationAction( 3097): Registering child application with device type A3GFS040JDOGQR, version 638000510, and component id com.amazon.venezia
+I/com.amazon.venezia/com.amazon.identity.auth.accounts.DMSSubAuthenticator( 3097): Child Application device type A3GFS040JDOGQR is already registered
+I/com.amazon.venezia/com.amazon.identity.auth.device.framework.RemoteMapInfo( 3097): Querying the device type without querying the remote content provider.
+E/com.amazon.venezia/com.amazon.identity.auth.device.utils.DeviceTypeHelpers( 3097): Device code is invalid. Device appears to be configured incorrectly.
+I/com.amazon.venezia/com.amazon.identity.auth.device.framework.RemoteMapInfo( 3097): Override DSN is not supported on this platform. Returning null
+I/com.amazon.venezia/com.amazon.identity.auth.accounts.AccountManagerLogic( 3097): registerChildApplication device type:A3GFS040JDOGQR
+I/com.amazon.venezia/com.amazon.identity.auth.device.framework.RemoteMapInfo( 3097): Querying the device type without querying the remote content provider.
+E/com.amazon.venezia/com.amazon.identity.auth.device.utils.DeviceTypeHelpers( 3097): Device code is invalid. Device appears to be configured incorrectly.
+I/com.amazon.venezia/com.amazon.identity.auth.device.framework.RemoteMapInfo( 3097): Querying the device type without querying the remote content provider.
+E/com.amazon.venezia/com.amazon.identity.auth.device.utils.DeviceTypeHelpers( 3097): Device code is invalid. Device appears to be configured incorrectly.
+I/com.amazon.venezia/com.amazon.identity.auth.accounts.RegisterChildApplicationAction( 3097): Registering child application with device type A3GFS040JDOGQR, version 638000510, and component id com.amazon.venezia
+I/com.amazon.venezia/com.amazon.identity.auth.accounts.DMSSubAuthenticator( 3097): Child Application device type A3GFS040JDOGQR is already registered
+I/com.amazon.venezia/com.amazon.identity.auth.device.framework.RemoteMapInfo( 3097): Querying the device type without querying the remote content provider.
+E/com.amazon.venezia/com.amazon.identity.auth.device.utils.DeviceTypeHelpers( 3097): Device code is invalid. Device appears to be configured incorrectly.
+I/com.amazon.venezia/com.amazon.identity.auth.device.framework.RemoteMapInfo( 3097): Override DSN is not supported on this platform. Returning null
+I/com.amazon.venezia/com.amazon.identity.auth.accounts.AccountManagerLogic( 3097): registerChildApplication device type:A3GFS040JDOGQR
+I/com.amazon.venezia/com.amazon.identity.auth.device.framework.RemoteMapInfo( 3097): Querying the device type without querying the remote content provider.
+E/com.amazon.venezia/com.amazon.identity.auth.device.utils.DeviceTypeHelpers( 3097): Device code is invalid. Device appears to be configured incorrectly.
+I/com.amazon.venezia/com.amazon.identity.auth.device.framework.RemoteMapInfo( 3097): Querying the device type without querying the remote content provider.
+E/com.amazon.venezia/com.amazon.identity.auth.device.utils.DeviceTypeHelpers( 3097): Device code is invalid. Device appears to be configured incorrectly.
+I/com.amazon.venezia/com.amazon.identity.auth.accounts.RegisterChildApplicationAction( 3097): Registering child application with device type A3GFS040JDOGQR, version 638000510, and component id com.amazon.venezia
+I/com.amazon.venezia/com.amazon.identity.auth.accounts.DMSSubAuthenticator( 3097): Child Application device type A3GFS040JDOGQR is already registered
+I/com.amazon.venezia/com.amazon.identity.auth.device.framework.RemoteMapInfo( 3097): Querying the device type without querying the remote content provider.
+E/com.amazon.venezia/com.amazon.identity.auth.device.utils.DeviceTypeHelpers( 3097): Device code is invalid. Device appears to be configured incorrectly.
+I/com.amazon.venezia/com.amazon.identity.auth.device.framework.RemoteMapInfo( 3097): Override DSN is not supported on this platform. Returning null
+I/com.amazon.venezia/com.amazon.identity.auth.accounts.AccountManagerLogic( 3097): registerChildApplication device type:A3GFS040JDOGQR
+I/com.amazon.venezia/com.amazon.identity.auth.device.framework.RemoteMapInfo( 3097): Querying the device type without querying the remote content provider.
+E/com.amazon.venezia/com.amazon.identity.auth.device.utils.DeviceTypeHelpers( 3097): Device code is invalid. Device appears to be configured incorrectly.
+I/com.amazon.venezia/com.amazon.identity.auth.device.framework.RemoteMapInfo( 3097): Querying the device type without querying the remote content provider.
+E/com.amazon.venezia/com.amazon.identity.auth.device.utils.DeviceTypeHelpers( 3097): Device code is invalid. Device appears to be configured incorrectly.
+I/com.amazon.venezia/com.amazon.identity.auth.accounts.RegisterChildApplicationAction( 3097): Registering child application with device type A3GFS040JDOGQR, version 638000510, and component id com.amazon.venezia
+I/com.amazon.venezia/com.amazon.identity.auth.accounts.DMSSubAuthenticator( 3097): Child Application device type A3GFS040JDOGQR is already registered
+I/com.amazon.venezia/com.amazon.identity.auth.device.framework.RemoteMapInfo( 3097): Querying the device type without querying the remote content provider.
+E/com.amazon.venezia/com.amazon.identity.auth.device.utils.DeviceTypeHelpers( 3097): Device code is invalid. Device appears to be configured incorrectly.
+I/com.amazon.venezia/com.amazon.identity.auth.device.framework.RemoteMapInfo( 3097): Override DSN is not supported on this platform. Returning null
+I/com.amazon.venezia/com.amazon.identity.auth.accounts.AccountManagerLogic( 3097): registerChildApplication device type:A3GFS040JDOGQR
+I/com.amazon.venezia/com.amazon.identity.auth.device.framework.RemoteMapInfo( 3097): Querying the device type without querying the remote content provider.
+E/com.amazon.venezia/com.amazon.identity.auth.device.utils.DeviceTypeHelpers( 3097): Device code is invalid. Device appears to be configured incorrectly.
+I/com.amazon.venezia/com.amazon.identity.auth.device.framework.RemoteMapInfo( 3097): Querying the device type without querying the remote content provider.
+E/com.amazon.venezia/com.amazon.identity.auth.device.utils.DeviceTypeHelpers( 3097): Device code is invalid. Device appears to be configured incorrectly.
+I/com.amazon.venezia/com.amazon.identity.auth.accounts.RegisterChildApplicationAction( 3097): Registering child application with device type A3GFS040JDOGQR, version 638000510, and component id com.amazon.venezia
+I/com.amazon.venezia/com.amazon.identity.auth.accounts.DMSSubAuthenticator( 3097): Child Application device type A3GFS040JDOGQR is already registered
+I/AmazonAppstore.SchedulePeriodicWork( 3097): com.amazon.venezia/com.amazon.mas.client.malware.blockedapp.BlockedAppService-com.amazon.mas.client.malware.blockedapp.get_blocked_apps encountering first work complete, scheduling repeating alarm.
+I/GCM     ( 1347): GCM message com.texty.sms 0:1424237440458176%a0bb592a00170842
+V/GCMBroadcastReceiver(30809): onReceive: com.google.android.c2dm.intent.RECEIVE
+V/GCMBroadcastReceiver(30809): GCM IntentService class: com.texty.sms.GCMIntentService
+V/GCMBaseIntentService(30809): Intent service name: GCMIntentService-82288362851-4
+E/WifiStateMachine(  721): WifiStateMachine CMD_START_SCAN source -2 txSuccessRate=11.67 rxSuccessRate=9.75 targetRoamBSSID=88:f7:c7:2f:88:ca RSSI=-28
+E/WifiStateMachine(  721): WifiStateMachine starting scan for "SurrenderNowOrPrepareToFi"WPA_PSK with 2412
+I/wpa_supplicant(  863): wlan0: CTRL-EVENT-SCAN-STARTED 
+D/WifiService(  721): acquireWifiLockLocked: WifiLock{NlpWifiLock type=2 binder=android.os.BinderProxy@36c8fa7}
+E/WifiStateMachine(  721): WifiStateMachine CMD_START_SCAN source 10007 txSuccessRate=11.67 rxSuccessRate=9.75 targetRoamBSSID=88:f7:c7:2f:88:ca RSSI=-28
+I/wpa_supplicant(  863): wlan0: CTRL-EVENT-SCAN-STARTED 
+I/GCoreUlr( 1777): BLE: ALARM_WAKEUP_LOCATOR: scannerActive=false, enoughTimeElapsed=false; scan not started.
+D/LocationFilter( 1777): Forcing stable location. Original location:Location[fused 37.345364,-121.948549 acc=20 et=+20h2m54s562ms] because connected WiFi network is the same, bssid=88:f7:c7:2f:88:ca
+D/WifiService(  721): releaseWifiLockLocked: WifiLock{NlpWifiLock type=2 binder=android.os.BinderProxy@36c8fa7}
+I/GCoreUlr( 1777): Successfully inserted location
+I/GCoreUlr( 1777): Not calling LocationReporter, hasMoved: false, elapsed millis: 2318023, request: Stationary(3600000)
+E/WifiStateMachine(  721): WifiStateMachine CMD_START_SCAN source -2 txSuccessRate=0.85 rxSuccessRate=1.12 targetRoamBSSID=88:f7:c7:2f:88:ca RSSI=-26
+E/WifiStateMachine(  721): WifiStateMachine starting scan for "SurrenderNowOrPrepareToFi"WPA_PSK with 2412
+I/wpa_supplicant(  863): wlan0: CTRL-EVENT-SCAN-STARTED 
+W/GAV4    ( 1337): Thread[Thread-117,5,main]: Exception sending hit: HttpHostConnectException
+W/GAV4    ( 1337): Thread[Thread-117,5,main]: Connection to https://ssl.google-analytics.com refused
+W/GAV4    ( 1337): Thread[Thread-117,5,main]: Empty hitIds passed to deleteHits.
+I/art     ( 1221): Background sticky concurrent mark sweep GC freed 89171(7MB) AllocSpace objects, 0(0B) LOS objects, 30% free, 17MB/25MB, paused 844us total 105.295ms
+I/MediaRouter( 1300): Found default route: MediaRouter.RouteInfo{ uniqueId=android/mr:DEFAULT_ROUTE, name=Phone, description=null, enabled=true, connecting=false, playbackType=0, playbackStream=3, volumeHandling=1, volume=13, volumeMax=15, presentationDisplayId=-1, extras=null, providerPackageName=android }
+W/ActivityManager(  721): Permission Denial: Accessing service ComponentInfo{com.google.android.music/com.google.android.music.dial.DialMediaRouteProviderService} from pid=1300, uid=10023 that is not exported from uid 10061
+I/ActivityManager(  721): Start proc com.google.android.youtube for service com.google.android.youtube/.app.remote.YouTubeTvRouteProviderService: pid=7749 uid=10073 gids={50073, 9997, 3003, 1028, 1015} abi=armeabi-v7a
+E/WifiStateMachine(  721): WifiStateMachine CMD_START_SCAN source 10007 txSuccessRate=0.18 rxSuccessRate=0.13 targetRoamBSSID=88:f7:c7:2f:88:ca RSSI=-31
+I/wpa_supplicant(  863): wlan0: CTRL-EVENT-SCAN-STARTED 
+E/WifiStateMachine(  721): WifiStateMachine CMD_START_SCAN source 10007 txSuccessRate=0.18 rxSuccessRate=0.13 targetRoamBSSID=88:f7:c7:2f:88:ca RSSI=-31
+W/ResourcesManager( 7749): Asset path '/system/framework/com.android.media.remotedisplay.jar' does not exist or contains no resources.
+W/ResourcesManager( 7749): Asset path '/system/framework/com.android.location.provider.jar' does not exist or contains no resources.
+I/art     (  721): Explicit concurrent mark sweep GC freed 87150(4MB) AllocSpace objects, 2(335KB) LOS objects, 24% free, 50MB/66MB, paused 1.155ms total 84.868ms
+V/JNIHelp ( 7749): Registering com/google/android/gms/org/conscrypt/NativeCrypto's 235 native methods...
+I/ProviderInstaller( 7749): Installed default security provider GmsCore_OpenSSL
+I/art     ( 1347): Explicit concurrent mark sweep GC freed 14498(805KB) AllocSpace objects, 0(0B) LOS objects, 40% free, 18MB/31MB, paused 453us total 18.924ms
+I/art     ( 1347): Explicit concurrent mark sweep GC freed 5202(223KB) AllocSpace objects, 0(0B) LOS objects, 39% free, 18MB/31MB, paused 706us total 21.845ms
+I/art     ( 7749): Explicit concurrent mark sweep GC freed 46016(2MB) AllocSpace objects, 4(64KB) LOS objects, 24% free, 17MB/23MB, paused 368us total 32.913ms
+W/System.err( 7749): YouTube MDX: Bogus value in shared preferences for key MdxServerSelection value , returning default value.
+I/System.out( 7749): YouTube MDX: MDX video stage moved to NEW
+I/System.out( 7749): YouTube MDX: MDX video player state moved to UNSTARTED
+I/System.out( 7749): YouTube MDX: MDX ad player state moved to UNSTARTED
+I/System.out( 7749): YouTube MDX: MDX video stage moved to NEW
+I/System.out( 7749): YouTube MDX: MDX video player state moved to UNSTARTED
+I/System.out( 7749): YouTube MDX: MDX ad player state moved to UNSTARTED
+E/GoogleConversionReporter( 7749): Error sending ping
+E/GoogleConversionReporter( 7749): org.apache.http.conn.HttpHostConnectException: Connection to https://www.googleadservices.com refused
+E/GoogleConversionReporter( 7749): 	at org.apache.http.impl.conn.DefaultClientConnectionOperator.openConnection(DefaultClientConnectionOperator.java:183)
+E/GoogleConversionReporter( 7749): 	at org.apache.http.impl.conn.AbstractPoolEntry.open(AbstractPoolEntry.java:164)
+E/GoogleConversionReporter( 7749): 	at org.apache.http.impl.conn.AbstractPooledConnAdapter.open(AbstractPooledConnAdapter.java:119)
+E/GoogleConversionReporter( 7749): 	at org.apache.http.impl.client.DefaultRequestDirector.execute(DefaultRequestDirector.java:360)
+E/GoogleConversionReporter( 7749): 	at org.apache.http.impl.client.AbstractHttpClient.execute(AbstractHttpClient.java:555)
+E/GoogleConversionReporter( 7749): 	at org.apache.http.impl.client.AbstractHttpClient.execute(AbstractHttpClient.java:487)
+E/GoogleConversionReporter( 7749): 	at org.apache.http.impl.client.AbstractHttpClient.execute(AbstractHttpClient.java:465)
+E/GoogleConversionReporter( 7749): 	at android.net.http.AndroidHttpClient.execute(AndroidHttpClient.java:252)
+E/GoogleConversionReporter( 7749): 	at aey.a(SourceFile:217)
+E/GoogleConversionReporter( 7749): 	at afb.run(SourceFile:173)
+E/GoogleConversionReporter( 7749): 	at java.lang.Thread.run(Thread.java:818)
+E/GoogleConversionReporter( 7749): Caused by: java.net.ConnectException: failed to connect to /127.0.0.1 (port 443) after 60000ms: isConnected failed: ECONNREFUSED (Connection refused)
+E/GoogleConversionReporter( 7749): 	at libcore.io.IoBridge.isConnected(IoBridge.java:238)
+E/GoogleConversionReporter( 7749): 	at libcore.io.IoBridge.connectErrno(IoBridge.java:171)
+E/GoogleConversionReporter( 7749): 	at libcore.io.IoBridge.connect(IoBridge.java:122)
+E/GoogleConversionReporter( 7749): 	at java.net.PlainSocketImpl.connect(PlainSocketImpl.java:183)
+E/GoogleConversionReporter( 7749): 	at java.net.PlainSocketImpl.connect(PlainSocketImpl.java:456)
+E/GoogleConversionReporter( 7749): 	at java.net.Socket.connect(Socket.java:882)
+E/GoogleConversionReporter( 7749): 	at org.apache.http.conn.scheme.PlainSocketFactory.connectSocket(PlainSocketFactory.java:119)
+E/GoogleConversionReporter( 7749): 	at org.apache.http.impl.conn.DefaultClientConnectionOperator.openConnection(DefaultClientConnectionOperator.java:144)
+E/GoogleConversionReporter( 7749): 	... 10 more
+E/GoogleConversionReporter( 7749): Caused by: android.system.ErrnoException: isConnected failed: ECONNREFUSED (Connection refused)
+E/GoogleConversionReporter( 7749): 	at libcore.io.IoBridge.isConnected(IoBridge.java:223)
+E/GoogleConversionReporter( 7749): 	... 17 more
+W/GAV2    ( 1300): Thread[Background Non-Blocking-2,5,main]: dispatch call queued.  Need to call GAServiceManager.getInstance().initialize().
+W/HandlerScheduledExecuto( 1300): Task does not implement UiTask. Consider using NamedUiRunnable for gce@332246ab
+W/HandlerScheduledExecuto( 1300): Task does not implement UiTask. Consider using NamedUiRunnable for gce@332246ab
+I/TrainingQuestionManagerImpl( 1300): updateFromServerResponse: no new training mode data and no pending answered questions to clear
+W/GAV4    ( 1337): Thread[Thread-117,5,main]: Exception sending hit: HttpHostConnectException
+W/GAV4    ( 1337): Thread[Thread-117,5,main]: Connection to https://ssl.google-analytics.com refused
+W/GAV4    ( 1337): Thread[Thread-117,5,main]: Empty hitIds passed to deleteHits.
+I/ActivityManager(  721): Killing 5772:com.google.android.apps.docs/u0a37 (adj 15): empty #17
+W/libprocessgroup(  721): failed to open /acct/uid_10037/pid_5772/cgroup.procs: No such file or directory
+E/WifiStateMachine(  721): WifiStateMachine CMD_START_SCAN source -2 txSuccessRate=7.29 rxSuccessRate=6.53 targetRoamBSSID=88:f7:c7:2f:88:ca RSSI=-30
+E/WifiStateMachine(  721): WifiStateMachine starting scan for "SurrenderNowOrPrepareToFi"WPA_PSK with 2412
+I/wpa_supplicant(  863): wlan0: CTRL-EVENT-SCAN-STARTED 
+I/GCoreUlr( 1777): BLE: ALARM_WAKEUP_LOCATOR: scannerActive=false, enoughTimeElapsed=false; scan not started.
+E/WifiStateMachine(  721): WifiStateMachine CMD_START_SCAN source -2 txSuccessRate=0.06 rxSuccessRate=0.03 targetRoamBSSID=88:f7:c7:2f:88:ca RSSI=-36
+E/WifiStateMachine(  721): WifiStateMachine starting scan for "SurrenderNowOrPrepareToFi"WPA_PSK with 2412
+I/wpa_supplicant(  863): wlan0: CTRL-EVENT-SCAN-STARTED 
+D/WifiService(  721): acquireWifiLockLocked: WifiLock{NlpWifiLock type=2 binder=android.os.BinderProxy@2b6ba817}
+E/WifiStateMachine(  721): WifiStateMachine CMD_START_SCAN source 10007 txSuccessRate=0.06 rxSuccessRate=0.03 targetRoamBSSID=88:f7:c7:2f:88:ca RSSI=-36
+E/WifiStateMachine(  721): WifiStateMachine CMD_START_SCAN source 10007 txSuccessRate=0.06 rxSuccessRate=0.03 targetRoamBSSID=88:f7:c7:2f:88:ca RSSI=-36
+I/wpa_supplicant(  863): wlan0: CTRL-EVENT-SCAN-STARTED 
+D/LocationFilter( 1777): Forcing stable location. Original location:Location[fused 37.345370,-121.948562 acc=24 et=+20h3m55s826ms] because connected WiFi network is the same, bssid=88:f7:c7:2f:88:ca
+D/WifiService(  721): releaseWifiLockLocked: WifiLock{NlpWifiLock type=2 binder=android.os.BinderProxy@2b6ba817}
+I/GCoreUlr( 1777): Successfully inserted location
+I/GCoreUlr( 1777): Not calling LocationReporter, hasMoved: false, elapsed millis: 2379233, request: Stationary(3600000)
+E/WifiStateMachine(  721): WifiStateMachine CMD_START_SCAN source -2 txSuccessRate=0.63 rxSuccessRate=0.63 targetRoamBSSID=88:f7:c7:2f:88:ca RSSI=-49
+E/WifiStateMachine(  721): WifiStateMachine starting scan for "SurrenderNowOrPrepareToFi"WPA_PSK with 2412
+I/wpa_supplicant(  863): wlan0: CTRL-EVENT-SCAN-STARTED 
+I/art     ( 1777): Explicit concurrent mark sweep GC freed 82763(5MB) AllocSpace objects, 0(0B) LOS objects, 40% free, 21MB/36MB, paused 799us total 56.354ms
+I/Icing   ( 1337): Indexing C57870ABE5A338C473E8DF49FB48291C9602B581 from com.android.chrome
+I/Icing   ( 1337): Indexing done C57870ABE5A338C473E8DF49FB48291C9602B581
+I/art     (  721): Explicit concurrent mark sweep GC freed 52876(2MB) AllocSpace objects, 1(167KB) LOS objects, 24% free, 50MB/66MB, paused 1.180ms total 81.286ms
+D/AndroidRuntime( 8004): 
+D/AndroidRuntime( 8004): >>>>>> AndroidRuntime START com.android.internal.os.RuntimeInit <<<<<<
+D/AndroidRuntime( 8004): CheckJNI is OFF
+D/AndroidRuntime( 8004): Calling main entry com.android.commands.pm.Pm
+D/Finsky  (17224): [1] PackageVerificationReceiver.onReceive: Verification requested, id = 10
+D/Finsky  (17224): [1] WorkerTask.onPreExecute: Verification Requested for id = 10, data=file:///data/local/tmp/com.fireminder.podcastcatcher flags=114 fromVerificationActivity=false
+D/Finsky  (17224): [1] 2.onResponse: Verification id=10 response=0
+D/Finsky  (17224): [1] PackageVerificationReceiver.onReceive: Verification requested, id = 10
+D/DefContainer(  917): Copying /data/local/tmp/com.fireminder.podcastcatcher to base.apk
+D/PackageManager(  721): Renaming /data/app/vmdl277563866.tmp to /data/app/com.fireminder.podcastcatcher-1
+I/ActivityManager(  721): Force stopping com.fireminder.podcastcatcher appid=10135 user=-1: uninstall pkg
+I/ActivityManager(  721): Killing 7064:com.fireminder.podcastcatcher/u0a135 (adj 0): stop com.fireminder.podcastcatcher
+I/WindowState(  721): WIN DEATH: Window{1e645a14 u0 com.fireminder.podcastcatcher/com.fireminder.podcastcatcher.ui.PodcastsActivity}
+I/WindowState(  721): WIN DEATH: Window{10f6c63d u0 com.fireminder.podcastcatcher/com.fireminder.podcastcatcher.ui.PodcastsActivity}
+W/ActivityManager(  721): Scheduling restart of crashed service com.fireminder.podcastcatcher/.services.SubscriptionService in 1000ms
+W/ActivityManager(  721): Force removing ActivityRecord{198b720b u0 com.fireminder.podcastcatcher/.ui.PodcastsActivity t3851}: app died, no saved state
+I/ActivityManager(  721):   Force finishing activity ActivityRecord{2eb8fd4a u0 com.fireminder.podcastcatcher/.ui.PodcastsActivity t3851}
+I/PackageManager(  721): Package com.fireminder.podcastcatcher codePath changed from /data/app/com.fireminder.podcastcatcher-2 to /data/app/com.fireminder.podcastcatcher-1; Retaining data and using new
+I/ActivityManager(  721):   Force stopping service ServiceRecord{18fb2b48 u0 com.fireminder.podcastcatcher/.services.SubscriptionService}
+I/art     (  721): DexFile_isDexOptNeeded failed to open oat file '/data/dalvik-cache/arm/data@app@com.fireminder.podcastcatcher-1@base.apk@classes.dex' for file location '/data/app/com.fireminder.podcastcatcher-1/base.apk': Failed to open oat filename for reading: No such file or directory
+I/art     (  721): DexFile_isDexOptNeeded failed to open oat file '/data/app/com.fireminder.podcastcatcher-1/arm/base.odex' for file location '/data/app/com.fireminder.podcastcatcher-1/base.apk': Failed to open oat filename for reading: No such file or directory
+I/PackageManager(  721): Running dexopt on: /data/app/com.fireminder.podcastcatcher-1/base.apk pkg=com.fireminder.podcastcatcher isa=arm vmSafeMode=false
+W/ActivityManager(  721): Spurious death for ProcessRecord{32ed9464 7064:com.fireminder.podcastcatcher/u0a135}, curProc for 7064: null
+I/dex2oat ( 8025): /system/bin/dex2oat --zip-fd=6 --zip-location=/data/app/com.fireminder.podcastcatcher-1/base.apk --oat-fd=7 --oat-location=/data/dalvik-cache/arm/data@app@com.fireminder.podcastcatcher-1@base.apk@classes.dex --instruction-set=arm --instruction-set-features=div --runtime-arg -Xms64m --runtime-arg -Xmx512m
+I/art     ( 1737): Explicit concurrent mark sweep GC freed 17203(926KB) AllocSpace objects, 0(0B) LOS objects, 39% free, 20MB/34MB, paused 731us total 19.732ms
+W/art     ( 1737): Attempt to remove local handle scope entry from IRT, ignoring
+W/InputMethodManagerService(  721): Got RemoteException sending setActive(false) notification to pid 7064 uid 10135
+W/dex2oat ( 8025): Before Android 4.1, method int android.support.v7.internal.widget.ListViewCompat.lookForSelectablePosition(int, boolean) would have incorrectly overridden the package-private method in android.widget.ListView
+I/art     (  721): Explicit concurrent mark sweep GC freed 49214(2MB) AllocSpace objects, 19(419KB) LOS objects, 24% free, 50MB/66MB, paused 1.133ms total 107.612ms
+I/dex2oat ( 8025): dex2oat took 1.780s (threads: 4)
+I/ActivityManager(  721): Force stopping com.fireminder.podcastcatcher appid=10135 user=-1: update pkg
+W/PackageManager(  721): Code path for pkg : com.fireminder.podcastcatcher changing from /data/app/com.fireminder.podcastcatcher-2 to /data/app/com.fireminder.podcastcatcher-1
+W/PackageManager(  721): Resource path for pkg : com.fireminder.podcastcatcher changing from /data/app/com.fireminder.podcastcatcher-2 to /data/app/com.fireminder.podcastcatcher-1
+I/ActivityManager(  721): Force stopping com.fireminder.podcastcatcher appid=10135 user=0: pkg removed
+I/art     ( 6382): Explicit concurrent mark sweep GC freed 2245(145KB) AllocSpace objects, 3(243KB) LOS objects, 24% free, 15MB/20MB, paused 220us total 9.938ms
+I/art     ( 3652): Explicit concurrent mark sweep GC freed 61(2464B) AllocSpace objects, 0(0B) LOS objects, 24% free, 16MB/21MB, paused 264us total 17.564ms
+I/art     (30809): Explicit concurrent mark sweep GC freed 5053(355KB) AllocSpace objects, 4(64KB) LOS objects, 25% free, 16MB/22MB, paused 281us total 21.190ms
+D/BackupManagerService(  721): Received broadcast Intent { act=android.intent.action.PACKAGE_REMOVED dat=package:com.fireminder.podcastcatcher flg=0x4000010 (has extras) }
+D/JobSchedulerService(  721): Receieved: android.intent.action.PACKAGE_REMOVED
+E/com.amazon.venezia/com.amazon.identity.auth.device.framework.MAPApplicationInformationQueryer( 3097): Notified by action android.intent.action.PACKAGE_REMOVED to invalidate app cache
+I/InputReader(  721): Reconfiguring input devices.  changes=0x00000010
+I/art     (  896): Explicit concurrent mark sweep GC freed 18712(931KB) AllocSpace objects, 6(3MB) LOS objects, 30% free, 36MB/52MB, paused 7.304ms total 40.503ms
+I/art     ( 1300): Explicit concurrent mark sweep GC freed 5022(311KB) AllocSpace objects, 1(29KB) LOS objects, 24% free, 20MB/27MB, paused 489us total 75.840ms
+I/InputReader(  721): Reconfiguring input devices.  changes=0x00000010
+E/com.amazon.venezia/com.amazon.identity.auth.device.framework.MAPApplicationInformationQueryer( 3097): Notified by action android.intent.action.PACKAGE_ADDED to invalidate app cache
+I/art     ( 1257): Explicit concurrent mark sweep GC freed 22640(666KB) AllocSpace objects, 6(878KB) LOS objects, 12% free, 54MB/62MB, paused 432us total 80.275ms
+W/Settings(  721): Setting install_non_market_apps has moved from android.provider.Settings.Global to android.provider.Settings.Secure, returning read-only value.
+I/InputReader(  721): Reconfiguring input devices.  changes=0x00000010
+E/com.amazon.venezia/com.amazon.identity.auth.device.framework.MAPApplicationInformationQueryer( 3097): Notified by action android.intent.action.PACKAGE_REPLACED to invalidate app cache
+I/art     ( 1347): Explicit concurrent mark sweep GC freed 3695(199KB) AllocSpace objects, 0(0B) LOS objects, 39% free, 18MB/31MB, paused 983us total 21.326ms
+I/art     (  195): Explicit concurrent mark sweep GC freed 709(30KB) AllocSpace objects, 0(0B) LOS objects, 40% free, 15MB/25MB, paused 196us total 7.998ms
+I/ActivityManager(  721): Start proc com.android.keychain for broadcast com.android.keychain/.KeyChainBroadcastReceiver: pid=8076 uid=1000 gids={41000, 9997, 1028, 1015, 3002, 3001, 3003} abi=armeabi-v7a
+I/art     (  195): Explicit concurrent mark sweep GC freed 5(160B) AllocSpace objects, 0(0B) LOS objects, 40% free, 15MB/25MB, paused 225us total 8.451ms
+I/art     (  195): Explicit concurrent mark sweep GC freed 5(160B) AllocSpace objects, 0(0B) LOS objects, 40% free, 15MB/25MB, paused 170us total 7.674ms
+W/InputMethodInfo(  721): Duplicated subtype definition found: , voice
+D/BackupManagerService(  721): Received broadcast Intent { act=android.intent.action.PACKAGE_ADDED dat=package:com.fireminder.podcastcatcher flg=0x4000010 (has extras) }
+W/BackupManagerService(  721): Removing schedule queue dupe of com.fireminder.podcastcatcher
+W/ContextImpl( 8076): Calling a method in the system process without a qualified user: android.app.ContextImpl.startService:1686 android.content.ContextWrapper.startService:515 android.content.ContextWrapper.startService:515 com.android.keychain.KeyChainBroadcastReceiver.onReceive:12 android.app.ActivityThread.handleReceiver:2579 
+I/ConfigFetchService( 1337): PackageReceiver: Intent { act=android.intent.action.PACKAGE_REMOVED dat=package:com.fireminder.podcastcatcher flg=0x4000010 cmp=com.google.android.gms/.config.ConfigFetchService$PackageReceiver (has extras) }
+I/ConfigService( 1347): onCreate
+I/ConfigService( 1347): onBind for Intent { act=com.google.android.gms.config.UPDATE pkg=com.google.android.gms } action com.google.android.gms.config.UPDATE
+I/ConfigFetchService( 1337): onStartCommand Intent { act=android.intent.action.PACKAGE_REMOVED dat=package:com.fireminder.podcastcatcher cmp=com.google.android.gms/.config.ConfigFetchService (has extras) }
+I/ConfigService( 1347): onBind returning update interface
+I/ConfigService( 1347): onBind for Intent { act=com.google.android.gms.config.START pkg=com.google.android.gms } action com.google.android.gms.config.START
+I/ConfigService( 1347): onBind returning config service
+I/ConfigService( 1347): onDestroy
+D/PackageBroadcastService( 1337): Received broadcast action=android.intent.action.PACKAGE_REMOVED and uri=com.fireminder.podcastcatcher
+I/ActivityManager(  721): Start proc com.google.android.gms.ui for broadcast com.google.android.gms/com.google.android.location.settings.PackageChangeReceiver: pid=8098 uid=10007 gids={50007, 9997, 3007, 2001, 3003, 1007, 3006, 3002, 3001, 1028, 1015, 1005} abi=armeabi-v7a
+I/art     (  721): Explicit concurrent mark sweep GC freed 24743(2MB) AllocSpace objects, 4(64KB) LOS objects, 24% free, 50MB/66MB, paused 4.895ms total 203.021ms
+D/AndroidRuntime( 8004): Shutting down VM
+W/ResourcesManager( 8098): Asset path '/system/framework/com.android.media.remotedisplay.jar' does not exist or contains no resources.
+W/ResourcesManager( 8098): Asset path '/system/framework/com.android.location.provider.jar' does not exist or contains no resources.
+I/MultiDex( 8098): VM with version 2.1.0 has multidex support
+I/MultiDex( 8098): install
+I/MultiDex( 8098): VM has multidex support, MultiDex support library is disabled.
+I/ProviderInstaller( 8098): Insert disabled by gate 'gms:security:enable_conscrypt_in_gms_application'
+I/Launcher( 1257): Deferring update until onResume
+W/Launcher( 1257): setApplicationContext called twice! old=com.google.android.velvet.VelvetApplication@1fa9f457 new=com.google.android.velvet.VelvetApplication@1fa9f457
+I/ActivityManager(  721): Start proc com.google.android.apps.docs for broadcast com.google.android.apps.docs/.receivers.AppPackageAddRemoveReceiver: pid=8119 uid=10037 gids={50037, 9997, 3003, 1028, 1015} abi=armeabi-v7a
+W/ResourcesManager( 1257): Asset path '/system/framework/com.google.android.media.effects.jar' does not exist or contains no resources.
+W/ResourcesManager( 1257): Asset path '/system/framework/com.google.android.maps.jar' does not exist or contains no resources.
+W/ResourcesManager( 1257): Asset path '/system/framework/com.google.android.maps.jar' does not exist or contains no resources.
+D/DocsApplication( 8119): Plugin installer initialized.
+I/Launcher( 1257): Deferring update until onResume
+I/PackageInfoHelper( 8119): Provided clientMode=RELEASE, packageInfo=PackageInfo{923585f com.google.android.apps.docs}
+D/TAG     ( 8119): onCreate()
+D/CrossAppStateProvider( 8119): Initialized StateProvider with authority: com.google.android.apps.docs.statesyncer
+D/AndroidRuntime( 8143): 
+D/AndroidRuntime( 8143): >>>>>> AndroidRuntime START com.android.internal.os.RuntimeInit <<<<<<
+D/AndroidRuntime( 8143): CheckJNI is OFF
+D/AndroidRuntime( 8143): Calling main entry com.android.commands.am.Am
+I/ActivityManager(  721): START u0 {act=android.intent.action.MAIN cat=[android.intent.category.LAUNCHER] flg=0x10000000 cmp=com.fireminder.podcastcatcher/.ui.PodcastsActivity} from uid 2000 on display 0
+D/AndroidRuntime( 8143): Shutting down VM
+I/ActivityManager(  721): Start proc com.fireminder.podcastcatcher for activity com.fireminder.podcastcatcher/.ui.PodcastsActivity: pid=8156 uid=10135 gids={50135, 9997, 3003} abi=armeabi-v7a
+I/art     ( 8156): Late-enabling -Xcheck:jni
+W/m       ( 1737): [TiclService] Ticl being stopped: Client: <ApplicationClientIdP: client_type=1018 client_name=5104da88-d856-42c9-9ccc-4111532bd850>, \n\006\n\004\010\003\020\001\022\022\t\260\246$x\335\260\206\206\021.L\303d\374uh\211\032\007\010\213,\020\003\030\001, <RunState: 2>
+I/PodcastCatcher SelectionBuilder( 8156): query(columns=null, distinct=false) SelectionBuilder[table=podcasts, selection=, selectionArgs=[]projectionMap = {} ]
+D/OpenGLRenderer( 8156): Render dirty regions requested: true
+D/Atlas   ( 8156): Validating map...
+I/Adreno-EGL( 8156): <qeglDrvAPI_eglInitialize:410>: QUALCOMM Build: 10/24/14, 167c270, I68fa98814b
+I/OpenGLRenderer( 8156): Initialized EGL, version 1.4
+D/OpenGLRenderer( 8156): Enabling debug mode 0
+W/IInputConnectionWrapper( 1737): showStatusIcon on inactive InputConnection
+I/ActivityManager(  721): Displayed com.fireminder.podcastcatcher/.ui.PodcastsActivity: +544ms
+W/ActivityManager(  721): getTasks: caller 10083 does not hold GET_TASKS; limiting output
+W/GAV2    ( 8119): Thread[main,5,main]: Need to call initialize() and be in fallback mode to start dispatch.
+I/ActivityManager(  721): Start proc com.facebook.katana:dash for broadcast com.facebook.katana/com.facebook.dash.receivers.DashPackageUninstallReceiver: pid=8208 uid=10097 gids={50097, 9997, 1028, 1015, 3003} abi=armeabi-v7a
+W/ResourcesManager( 8208): Asset path '/system/framework/com.google.android.maps.jar' does not exist or contains no resources.
+D/CatchMeIfYouCan( 8208): Process (dash) ca: '/data/data/com.facebook.katana/app_cmiyc/0C66B38F48468E96F8008B6D5A2AE33B4A60265E01'
+D/CatchMeIfYouCan( 8208): Process (dash) fc: '/data/data/com.facebook.katana/app_cmiyc/0C66B38F48468E96F8008B6D5A2AE33B4A60265E02'
+D/CatchMeIfYouCan( 8208): Process (dash) cp: '('dash', 6, 60000, silent [true], restart [true], logout [true])'
+D/ACRA    ( 8208): ACRA is enabled for com.facebook.katana, intializing...
+D/ACRA    ( 8208): Looking for error files in /data/data/com.facebook.katana/app_acra-reports
+D/ACRA    ( 8208): Looking for error files in /data/data/com.facebook.katana/app_minidumps
+D/SoLoader( 8208): found gnustl_shared in default place
+D/SoLoader( 8208): found fb_breakpad_client in default place
+I/DexLibLoader( 8208): not using cross-dex optimization: ART in use
+D/SoLoader( 8208): found stdc++ in default place
+D/SoLoader( 8208): found gnustl_shared in default place
+D/SoLoader( 8208): found sigmux in default place
+D/SoLoader( 8208): found distract in default place
+D/SoLoader( 8208): found fb_dalvik-internals in default place
+I/dalvik-internals( 8208): dlopen(libdvm) failed: no Dalvik modifications possible
+V/DexLibLoader( 8208): about to lock odex store
+V/DexLibLoader( 8208): locking odex store took 0 ms
+V/DexLibLoader( 8208): Secondary program dex metadata: secondary-1.dex.jar.xz f2cb3896183fbb387122262fc65fbbc1d7f6d5fc secondary.dex01.Canary
+V/DexLibLoader( 8208): Secondary program dex metadata: secondary-2.dex.jar.xz 2c570e9f5369691334824b57c715246dc34c240b secondary.dex02.Canary
+V/DexLibLoader( 8208): Secondary program dex metadata: secondary-3.dex.jar.xz 1c259a826c1af2d0ff7e33c5f2e8badbd5a60dec secondary.dex03.Canary
+V/DexLibLoader( 8208): Secondary program dex metadata: secondary-4.dex.jar.xz f4376a467cef63fb7bc62c49316c640c7e24de23 secondary.dex04.Canary
+V/DexLibLoader( 8208): Secondary program dex metadata: secondary-5.dex.jar.xz 1ce117ebd4fcea9bf792f763d1777e1487094af7 secondary.dex05.Canary
+V/DexLibLoader( 8208): Secondary program dex metadata: secondary-6.dex.jar.xz ead46517a20fbaa742401392a85997f8b76708cc secondary.dex06.Canary
+V/DexLibLoader( 8208): directory "/data/data/com.facebook.katana/app_secondary_program_dex" contains "program-f2cb3896183fbb387122262fc65fbbc1d7f6d5fcea21deee.dex.jar" as expected
+V/DexLibLoader( 8208): directory "/data/data/com.facebook.katana/app_secondary_program_dex" contains "program-2c570e9f5369691334824b57c715246dc34c240bea21deee.dex.jar" as expected
+V/DexLibLoader( 8208): directory "/data/data/com.facebook.katana/app_secondary_program_dex" contains "program-1c259a826c1af2d0ff7e33c5f2e8badbd5a60decea21deee.dex.jar" as expected
+V/DexLibLoader( 8208): directory "/data/data/com.facebook.katana/app_secondary_program_dex" contains "program-f4376a467cef63fb7bc62c49316c640c7e24de23ea21deee.dex.jar" as expected
+V/DexLibLoader( 8208): directory "/data/data/com.facebook.katana/app_secondary_program_dex" contains "program-1ce117ebd4fcea9bf792f763d1777e1487094af7ea21deee.dex.jar" as expected
+V/DexLibLoader( 8208): directory "/data/data/com.facebook.katana/app_secondary_program_dex" contains "program-ead46517a20fbaa742401392a85997f8b76708ccea21deee.dex.jar" as expected
+D/DexLibLoader( 8208): directory "/data/data/com.facebook.katana/app_secondary_program_dex" is valid
+V/DexLibLoader( 8208): directory "/data/data/com.facebook.katana/app_secondary_program_dex_opt" contains "program-f2cb3896183fbb387122262fc65fbbc1d7f6d5fcea21deee.dex.dex" as expected
+V/DexLibLoader( 8208): directory "/data/data/com.facebook.katana/app_secondary_program_dex_opt" contains "program-2c570e9f5369691334824b57c715246dc34c240bea21deee.dex.dex" as expected
+V/DexLibLoader( 8208): directory "/data/data/com.facebook.katana/app_secondary_program_dex_opt" contains "program-1c259a826c1af2d0ff7e33c5f2e8badbd5a60decea21deee.dex.dex" as expected
+V/DexLibLoader( 8208): directory "/data/data/com.facebook.katana/app_secondary_program_dex_opt" contains "program-f4376a467cef63fb7bc62c49316c640c7e24de23ea21deee.dex.dex" as expected
+V/DexLibLoader( 8208): directory "/data/data/com.facebook.katana/app_secondary_program_dex_opt" contains "program-1ce117ebd4fcea9bf792f763d1777e1487094af7ea21deee.dex.dex" as expected
+V/DexLibLoader( 8208): directory "/data/data/com.facebook.katana/app_secondary_program_dex_opt" contains "program-ead46517a20fbaa742401392a85997f8b76708ccea21deee.dex.dex" as expected
+D/DexLibLoader( 8208): directory "/data/data/com.facebook.katana/app_secondary_program_dex_opt" is valid
+D/DexLibLoader( 8208): loading pre-built fallback odex files
+D/DexLibLoader( 8208): released odex store lock
+D/DexLibLoader( 8208): DexLibLoader.loadAll took 65 ms
+D/SystemClassLoaderAdder( 8208): Marked as initialized entry corresponding to path /data/app/com.facebook.katana-2/base.apk
+W/GAV2    ( 8119): Thread[main,5,main]: dispatch call queued.  Need to call GAServiceManager.getInstance().initialize().
+I/ActivityManager(  721): Killing 5954:com.google.android.apps.magazines/u0a58 (adj 15): empty #17
+W/libprocessgroup(  721): failed to open /acct/uid_10058/pid_5954/cgroup.procs: No such file or directory
+W/fb4a(:dash):StaticBindingVerifier( 8208): Verify
+D/WifiService(  721): New client listening to asynchronous messages
+I/ActivityManager(  721): Killing 6027:com.google.android.apps.cloudprint/u0a33 (adj 15): empty #17
+W/libprocessgroup(  721): failed to open /acct/uid_10033/pid_6027/cgroup.procs: No such file or directory
+I/ActivityManager(  721): Start proc com.google.android.partnersetup for broadcast com.google.android.partnersetup/.RlzPingBroadcastReceiver: pid=8261 uid=10011 gids={50011, 9997, 3003} abi=armeabi-v7a
+W/AmazonAppstore.AppManagerAndroidPackageDelegate(32259): Unable to determine asin for package com.fireminder.podcastcatcher.  Skipping metadata update.
+E/AmazonAppstore.AppManagerService( 3097): asinList: null
+E/AmazonAppstore.AppManagerService( 3097): com.amazon.assertion.AssertionException: asinList: null
+E/AmazonAppstore.AppManagerService( 3097): 	at com.amazon.assertion.Assert.fail(Assert.java:203)
+E/AmazonAppstore.AppManagerService( 3097): 	at com.amazon.assertion.Assert.notNull(Assert.java:22)
+E/AmazonAppstore.AppManagerService( 3097): 	at com.amazon.mas.client.locker.service.appmgr.AppManagerAndroidPackageDelegate.handleAppInsertion(AppManagerAndroidPackageDelegate.java:113)
+E/AmazonAppstore.AppManagerService( 3097): 	at com.amazon.mas.client.locker.service.appmgr.AppManagerAndroidPackageDelegate.handleIntent(AppManagerAndroidPackageDelegate.java:76)
+E/AmazonAppstore.AppManagerService( 3097): 	at com.amazon.mas.client.locker.service.appmgr.AppManagerService.onHandleIntent(AppManagerService.java:96)
+E/AmazonAppstore.AppManagerService( 3097): 	at com.amazon.android.service.IntentTimeoutService.handleIntent(IntentTimeoutService.java:253)
+E/AmazonAppstore.AppManagerService( 3097): 	at com.amazon.android.service.IntentTimeoutService.access$000(IntentTimeoutService.java:27)
+E/AmazonAppstore.AppManagerService( 3097): 	at com.amazon.android.service.IntentTimeoutService$ServiceHandler.handleMessage(IntentTimeoutService.java:83)
+E/AmazonAppstore.AppManagerService( 3097): 	at android.os.Handler.dispatchMessage(Handler.java:102)
+E/AmazonAppstore.AppManagerService( 3097): 	at android.os.Looper.loop(Looper.java:135)
+E/AmazonAppstore.AppManagerService( 3097): 	at android.os.HandlerThread.run(HandlerThread.java:61)
+I/ActivityManager(  721): Killing 6382:system:ui/1000 (adj 15): empty #17
+I/ConfigFetchService( 1337): PackageReceiver: Intent { act=android.intent.action.PACKAGE_ADDED dat=package:com.fireminder.podcastcatcher flg=0x4000010 cmp=com.google.android.gms/.config.ConfigFetchService$PackageReceiver (has extras) }
+W/libprocessgroup(  721): failed to open /acct/uid_1000/pid_6382/cgroup.procs: No such file or directory
+I/ConfigService( 1347): onCreate
+D/TaskPersister(  721): removeObsoleteFile: deleting file=3851_task.xml
+I/ConfigService( 1347): onBind for Intent { act=com.google.android.gms.config.UPDATE pkg=com.google.android.gms } action com.google.android.gms.config.UPDATE
+D/TaskPersister(  721): removeObsoleteFile: deleting file=3851_task_thumbnail.png
+I/ConfigService( 1347): onBind returning update interface
+I/ConfigService( 1347): onBind for Intent { act=com.google.android.gms.config.START pkg=com.google.android.gms } action com.google.android.gms.config.START
+I/ConfigService( 1347): onBind returning config service
+I/ConfigFetchService( 1337): onStartCommand Intent { act=android.intent.action.PACKAGE_ADDED dat=package:com.fireminder.podcastcatcher cmp=com.google.android.gms/.config.ConfigFetchService (has extras) }
+I/ConfigFetchService( 1337): launchTask
+I/ConfigFetchService( 1337): service connected
+I/ConfigClient( 1337): service connected
+D/PackageBroadcastService( 1337): Received broadcast action=android.intent.action.PACKAGE_ADDED and uri=com.fireminder.podcastcatcher
+I/UpdateIcingCorporaServi( 1300): Updating corpora: APPS=com.fireminder.podcastcatcher, CONTACTS=MAYBE
+I/PeopleContactsSync( 1337): CP2 sync disabled
+W/ActivityManager(  721): getTasks: caller 10083 does not hold GET_TASKS; limiting output
+I/ActivityManager(  721): START u0 {flg=0x10800000 cmp=com.estrongs.android.pop/.app.InstallMonitorActivity (has extras)} from uid 10083 on display 0
+W/AmazonAppstore.AppManagerAndroidPackageDelegate(32259): Unable to determine asin for package com.fireminder.podcastcatcher.  Skipping metadata update.
+E/AmazonAppstore.AppManagerService( 3097): asinList: null
+E/AmazonAppstore.AppManagerService( 3097): com.amazon.assertion.AssertionException: asinList: null
+E/AmazonAppstore.AppManagerService( 3097): 	at com.amazon.assertion.Assert.fail(Assert.java:203)
+E/AmazonAppstore.AppManagerService( 3097): 	at com.amazon.assertion.Assert.notNull(Assert.java:22)
+E/AmazonAppstore.AppManagerService( 3097): 	at com.amazon.mas.client.locker.service.appmgr.AppManagerAndroidPackageDelegate.handleAppInsertion(AppManagerAndroidPackageDelegate.java:113)
+E/AmazonAppstore.AppManagerService( 3097): 	at com.amazon.mas.client.locker.service.appmgr.AppManagerAndroidPackageDelegate.handleIntent(AppManagerAndroidPackageDelegate.java:76)
+E/AmazonAppstore.AppManagerService( 3097): 	at com.amazon.mas.client.locker.service.appmgr.AppManagerService.onHandleIntent(AppManagerService.java:96)
+E/AmazonAppstore.AppManagerService( 3097): 	at com.amazon.android.service.IntentTimeoutService.handleIntent(IntentTimeoutService.java:253)
+E/AmazonAppstore.AppManagerService( 3097): 	at com.amazon.android.service.IntentTimeoutService.access$000(IntentTimeoutService.java:27)
+E/AmazonAppstore.AppManagerService( 3097): 	at com.amazon.android.service.IntentTimeoutService$ServiceHandler.handleMessage(IntentTimeoutService.java:83)
+E/AmazonAppstore.AppManagerService( 3097): 	at android.os.Handler.dispatchMessage(Handler.java:102)
+E/AmazonAppstore.AppManagerService( 3097): 	at android.os.Looper.loop(Looper.java:135)
+E/AmazonAppstore.AppManagerService( 3097): 	at android.os.HandlerThread.run(HandlerThread.java:61)
+I/ActivityManager(  721): Start proc com.google.android.apps.magazines for broadcast com.google.android.apps.magazines/com.google.apps.dots.android.app.receiver.FirstInstallNotificationReceiver: pid=8331 uid=10058 gids={50058, 9997, 3003, 1028, 1015} abi=armeabi-v7a
+W/InputMethodManagerService(  721): Window already focused, ignoring focus gain of: com.android.internal.view.IInputMethodClient$Stub$Proxy@22ab5859 attribute=null, token = android.os.BinderProxy@1e357874
+I/ApplicationLogger( 1300): canRun() : Opted Out
+I/UpdateIcingCorporaServi( 1300): UpdateCorporaTask done [took 165 ms] updated apps [took 165 ms] 
+I/art     ( 8208): Rejecting re-init on previously-failed class java.lang.Class<com.facebook.ssl.openssl.TicketEnabledOpenSSLSocketImplWrapper>
+I/art     ( 8208): Rejecting re-init on previously-failed class java.lang.Class<com.facebook.ssl.openssl.TicketEnabledOpenSSLSocketImplWrapper>
+D/SoLoader( 8208): found gnustl_shared in default place
+D/SoLoader( 8208): found fb in default place
+D/SoLoader( 8208): found fb_breakpad_client in default place
+D/SoLoader( 8208): found fbjni in default place
+D/SoLoader( 8208): found heartbleed in default place
+I/WebViewFactory( 8331): Loading com.google.android.webview version 37 (1602158-arm) (code 111201)
+I/LibraryLoader( 8331): Loading: webviewchromium
+I/LibraryLoader( 8331): Time to load native libraries: 3 ms (timestamps 8642-8645)
+I/LibraryLoader( 8331): Expected native library version number "",actual native library version number ""
+V/WebViewChromiumFactoryProvider( 8331): Binding Chromium to main looper Looper (main, tid 1) {16ce5c96}
+I/LibraryLoader( 8331): Expected native library version number "",actual native library version number ""
+I/chromium( 8331): [INFO:library_loader_hooks.cc(106)] Chromium logging enabled: level = 0, default verbosity = 0
+I/BrowserStartupController( 8331): Initializing chromium process, renderers=0
+W/art     ( 8331): Attempt to remove local handle scope entry from IRT, ignoring
+W/chromium( 8331): [WARNING:resource_bundle.cc(315)] locale_file_path.empty()
+I/chromium( 8331): [INFO:aw_browser_main_parts.cc(63)] Load from apk succesful, fd=35 off=46780 len=2953
+I/chromium( 8331): [INFO:aw_browser_main_parts.cc(78)] Loading webviewchromium.pak from, fd:36 off:229484 len:643667
+W/AudioManagerAndroid( 8331): Requires BLUETOOTH permission
+I/Adreno-EGL( 8331): <qeglDrvAPI_eglInitialize:410>: QUALCOMM Build: 10/24/14, 167c270, I68fa98814b
+I/NSApplication( 8331): Starting up...
+I/ActivityManager(  721): Killing 7419:com.android.providers.calendar/u0a1 (adj 15): empty #17
+W/libprocessgroup(  721): failed to open /acct/uid_10001/pid_7419/cgroup.procs: No such file or directory
+D/PackageBroadcastService( 1337): Received broadcast action=android.intent.action.PACKAGE_REPLACED and uri=com.fireminder.podcastcatcher
+I/PeopleContactsSync( 1337): CP2 sync disabled
+W/Launcher( 1257): setApplicationContext called twice! old=com.google.android.velvet.VelvetApplication@1fa9f457 new=com.google.android.velvet.VelvetApplication@1fa9f457
+I/ActivityManager(  721): Start proc com.google.android.apps.cloudprint for broadcast com.google.android.apps.cloudprint/.printdialog.receivers.UpgradeBroadcastReceiver: pid=8406 uid=10033 gids={50033, 9997, 3003, 1028} abi=armeabi-v7a
+W/BroadcastQueue(  721): Permission Denial: broadcasting Intent { act=android.net.conn.INET_CONDITION_ACTION flg=0x4000010 (has extras) } from null (pid=-1, uid=-1) requires com.facebook.permission.prod.FB_APP_COMMUNICATION due to registered receiver BroadcastFilter{16af962e u0 ReceiverList{29d820a9 8208 com.facebook.katana:dash/10097/u0 remote:1cd8ac30}}
+W/BroadcastQueue(  721): Permission Denial: broadcasting Intent { act=android.net.conn.CONNECTIVITY_CHANGE flg=0x4000010 (has extras) } from null (pid=-1, uid=-1) requires com.facebook.permission.prod.FB_APP_COMMUNICATION due to registered receiver BroadcastFilter{16af962e u0 ReceiverList{29d820a9 8208 com.facebook.katana:dash/10097/u0 remote:1cd8ac30}}
+I/MultiDex( 8406): VM with version 2.1.0 has multidex support
+I/MultiDex( 8406): install
+I/MultiDex( 8406): VM has multidex support, MultiDex support library is disabled.
+I/ActivityManager(  721): Killing 7449:com.google.android.calendar/u0a29 (adj 15): empty #17
+W/libprocessgroup(  721): failed to open /acct/uid_10029/pid_7449/cgroup.procs: No such file or directory
+D/GCM     ( 1347): GcmService start Intent { act=com.google.android.gms.INITIALIZE flg=0x10 pkg=com.google.android.gms cmp=com.google.android.gms/.gcm.GcmService } com.google.android.gms.INITIALIZE
+D/AuthorizationBluetoothService( 1347): Received GmsCore event: Intent { act=com.google.android.gms.INITIALIZE flg=0x10 pkg=com.google.android.gms cmp=com.google.android.gms/.auth.be.proximity.authorization.bt.AuthorizationBluetoothService$AutoStarter }.
+D/c       ( 1347): Getting all permits...
+D/a       ( 1347): Opening database...
+D/LocationInitializer( 1337): Restart initialization of location
+D/a       ( 1347): Opening database auth.proximity.permit_store...
+D/a       ( 1347): Closing database...
+E/WifiStateMachine(  721): WifiStateMachine CMD_START_SCAN source -2 txSuccessRate=9.55 rxSuccessRate=7.67 targetRoamBSSID=88:f7:c7:2f:88:ca RSSI=-30
+E/WifiStateMachine(  721): WifiStateMachine starting scan for "SurrenderNowOrPrepareToFi"WPA_PSK with 2412
+I/wpa_supplicant(  863): wlan0: CTRL-EVENT-SCAN-STARTED 
+W/AndroidInternalSchedule( 1737): [TiclService] Ignoring event with wrong ticl id (not 1424237546936): <AndroidSchedulerEvent: version=<Version: major_version=1 minor_version=0> event_name=InitialPersistentHeartbeat ticl_id=1424237544131>
+I/Icing   ( 1337): Indexing 1F0D4FB57C4DC83FF94B189DDDC4AD388C241BFE from com.google.android.googlequicksearchbox
+I/Icing   ( 1337): Indexing done 1F0D4FB57C4DC83FF94B189DDDC4AD388C241BFE
+W/BroadcastQueue(  721): Permission Denial: broadcasting Intent { act=android.net.conn.CONNECTIVITY_CHANGE flg=0x4000010 (has extras) } from null (pid=-1, uid=-1) requires com.facebook.permission.prod.FB_APP_COMMUNICATION due to registered receiver BroadcastFilter{e509db u0 ReceiverList{102392ea 8208 com.facebook.katana:dash/10097/u0 remote:39776ad5}}
+I/art     (  721): Explicit concurrent mark sweep GC freed 37898(2MB) AllocSpace objects, 10(6MB) LOS objects, 24% free, 49MB/65MB, paused 1.021ms total 78.251ms
+W/m       ( 1737): [TiclService] Ticl being stopped: Client: <ApplicationClientIdP: client_type=1018 client_name=5104da88-d856-42c9-9ccc-4111532bd850>, \n\006\n\004\010\003\020\001\022\022\t\260\246$x\335\260\206\206\021.L\303d\374uh\211\032\007\010\213,\020\003\030\001, <RunState: 2>
+W/Settings( 8208): Setting wifi_sleep_policy has moved from android.provider.Settings.System to android.provider.Settings.Global, returning read-only value.
+I/GCM     ( 1347): GCM message com.android.chrome 0:1424237553032765%0f493ae6f9fd7ecd
+V/GCMBroadcastReceiver( 1737): onReceive: com.google.android.c2dm.intent.RECEIVE
+V/GCMBroadcastReceiver( 1737): GCM IntentService class: com.google.ipc.invalidation.external.client.contrib.MultiplexingGcmListener
+V/GCMBaseIntentService( 1737): Acquiring wakelock
+V/GCMBaseIntentService( 1737): Intent service name: GCMIntentService-DynamicSenderIds-14
+V/GCMBaseIntentService( 1737): Releasing wakelock
+I/GAV2    ( 8119): Thread[GAThread,5,main]: No campaign data found.
+I/GAV4    ( 8331): Thread[GAThread,5,main]: No campaign data found.
+V/ConfigFetchTask( 1337): ConfigFetchTask getDeviceDataVersionInfo(): ABFEt1VRPoqjeHKaaNgryl3zoC3Bq8u8HWhoDV6GtgcPp12yOg_TjgeQAIG0rhHbIyOdyqKAx6iQ-6Aw9MQZwQmmlt6wWz-8V5EHHAbJNr0-234hLS9VG2Mo8UzHIi_wgKSa85FMakTghQKOELXaI1bESrROr2RejfAmxhkNOA9tR29a_rYrvbwdTmLodJWGqyFOZxGoPoc9
+I/GoogleHttpClient( 1337): Falling back to old SSLCertificateSocketFactory
+I/ConfigFetchService( 1337): fetch service done; releasing wakelock
+I/ConfigFetchService( 1337): stopping self
+I/ConfigService( 1347): onDestroy
+E/WifiStateMachine(  721): WifiStateMachine CMD_START_SCAN source -2 txSuccessRate=3.82 rxSuccessRate=3.58 targetRoamBSSID=88:f7:c7:2f:88:ca RSSI=-38
+E/WifiStateMachine(  721): WifiStateMachine starting scan for "SurrenderNowOrPrepareToFi"WPA_PSK with 2412
+I/wpa_supplicant(  863): wlan0: CTRL-EVENT-SCAN-STARTED 
+I/ActivityManager(  721): Waited long enough for: ServiceRecord{349582e2 u0 com.amazon.mShop.android/com.amazon.mas.client.locker.service.appmgr.AppManagerService}
+I/ActivityManager(  721): Waited long enough for: ServiceRecord{39a47e48 u0 com.amazon.venezia/com.amazon.mas.client.locker.service.appmgr.AppManagerService}
+I/GCoreUlr( 1777): BLE: ALARM_WAKEUP_LOCATOR: scannerActive=false, enoughTimeElapsed=false; scan not started.
+D/WifiService(  721): acquireWifiLockLocked: WifiLock{NlpWifiLock type=2 binder=android.os.BinderProxy@f67b252}
+E/WifiStateMachine(  721): WifiStateMachine CMD_START_SCAN source 10007 txSuccessRate=3.35 rxSuccessRate=2.20 targetRoamBSSID=88:f7:c7:2f:88:ca RSSI=-30
+I/wpa_supplicant(  863): wlan0: CTRL-EVENT-SCAN-STARTED 
+D/Finsky  (17224): [1] 5.onFinished: Installation state replication succeeded.
+D/LocationFilter( 1777): Forcing stable location. Original location:Location[fused 37.345336,-121.948548 acc=20 et=+20h5m0s210ms] because connected WiFi network is the same, bssid=88:f7:c7:2f:88:ca
+D/WifiService(  721): releaseWifiLockLocked: WifiLock{NlpWifiLock type=2 binder=android.os.BinderProxy@f67b252}
+I/GCoreUlr( 1777): Successfully inserted location
+I/GCoreUlr( 1777): Not calling LocationReporter, hasMoved: false, elapsed millis: 2443626, request: Stationary(3600000)
+W/ResourceType(  896): No package identifier when getting value for resource number 0x00000000
+W/PackageManager(  896): Failure retrieving resources for com.fireminder.podcastcatcher: Resource ID #0x0
+I/ActivityManager(  721): START u0 {act=com.android.systemui.recents.SHOW_RECENTS flg=0x10804000 cmp=com.android.systemui/.recents.RecentsActivity (has extras)} from uid 10012 on display 0
+W/ResourceType(  896): No package identifier when getting value for resource number 0x00000000
+W/PackageManager(  896): Failure retrieving resources for com.fireminder.podcastcatcher: Resource ID #0x0
+I/Metrics:BatchTransmitte(32259): QueuePusher.sendBatches - Drained batch queue.; Number of HIGH queue batches sent: 0
+I/art     (  721): Explicit concurrent mark sweep GC freed 33279(1698KB) AllocSpace objects, 5(2010KB) LOS objects, 23% free, 51MB/67MB, paused 981us total 80.274ms
+W/art     ( 1737): Attempt to remove local handle scope entry from IRT, ignoring
+I/ActivityManager(  721): START u0 {act=android.intent.action.VIEW cat=[android.intent.category.BROWSABLE] dat=http://www.theskepticsguide.org/feed/sgu flg=0x10000000 cmp=android/com.android.internal.app.ResolverActivity (has extras)} from uid 10032 on display 0
+I/art     ( 1737): Explicit concurrent mark sweep GC freed 31266(1411KB) AllocSpace objects, 4(129KB) LOS objects, 40% free, 20MB/34MB, paused 580us total 37.778ms
+I/ActivityManager(  721): Start proc system:ui for activity android/com.android.internal.app.ResolverActivity: pid=8578 uid=1000 gids={41000, 9997, 1028, 1015, 3002, 3001, 3003} abi=armeabi-v7a
+W/m       ( 1737): [TiclService] Ticl being stopped: Client: <ApplicationClientIdP: client_type=1018 client_name=5104da88-d856-42c9-9ccc-4111532bd850>, \n\006\n\004\010\003\020\001\022\022\t\260\246$x\335\260\206\206\021.L\303d\374uh\211\032\007\010\213,\020\003\030\001, <RunState: 2>
+D/ResolverActivity( 8578): sinceTime=1423027975738
+W/ResourcesManager( 8578): Asset path '/system/framework/com.google.android.maps.jar' does not exist or contains no resources.
+I/ActivityManager(  721): Displayed android/com.android.internal.app.ResolverActivity: +276ms (total +26s48ms)
+W/IInputConnectionWrapper( 1737): showStatusIcon on inactive InputConnection
+W/AndroidInternalSchedule( 1737): [TiclService] Ignoring event with wrong ticl id (not 1424237575727): <AndroidSchedulerEvent: version=<Version: major_version=1 minor_version=0> event_name=InitialPersistentHeartbeat ticl_id=1424237574693>
+D/AbstractMetricsFactoryImpl(29801): record : No data points in metrics event
+I/GCM     ( 1347): GCM message com.android.chrome 0:1424237579996183%0f493ae6f9fd7ecd
+V/GCMBroadcastReceiver( 1737): onReceive: com.google.android.c2dm.intent.RECEIVE
+V/GCMBroadcastReceiver( 1737): GCM IntentService class: com.google.ipc.invalidation.external.client.contrib.MultiplexingGcmListener
+V/GCMBaseIntentService( 1737): Acquiring wakelock
+V/GCMBaseIntentService( 1737): Intent service name: GCMIntentService-DynamicSenderIds-15
+V/GCMBaseIntentService( 1737): Releasing wakelock
+D/InvalidationClientService( 1737): Registration status for Oid: <1004, AUTOFILL>: REGISTERED
+D/InvalidationClientService( 1737): Registration status for Oid: <1004, AUTOFILL_PROFILE>: REGISTERED
+D/InvalidationClientService( 1737): Registration status for Oid: <1004, EXPERIMENTS>: REGISTERED
+D/InvalidationClientService( 1737): Registration status for Oid: <1004, FAVICON_IMAGE>: REGISTERED
+D/InvalidationClientService( 1737): Registration status for Oid: <1004, BOOKMARK>: REGISTERED
+D/InvalidationClientService( 1737): Registration status for Oid: <1004, HISTORY_DELETE_DIRECTIVE>: REGISTERED
+D/InvalidationClientService( 1737): Registration status for Oid: <1004, PASSWORD>: REGISTERED
+D/InvalidationClientService( 1737): Registration status for Oid: <1004, NIGORI>: REGISTERED
+D/InvalidationClientService( 1737): Registration status for Oid: <1004, TYPED_URL>: REGISTERED
+D/InvalidationClientService( 1737): Registration status for Oid: <1004, DEVICE_INFO>: REGISTERED
+D/InvalidationClientService( 1737): Registration status for Oid: <1004, MANAGED_USER_SETTING>: REGISTERED
+D/DelayedSyncController( 1737): No delayed sync.
+I/ActivityManager(  721): Process com.google.android.youtube (pid 7749) has died
+I/ActivityManager(  721): Killing 7560:com.google.android.deskclock/u0a35 (adj 15): empty #17
+W/libprocessgroup(  721): failed to open /acct/uid_10035/pid_7560/cgroup.procs: No such file or directory
+E/WifiStateMachine(  721): WifiStateMachine CMD_START_SCAN source -2 txSuccessRate=9.58 rxSuccessRate=8.89 targetRoamBSSID=88:f7:c7:2f:88:ca RSSI=-22
+E/WifiStateMachine(  721): WifiStateMachine starting scan for "SurrenderNowOrPrepareToFi"WPA_PSK with 2412
+I/wpa_supplicant(  863): wlan0: CTRL-EVENT-SCAN-STARTED 
+W/GAV4    ( 1337): Thread[Thread-117,5,main]: Exception sending hit: HttpHostConnectException
+W/GAV4    ( 1337): Thread[Thread-117,5,main]: Connection to https://ssl.google-analytics.com refused
+W/GAV4    ( 1337): Thread[Thread-117,5,main]: Empty hitIds passed to deleteHits.
+I/PackageManager(  721): Setting last chosen activity com.fireminder.podcastcatcher/.ui.PodcastsActivity for user 0:
+I/PackageManager(  721):   Action: "android.intent.action.VIEW"
+I/PackageManager(  721):   Category: "android.intent.category.BROWSABLE"
+I/PackageManager(  721):   Category: "android.intent.category.DEFAULT"
+I/PackageManager(  721):   Scheme: "http"
+I/PackageManager(  721):   Authority: "": -1 WILD
+I/PackageManager(  721):   Path: "PatternMatcher{GLOB: .*feed.*}"
+I/ActivityManager(  721): START u0 {act=android.intent.action.VIEW cat=[android.intent.category.BROWSABLE] dat=http://www.theskepticsguide.org/feed/sgu flg=0x13000000 cmp=com.fireminder.podcastcatcher/.ui.PodcastsActivity (has extras)} from uid 10032 on display 0
+I/PodcastCatcher SelectionBuilder( 8156): query(columns=null, distinct=false) SelectionBuilder[table=podcasts, selection=, selectionArgs=[]projectionMap = {} ]
+I/ActivityManager(  721): Displayed com.fireminder.podcastcatcher/.ui.PodcastsActivity: +255ms
+I/ActivityManager(  721): Killing 8076:com.android.keychain/1000 (adj 15): empty #17
+W/libprocessgroup(  721): failed to open /acct/uid_1000/pid_8076/cgroup.procs: No such file or directory
+W/ActivityManager(  721): Duplicate finish request for ActivityRecord{3b43d2b9 u0 android/com.android.internal.app.ResolverActivity t3855 f}
+D/TaskPersister(  721): removeObsoleteFile: deleting file=3855_task_thumbnail.png
+I/PodcastCatcher SubscriptionService( 8156): handleSubscription: http://www.theskepticsguide.org/feed/sgu
+E/PodcastCatcher SubscriptionService( 8156): error in: handleSubscriptionResponse: Unexpected token (position:TEXT ï»¿@1:4 in java.io.InputStreamReader@23a76215) 
+W/System.err( 8156): org.xmlpull.v1.XmlPullParserException: Unexpected token (position:TEXT ï»¿@1:4 in java.io.InputStreamReader@23a76215) 
+W/System.err( 8156): 	at org.kxml2.io.KXmlParser.next(KXmlParser.java:432)
+W/System.err( 8156): 	at org.kxml2.io.KXmlParser.next(KXmlParser.java:313)
+W/System.err( 8156): 	at com.fireminder.podcastcatcher.models.PodcastHandler.parsePodcast(PodcastHandler.java:69)
+W/System.err( 8156): 	at com.fireminder.podcastcatcher.utils.RssParseHelper.parsePodcastFromXml(RssParseHelper.java:43)
+W/System.err( 8156): 	at com.fireminder.podcastcatcher.services.SubscriptionService.handleResponse(SubscriptionService.java:78)
+W/System.err( 8156): 	at com.fireminder.podcastcatcher.services.SubscriptionService.onResponse(SubscriptionService.java:103)
+W/System.err( 8156): 	at com.fireminder.podcastcatcher.services.SubscriptionService.onResponse(SubscriptionService.java:26)
+W/System.err( 8156): 	at com.android.volley.toolbox.StringRequest.deliverResponse(StringRequest.java:60)
+W/System.err( 8156): 	at com.android.volley.toolbox.StringRequest.deliverResponse(StringRequest.java:30)
+W/System.err( 8156): 	at com.android.volley.ExecutorDelivery$ResponseDeliveryRunnable.run(ExecutorDelivery.java:99)
+W/System.err( 8156): 	at android.os.Handler.handleCallback(Handler.java:739)
+W/System.err( 8156): 	at android.os.Handler.dispatchMessage(Handler.java:95)
+W/System.err( 8156): 	at android.os.Looper.loop(Looper.java:135)
+W/System.err( 8156): 	at android.app.ActivityThread.main(ActivityThread.java:5221)
+W/System.err( 8156): 	at java.lang.reflect.Method.invoke(Native Method)
+W/System.err( 8156): 	at java.lang.reflect.Method.invoke(Method.java:372)
+W/System.err( 8156): 	at com.android.internal.os.ZygoteInit$MethodAndArgsCaller.run(ZygoteInit.java:899)
+W/System.err( 8156): 	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:694)
+D/PodcastCatcher SubscriptionService( 8156): onResponse
+W/GAV4    ( 1337): Thread[Thread-117,5,main]: Exception sending hit: HttpHostConnectException
+W/GAV4    ( 1337): Thread[Thread-117,5,main]: Connection to https://ssl.google-analytics.com refused
+W/GAV4    ( 1337): Thread[Thread-117,5,main]: Empty hitIds passed to deleteHits.
+E/WifiStateMachine(  721): WifiStateMachine CMD_START_SCAN source -2 txSuccessRate=12.11 rxSuccessRate=13.19 targetRoamBSSID=88:f7:c7:2f:88:ca RSSI=-24
+E/WifiStateMachine(  721): WifiStateMachine starting scan for "SurrenderNowOrPrepareToFi"WPA_PSK with 2412
+I/wpa_supplicant(  863): wlan0: CTRL-EVENT-SCAN-STARTED 
+W/AndroidInternalSchedule( 1737): [TiclService] Ignoring event with wrong ticl id (not 1424237575727): <AndroidSchedulerEvent: version=<Version: major_version=1 minor_version=0> event_name=RegSyncHeartbeat ticl_id=1424237544131>
+D/WifiService(  721): acquireWifiLockLocked: WifiLock{HTTPMetricsTransport type=3 binder=android.os.BinderProxy@1d84ccc3}
+D/AbstractMetricsFactoryImpl(29801): record : No data points in metrics event
+I/Metrics:BatchTransmitte(29801): QueuePusher.sendBatches - Drained batch queue.; Number of HIGH queue batches sent: 0
+W/ResourceType(  896): No package identifier when getting value for resource number 0x00000000
+W/PackageManager(  896): Failure retrieving resources for com.fireminder.podcastcatcher: Resource ID #0x0
+I/ActivityManager(  721): START u0 {act=com.android.systemui.recents.SHOW_RECENTS flg=0x10804000 cmp=com.android.systemui/.recents.RecentsActivity (has extras)} from uid 10012 on display 0
+W/ResourceType(  896): No package identifier when getting value for resource number 0x00000000
+W/PackageManager(  896): Failure retrieving resources for com.fireminder.podcastcatcher: Resource ID #0x0
+I/art     (  721): Explicit concurrent mark sweep GC freed 46682(2MB) AllocSpace objects, 19(9MB) LOS objects, 23% free, 51MB/67MB, paused 2.710ms total 107.047ms
+W/art     ( 1737): Attempt to remove local handle scope entry from IRT, ignoring
+D/WifiService(  721): releaseWifiLockLocked: WifiLock{HTTPMetricsTransport type=3 binder=android.os.BinderProxy@1d84ccc3}
+I/Metrics:BatchTransmitte(29801): QueuePusher.sendBatches - Drained batch queue.; Number of NORMAL queue batches sent: 1
+W/IdleConnectionHandler(29801): Removing a connection that never existed!
+I/ActivityManager(  721): START u0 {act=android.intent.action.VIEW cat=[android.intent.category.BROWSABLE] dat=http://www.theskepticsguide.org/feed/sgu flg=0x10000000 cmp=android/com.android.internal.app.ResolverActivity (has extras)} from uid 10032 on display 0
+D/ResolverActivity( 8578): sinceTime=1423028008128
+W/m       ( 1737): [TiclService] Ticl being stopped: Client: <ApplicationClientIdP: client_type=1018 client_name=5104da88-d856-42c9-9ccc-4111532bd850>, \n\006\n\004\010\003\020\001\022\022\t\260\246$x\335\260\206\206\021.L\303d\374uh\211\032\007\010\213,\020\003\030\001, <RunState: 2>
+W/ResourcesManager( 8578): Asset path '/system/framework/com.google.android.maps.jar' does not exist or contains no resources.
+I/ActivityManager(  721): Displayed android/com.android.internal.app.ResolverActivity: +125ms
+W/IInputConnectionWrapper( 1737): showStatusIcon on inactive InputConnection
+I/art     ( 1737): Explicit concurrent mark sweep GC freed 33821(1539KB) AllocSpace objects, 5(275KB) LOS objects, 40% free, 20MB/34MB, paused 753us total 30.744ms
+I/PackageManager(  721): Setting last chosen activity com.fireminder.podcastcatcher/.ui.PodcastsActivity for user 0:
+I/PackageManager(  721):   Action: "android.intent.action.VIEW"
+I/PackageManager(  721):   Category: "android.intent.category.BROWSABLE"
+I/PackageManager(  721):   Category: "android.intent.category.DEFAULT"
+I/PackageManager(  721):   Scheme: "http"
+I/PackageManager(  721):   Authority: "": -1 WILD
+I/PackageManager(  721):   Path: "PatternMatcher{GLOB: .*feed.*}"
+I/ActivityManager(  721): START u0 {act=android.intent.action.VIEW cat=[android.intent.category.BROWSABLE] dat=http://www.theskepticsguide.org/feed/sgu flg=0x13000000 cmp=com.fireminder.podcastcatcher/.ui.PodcastsActivity (has extras)} from uid 10032 on display 0
+I/PodcastCatcher SelectionBuilder( 8156): query(columns=null, distinct=false) SelectionBuilder[table=podcasts, selection=, selectionArgs=[]projectionMap = {} ]
+I/ActivityManager(  721): Displayed com.fireminder.podcastcatcher/.ui.PodcastsActivity: +204ms
+W/ActivityManager(  721): Duplicate finish request for ActivityRecord{2789e7a0 u0 android/com.android.internal.app.ResolverActivity t3856 f}
+W/m       ( 1737): [TiclService] Ticl being stopped: Client: <ApplicationClientIdP: client_type=1018 client_name=5104da88-d856-42c9-9ccc-4111532bd850>, \n\006\n\004\010\003\020\001\022\022\t\260\246$x\335\260\206\206\021.L\303d\374uh\211\032\007\010\213,\020\003\030\001, <RunState: 2>
+I/GCM     ( 1347): GCM message com.android.chrome 0:1424237612695566%0f493ae6f9fd7ecd
+V/GCMBroadcastReceiver( 1737): onReceive: com.google.android.c2dm.intent.RECEIVE
+V/GCMBroadcastReceiver( 1737): GCM IntentService class: com.google.ipc.invalidation.external.client.contrib.MultiplexingGcmListener
+V/GCMBaseIntentService( 1737): Acquiring wakelock
+V/GCMBaseIntentService( 1737): Intent service name: GCMIntentService-DynamicSenderIds-16
+V/GCMBaseIntentService( 1737): Releasing wakelock
+I/art     (  721): Explicit concurrent mark sweep GC freed 16348(988KB) AllocSpace objects, 12(5MB) LOS objects, 24% free, 50MB/66MB, paused 1.206ms total 100.865ms
+I/PodcastCatcher SubscriptionService( 8156): handleSubscription: http://www.theskepticsguide.org/feed/sgu
+E/PodcastCatcher SubscriptionService( 8156): error in: handleSubscriptionResponse: Unexpected token (position:TEXT ï»¿@1:4 in java.io.InputStreamReader@1329a839) 
+W/System.err( 8156): org.xmlpull.v1.XmlPullParserException: Unexpected token (position:TEXT ï»¿@1:4 in java.io.InputStreamReader@1329a839) 
+W/System.err( 8156): 	at org.kxml2.io.KXmlParser.next(KXmlParser.java:432)
+W/System.err( 8156): 	at org.kxml2.io.KXmlParser.next(KXmlParser.java:313)
+W/System.err( 8156): 	at com.fireminder.podcastcatcher.models.PodcastHandler.parsePodcast(PodcastHandler.java:69)
+W/System.err( 8156): 	at com.fireminder.podcastcatcher.utils.RssParseHelper.parsePodcastFromXml(RssParseHelper.java:43)
+W/System.err( 8156): 	at com.fireminder.podcastcatcher.services.SubscriptionService.handleResponse(SubscriptionService.java:78)
+W/System.err( 8156): 	at com.fireminder.podcastcatcher.services.SubscriptionService.onResponse(SubscriptionService.java:103)
+W/System.err( 8156): 	at com.fireminder.podcastcatcher.services.SubscriptionService.onResponse(SubscriptionService.java:26)
+W/System.err( 8156): 	at com.android.volley.toolbox.StringRequest.deliverResponse(StringRequest.java:60)
+W/System.err( 8156): 	at com.android.volley.toolbox.StringRequest.deliverResponse(StringRequest.java:30)
+W/System.err( 8156): 	at com.android.volley.ExecutorDelivery$ResponseDeliveryRunnable.run(ExecutorDelivery.java:99)
+W/System.err( 8156): 	at android.os.Handler.handleCallback(Handler.java:739)
+W/System.err( 8156): 	at android.os.Handler.dispatchMessage(Handler.java:95)
+W/System.err( 8156): 	at android.os.Looper.loop(Looper.java:135)
+W/System.err( 8156): 	at android.app.ActivityThread.main(ActivityThread.java:5221)
+W/System.err( 8156): 	at java.lang.reflect.Method.invoke(Native Method)
+W/System.err( 8156): 	at java.lang.reflect.Method.invoke(Method.java:372)
+W/System.err( 8156): 	at com.android.internal.os.ZygoteInit$MethodAndArgsCaller.run(ZygoteInit.java:899)
+W/System.err( 8156): 	at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:694)
+D/PodcastCatcher SubscriptionService( 8156): onResponse
+D/TaskPersister(  721): removeObsoleteFile: deleting file=3856_task_thumbnail.png

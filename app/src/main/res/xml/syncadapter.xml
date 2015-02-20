@@ -1,0 +1,7 @@
+
+<sync-adapter xmlns:android="http://schemas.android.com/apk/res/android"
+    android:contentAuthority="com.fireminder.podcastcatcher"
+    android:accountType="com.fireminder"
+    android:supportsUploading="false"
+    android:userVisible="true"
+    />
