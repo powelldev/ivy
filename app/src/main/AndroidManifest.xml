@@ -5,8 +5,10 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS" />
     <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
+        android:name="PodcastCatcherApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -17,6 +19,7 @@
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.BROWSABLE" />
                 <category android:name="android.intent.category.DEFAULT" />
 
@@ -77,25 +80,23 @@
                     android:scheme="http" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".ui.activities.ChannelActivity"
             android:configChanges="orientation|screenSize"
             android:label="@string/title_activity_channel" >
         </activity>
-
         <activity
             android:name=".ui.activities.SearchActivity"
             android:configChanges="orientation|screenSize"
             android:label="@string/title_activity_search" >
         </activity>
-
         <activity
             android:name=".ui.activities.RecentsActivity"
             android:configChanges="orientation|screenSize"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
@@ -105,47 +106,65 @@
             android:configChanges="orientation|screenSize"
             android:label="@string/title_activity_playlist" >
         </activity>
+
         <service
             android:name=".services.SubscriptionService"
             android:enabled="true"
-            android:exported="true" >
+            android:exported="false" >
         </service>
 
         <provider
             android:name=".provider.PodcastCatcherProvider"
-            android:syncable="true"
-            android:authorities="com.fireminder.podcastcatcher" />
+            android:exported="false"
+            android:authorities="com.fireminder.podcastcatcher"
+            android:syncable="true" />
 
         <service
             android:name=".services.RetrieveEpisodeService"
             android:exported="false" >
         </service>
-
         <service
             android:name=".services.RetrieveRecentEpisodesService"
             android:exported="false" >
         </service>
-        <service android:name=".sync.SyncService"
-            android:exported="true">
+        <service
+            android:name=".sync.SyncService"
+            android:exported="false" >
             <intent-filter>
                 <action android:name="android.content.SyncAdapter" />
             </intent-filter>
+
             <meta-data
                 android:name="android.content.SyncAdapter"
-                android:resource="@xml/syncadapter"
-                />
+                android:resource="@xml/syncadapter" />
         </service>
-        <service
-            android:name=".sync.AuthenticatorService">
+        <service android:name=".sync.AuthenticatorService"
+            android:exported="false">
             <intent-filter>
                 <action android:name="android.accounts.AccountAuthenticator" />
             </intent-filter>
+
             <meta-data
                 android:name="android.accounts.AccountAuthenticator"
-                android:resource="@xml/authenticator"
-                />
-
+                android:resource="@xml/authenticator" />
         </service>
+
+        <service android:name=".services.DownloadManagerService"
+            android:exported="false">
+        </service>
+
+        <service android:name=".mediaplayer.MediaPlayerService"
+            android:exported="false">
+        </service>
+
+        <receiver
+            android:name=".receiver.DownloadManagerReceiver"
+            android:enabled="true"
+            android:exported="true" >
+            <intent-filter>
+                <action android:name="android.intent.action.DOWNLOAD_COMPLETE"/>
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

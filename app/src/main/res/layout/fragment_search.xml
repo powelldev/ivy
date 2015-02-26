@@ -13,7 +13,7 @@
             android:id="@+id/fragment_search_search_edittext"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:hint="Search by Name or Subject"
+            android:hint="@string/search_hint"
             >
             <requestFocus />
         </EditText>
@@ -23,7 +23,7 @@
             android:id="@+id/fragment_search_search_button"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:text="Search" />
+            android:text="@string/search" />
     </RelativeLayout>
 
     <ListView
