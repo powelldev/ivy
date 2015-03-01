@@ -8,7 +8,7 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
-        android:name="PodcastCatcherApplication"
+        android:name=".PodcastCatcherApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -17,6 +17,12 @@
             android:name=".ui.activities.PodcastsActivity"
             android:configChanges="orientation|screenSize"
             android:label="@string/app_name" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
@@ -94,12 +100,6 @@
             android:name=".ui.activities.RecentsActivity"
             android:configChanges="orientation|screenSize"
             android:label="@string/app_name" >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity
             android:name=".ui.activities.PlaylistActivity"
@@ -115,8 +115,8 @@
 
         <provider
             android:name=".provider.PodcastCatcherProvider"
-            android:exported="false"
             android:authorities="com.fireminder.podcastcatcher"
+            android:exported="false"
             android:syncable="true" />
 
         <service
@@ -138,8 +138,9 @@
                 android:name="android.content.SyncAdapter"
                 android:resource="@xml/syncadapter" />
         </service>
-        <service android:name=".sync.AuthenticatorService"
-            android:exported="false">
+        <service
+            android:name=".sync.AuthenticatorService"
+            android:exported="false" >
             <intent-filter>
                 <action android:name="android.accounts.AccountAuthenticator" />
             </intent-filter>
@@ -148,13 +149,13 @@
                 android:name="android.accounts.AccountAuthenticator"
                 android:resource="@xml/authenticator" />
         </service>
-
-        <service android:name=".services.DownloadManagerService"
-            android:exported="false">
+        <service
+            android:name=".services.DownloadManagerService"
+            android:exported="false" >
         </service>
-
-        <service android:name=".mediaplayer.MediaPlayerService"
-            android:exported="false">
+        <service
+            android:name=".mediaplayer.MediaPlayerService"
+            android:exported="false" >
         </service>
 
         <receiver
@@ -162,9 +163,14 @@
             android:enabled="true"
             android:exported="true" >
             <intent-filter>
-                <action android:name="android.intent.action.DOWNLOAD_COMPLETE"/>
+                <action android:name="android.intent.action.DOWNLOAD_COMPLETE" />
             </intent-filter>
         </receiver>
+
+        <activity
+            android:name=".ui.activities.PodcastPlaybackActivity"
+            android:label="@string/title_activity_podcast_playback" >
+        </activity>
     </application>
 
 </manifest>

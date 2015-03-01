@@ -9,6 +9,7 @@ import com.fireminder.podcastcatcher.models.Episode;
 import com.fireminder.podcastcatcher.models.Podcast;
 import com.fireminder.podcastcatcher.provider.PodcastCatcherContract;
 import com.fireminder.podcastcatcher.utils.Logger;
+import com.fireminder.podcastcatcher.utils.Utils;
 import com.google.common.io.CharStreams;
 
 import java.io.IOException;

@@ -20,6 +20,10 @@ import android.widget.TextView;
 import com.fireminder.podcastcatcher.R;
 import com.fireminder.podcastcatcher.models.Episode;
 import com.fireminder.podcastcatcher.provider.PodcastCatcherContract;
+import com.fireminder.podcastcatcher.utils.Utils;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ChannelFragment extends ListFragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
@@ -78,22 +82,25 @@ public class ChannelFragment extends ListFragment implements LoaderManager.Loade
     if (cursor.getCount() == 0) {
 
     } else {
-      EpisodeAdapter adapter = new EpisodeAdapter(getActivity(), cursor);
+      EpisodeAdapter adapter = new EpisodeAdapter(getActivity(), cursor, podcastChannelId);
       getListView().setAdapter(adapter);
-      adapter.notifyDataSetChanged();
     }
   }
 
   @Override
   public void onLoaderReset(Loader<Cursor> loader) {
-    ((CursorAdapter)getListView().getAdapter()).notifyDataSetChanged();
   }
 
   private static class EpisodeAdapter extends CursorAdapter implements
       View.OnClickListener, PopupMenu.OnMenuItemClickListener {
 
-    public EpisodeAdapter (Context context, Cursor cursor) {
+    private Context mContext;
+    private String mPodcastChannelId;
+
+    public EpisodeAdapter(Context context, Cursor cursor, String podcastChannelId) {
       super(context, cursor, 0);
+      mContext = context.getApplicationContext();
+      mPodcastChannelId = podcastChannelId;
     }
 
     @Override
@@ -122,6 +129,7 @@ public class ChannelFragment extends ListFragment implements LoaderManager.Loade
 
     @Override
     public void onClick(View v) {
+      throw new UnsupportedOperationException("Not yet Implemented");
 
     }
 

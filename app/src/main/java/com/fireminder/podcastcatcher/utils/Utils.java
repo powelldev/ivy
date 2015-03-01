@@ -1,9 +1,14 @@
 package com.fireminder.podcastcatcher.utils;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.Uri;
-import android.text.format.*;
+
+import com.fireminder.podcastcatcher.models.Episode;
+import com.fireminder.podcastcatcher.models.Podcast;
+import com.fireminder.podcastcatcher.provider.PodcastCatcherContract;
+import com.fireminder.podcastcatcher.services.DownloadManagerService;
 
 import org.ocpsoft.prettytime.PrettyTime;
 
@@ -59,6 +64,21 @@ public class Utils {
 
   }
 
+  public static void downloadAllEpisodes(Context context, Podcast podcast) {
+    Cursor cursor = context.getContentResolver().query(
+        PodcastCatcherContract.Episodes.CONTENT_URI,
+        null, /* projection */
+        PodcastCatcherContract.Podcasts.PODCAST_ID + "=?",
+        new String[] {podcast.podcastId},
+        null /* sortOrder */);
+
+    while (cursor.moveToNext()) {
+      Episode episode = Episode.parseEpisodeFromCursor(cursor);
+      DownloadManagerService.download(context, episode);
+    }
+
+  }
+
   public static String makeTimePretty(long pubDate) {
     Date date = new Date(pubDate);
     Date oneYearAgo = new Date(System.currentTimeMillis());
@@ -69,5 +89,23 @@ public class Utils {
   public static Uri createEpisodeDestination(Context applicationContext, String episodeId) {
     return Uri.withAppendedPath(Uri.fromFile(applicationContext.getExternalFilesDir(null)),
         episodeId);
+  }
+
+  public static Episode getNextEpisode(Context mContext, Podcast podcast) {
+    Cursor cursor = mContext.getContentResolver().query(PodcastCatcherContract.Episodes.CONTENT_URI,
+        null,
+        PodcastCatcherContract.Podcasts.PODCAST_ID + "=?",
+        new String[] {podcast.podcastId},
+        null
+    );
+
+    while(cursor.moveToNext()) {
+      Episode episode = Episode.parseEpisodeFromCursor(cursor);
+      if (!episode.isComplete) {
+        return episode;
+      }
+    }
+
+    return null;
   }
 }

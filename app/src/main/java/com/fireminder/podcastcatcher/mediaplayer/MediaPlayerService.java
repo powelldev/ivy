@@ -39,7 +39,6 @@ public class MediaPlayerService extends Service implements StatefulMediaPlayer.M
   // Flags for communication between client view controls and
   // the MediaPlayer
   public static final int MSG_SET_DATA = 200;
-  public static final int MSG_SET_QUEUE = 201;
   public static final int MSG_PLAY_PAUSE = 300;
   public static final int MSG_SEEK_START = 400;
   public static final int MSG_SEEK_END = 401;

@@ -15,7 +15,7 @@ public class PodcastCatcherDatabase extends SQLiteOpenHelper {
   private static final String LOG_TAG = PodcastCatcherDatabase.class.getSimpleName();
   private static final String DATABASE_NAME = "podcastcatcher.db";
 
-  private static final int VER_2015_DEBUG_A = 31;
+  private static final int VER_2015_DEBUG_A = 32;
   private static final int CUR_DATABASE_VERSION = VER_2015_DEBUG_A;
 
   private final Context mContext;
@@ -54,6 +54,7 @@ public class PodcastCatcherDatabase extends SQLiteOpenHelper {
             + EpisodeColumns.EPISODE_PUBLICATION_DATE + " TEXT NOT NULL, "
             + EpisodeColumns.EPISODE_CONTENT_DURATION + " INTEGER , "
             + EpisodeColumns.EPISODE_PERCENT_ELAPSED + " REAL, "
+            + EpisodeColumns.EPISODE_IS_COMPLETE + " INTEGER, "
             + EpisodeColumns.EPISODE_IS_DOWNLOADED + " INTEGER "
             + ") "
     );
@@ -65,17 +66,6 @@ public class PodcastCatcherDatabase extends SQLiteOpenHelper {
             + PlaylistColumns.PLAYLIST_ORDER + " INTEGER UNIQUE NOT NULL"
             + ") "
     );
-
-    /*
-    db.execSQL( "" +
-          "CREATE TRIGGER setInitialPlaylistOrder " +
-          " AFTER INSERT ON " + Tables.PLAYLIST +
-          " BEGIN UPDATE " + Tables.PLAYLIST +
-           " SET " + PlaylistColumns.PLAYLIST_ORDER + " = " + BaseColumns._ID +
-           " WHERE " + PlaylistColumns.PLAYLIST_ORDER + "='" + Playlist.PLAYLIST_SENTINEL + "' ) "
-    );
-    */
-
 
   }
 

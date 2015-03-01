@@ -21,6 +21,7 @@ import com.fireminder.podcastcatcher.mediaplayer.MediaPlayerFragment;
 import com.fireminder.podcastcatcher.services.RetrieveRecentEpisodesService;
 import com.fireminder.podcastcatcher.sync.StubAccount;
 import com.fireminder.podcastcatcher.ui.NavigationDrawerAdapter;
+import com.fireminder.podcastcatcher.ui.fragments.PodcastPlaybackFragment;
 import com.fireminder.podcastcatcher.ui.fragments.SubscribeDialogFragment;
 import com.fireminder.podcastcatcher.utils.Logger;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
@@ -136,7 +137,7 @@ public abstract class BaseActivity extends ActionBarActivity {
         @Override
         public void onPanelExpanded(View panel) {
           Logger.d(LOG_TAG, "onPanelExpanded()");
-          getSupportFragmentManager().beginTransaction().add(R.id.fragment_container_lower, new MediaPlayerFragment(), "").commit();
+          getSupportFragmentManager().beginTransaction().add(R.id.fragment_container_lower, new PodcastPlaybackFragment(), "player").commit();
         }
 
         @Override

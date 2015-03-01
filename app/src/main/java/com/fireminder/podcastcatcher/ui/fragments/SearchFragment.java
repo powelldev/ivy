@@ -56,6 +56,8 @@ public class SearchFragment extends ListFragment implements View.OnClickListener
     SearchAsyncTask task = new SearchAsyncTask(inputText, this);
     task.execute();
   }
+
+  // Enter key launches search
   @Override
   public boolean onKey(View v, int keyCode, KeyEvent event) {
     if ((event.getAction() == KeyEvent.ACTION_DOWN) && keyCode == KeyEvent.KEYCODE_ENTER) {
@@ -64,6 +66,7 @@ public class SearchFragment extends ListFragment implements View.OnClickListener
     }
     return false;
   }
+
   @Override
   public void onClick(View v) {
     search();

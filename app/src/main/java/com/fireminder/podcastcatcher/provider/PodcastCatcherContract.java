@@ -36,6 +36,7 @@ public class PodcastCatcherContract {
     String EPISODE_CONTENT_DURATION = "episode_content_duration";
     String EPISODE_PERCENT_ELAPSED = "episode_percent_elapsed";
     String EPISODE_IS_DOWNLOADED = "episode_is_downloaded";
+    String EPISODE_IS_COMPLETE = "episode_complete";
   }
 
   interface PlaylistColumns {

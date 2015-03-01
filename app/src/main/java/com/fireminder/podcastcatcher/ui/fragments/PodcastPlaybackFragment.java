@@ -1,4 +1,5 @@
-package com.fireminder.podcastcatcher.mediaplayer;
+package com.fireminder.podcastcatcher.ui.fragments;
+
 
 import android.content.ComponentName;
 import android.content.Context;
@@ -15,11 +16,20 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import com.fireminder.podcastcatcher.R;
+import com.fireminder.podcastcatcher.mediaplayer.MediaPlayerControlView;
+import com.fireminder.podcastcatcher.mediaplayer.MediaPlayerService;
+import com.squareup.picasso.Picasso;
+
+/**
+ *
+ */
+public class PodcastPlaybackFragment extends Fragment implements MediaPlayerControlView.Listener {
 
 
-public class MediaPlayerFragment extends Fragment implements MediaPlayerControlView.Listener {
+  public PodcastPlaybackFragment() {}
 
   private static final int NO_ARG = -1;
 
@@ -73,15 +83,20 @@ public class MediaPlayerFragment extends Fragment implements MediaPlayerControlV
   };
 
   MediaPlayerControlView mediaPlayerControlView;
+  ImageView mAlbumArtImageView;
 
   @Override
   public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-    View rootView = inflater.inflate(R.layout.fragment_media_player, container, false);
+    View rootView = inflater.inflate(R.layout.fragment_podcast_playback, container, false);
     mediaPlayerControlView = new MediaPlayerControlView(getActivity(), rootView);
     mediaPlayerControlView.setListener(this);
-
+    mAlbumArtImageView = (ImageView) rootView.findViewById(R.id.episode_image);
     return rootView;
+  }
+
+  public void setAlbumArt(String imageUri) {
+    Picasso.with(getActivity()).load(imageUri).into(mAlbumArtImageView);
   }
 
   @Override
@@ -145,3 +160,4 @@ public class MediaPlayerFragment extends Fragment implements MediaPlayerControlV
   }
 
 }
+

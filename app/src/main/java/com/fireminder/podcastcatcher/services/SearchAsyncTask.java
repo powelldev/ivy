@@ -51,7 +51,7 @@ public class SearchAsyncTask extends AsyncTask<Void, Void, List<SearchAsyncTask.
       final InputStream is = url.openConnection().getInputStream();
       response = CharStreams.toString(new InputStreamReader(is, Charsets.UTF_8));
     } catch (Exception e) {
-      Logger.e(LOG_TAG, e.getMessage());
+      Logger.e(LOG_TAG, "Error in getResponse(): " + e.getMessage());
       e.printStackTrace();
     }
     return response;
@@ -62,8 +62,8 @@ public class SearchAsyncTask extends AsyncTask<Void, Void, List<SearchAsyncTask.
     try {
       JSONObject jsonObj = new JSONObject(response);
       results = jsonObj.getJSONArray("results");
-    } catch (JSONException e) {
-      Logger.e(LOG_TAG, e.getMessage());
+    } catch (Exception e) {
+      Logger.e(LOG_TAG, "Error in parseResultsFrom: " + e.getMessage());
       e.printStackTrace();
     }
     return results;

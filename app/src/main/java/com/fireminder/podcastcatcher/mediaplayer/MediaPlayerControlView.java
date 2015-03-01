@@ -8,7 +8,8 @@ import android.widget.TextView;
 import com.fireminder.podcastcatcher.R;
 
 /**
- * Created by mpowell on 2/21/15.
+ * View responsible for media player controls. Any layout must contain the button id's specified in initView.
+ * Any Fragment must implement this classes Listener to recieve appropriate callbacks.
  */
 public class MediaPlayerControlView implements View.OnClickListener, SeekBar.OnSeekBarChangeListener {
 
@@ -28,10 +29,8 @@ public class MediaPlayerControlView implements View.OnClickListener, SeekBar.OnS
 
   private void initView(Context context, View rootView) {
     rootView.findViewById(R.id.button_play_pause).setOnClickListener(this);
-    rootView.findViewById(R.id.button_set_data).setOnClickListener(this);
     rootView.findViewById(R.id.button_back_thirty).setOnClickListener(this);
     rootView.findViewById(R.id.button_forward_thirty).setOnClickListener(this);
-    rootView.findViewById(R.id.button_set_playlist).setOnClickListener(this);
     textViewElapsed = (TextView) rootView.findViewById(R.id.text_view_elapsed);
     textViewDuration = (TextView) rootView.findViewById(R.id.text_view_duration);
     textViewTitle = (TextView) rootView.findViewById(R.id.text_view_title);
@@ -60,13 +59,9 @@ public class MediaPlayerControlView implements View.OnClickListener, SeekBar.OnS
   public interface Listener {
     public void onPlayPauseClicked();
 
-    public void onSetDataClicked();
-
     public void onRewindThirtyClicked();
 
     public void onForwardThirtyClicked();
-
-    public void onSetPlaylist();
 
     public void onSeekBarStarted();
 
@@ -81,18 +76,14 @@ public class MediaPlayerControlView implements View.OnClickListener, SeekBar.OnS
       case R.id.button_play_pause:
         listener.onPlayPauseClicked();
         break;
-      case R.id.button_set_data:
-        listener.onSetDataClicked();
-        break;
       case R.id.button_back_thirty:
         listener.onRewindThirtyClicked();
         break;
       case R.id.button_forward_thirty:
         listener.onForwardThirtyClicked();
         break;
-      case R.id.button_set_playlist:
-        listener.onSetPlaylist();
-        break;
+      default:
+        throw new UnsupportedOperationException("Not yet implemented");
     }
 
   }

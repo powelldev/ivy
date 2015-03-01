@@ -12,6 +12,7 @@
     <string name="title_activity_channel">ChannelActivity</string>
 
     <item type="id" name="TAG_EPISODE_KEY" />
+    <item type="id" name="TAG_PODCAST_KEY" />
 
 <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
@@ -23,4 +24,6 @@
     <string name="refresh">Refresh</string>
     <string name="http">http://</string>
     <string name="search_hint">Search by Name or Subject</string>
+    <string name="download">Download</string>
+    <string name="title_activity_podcast_playback">PodcastPlaybackActivity</string>
 </resources>

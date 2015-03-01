@@ -31,6 +31,7 @@ public class Episode implements Parcelable {
   public long elapsed;
   public String podcast_id;
   public boolean isDownloaded;
+  public boolean isComplete;
 
   public Episode(Parcel source) {
     title = source.readString();
@@ -43,6 +44,7 @@ public class Episode implements Parcelable {
     elapsed = source.readLong();
     podcast_id = source.readString();
     isDownloaded = source.readInt() == 1;
+    isComplete = source.readInt() == 1;
   }
 
   public Episode() {
@@ -85,6 +87,7 @@ public class Episode implements Parcelable {
     episode.elapsed = cursor.getLong(cursor.getColumnIndex(PodcastCatcherContract.Episodes.EPISODE_PERCENT_ELAPSED));
     episode.podcast_id = cursor.getString(cursor.getColumnIndex(PodcastCatcherContract.Podcasts.PODCAST_ID));
     episode.isDownloaded = cursor.getInt(cursor.getColumnIndex(PodcastCatcherContract.Episodes.EPISODE_IS_DOWNLOADED)) == 1;
+    episode.isComplete = cursor.getInt(cursor.getColumnIndex(PodcastCatcherContract.Episodes.EPISODE_IS_COMPLETE)) == 1;
     return episode;
   }
 
@@ -119,6 +122,8 @@ public class Episode implements Parcelable {
       episode.duration = 0;
       episode.elapsed = 0;
       episode.local_uri = "";
+      episode.isDownloaded = false;
+      episode.isComplete = false;
 
       episodes.add(episode);
     }
@@ -142,6 +147,7 @@ public class Episode implements Parcelable {
     dest.writeLong(elapsed);
     dest.writeString(podcast_id);
     dest.writeInt(isDownloaded ? 1 : 0);
+    dest.writeInt(isComplete ? 1 : 0);
   }
 
   public static ContentValues episodeToContentValues(Episode episode) {
@@ -156,6 +162,7 @@ public class Episode implements Parcelable {
     cv.put(PodcastCatcherContract.Episodes.EPISODE_CONTENT_DURATION, episode.duration);
     cv.put(PodcastCatcherContract.Episodes.EPISODE_PERCENT_ELAPSED, episode.elapsed);
     cv.put(PodcastCatcherContract.Episodes.EPISODE_IS_DOWNLOADED, episode.isDownloaded ? 1 : 0);
+    cv.put(PodcastCatcherContract.Episodes.EPISODE_IS_COMPLETE, episode.isComplete ? 1 : 0);
     return cv;
   }
 

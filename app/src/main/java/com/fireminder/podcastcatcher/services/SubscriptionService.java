@@ -51,10 +51,13 @@ public class SubscriptionService extends Service implements Response.Listener<St
   @Override
   public int onStartCommand(Intent intent, int flags, int startId) {
     if (intent != null) {
-      final String action = intent.getAction();
-      if (ACTION_SUBSCRIBE.equals(action)) {
-        mTargetUrl = intent.getStringExtra(EXTRA_TARGET_URL);
-        handleSubscription();
+      switch (intent.getAction()) {
+        case ACTION_SUBSCRIBE:
+          mTargetUrl = intent.getStringExtra(EXTRA_TARGET_URL);
+          handleSubscription();
+          break;
+        default:
+          throw new UnsupportedOperationException("Not yet implemented");
       }
     }
     return Service.START_STICKY;
