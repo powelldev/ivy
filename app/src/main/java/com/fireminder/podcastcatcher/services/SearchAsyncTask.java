@@ -8,6 +8,7 @@ import com.google.common.base.Charsets;
 import com.google.common.io.CharStreams;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.InputStream;
@@ -43,53 +44,68 @@ public class SearchAsyncTask extends AsyncTask<Void, Void, List<SearchAsyncTask.
     void onSearchComplete(List<SearchResult> searchResults);
   }
 
-
-  private String sanitizeString(String term) {
+  private String getResponse(Uri uri) {
+    String response = null;
     try {
-      term = URLEncoder.encode(term, "UTF-8");
-    } catch (UnsupportedEncodingException e) {
-      e.printStackTrace();
-    }
-    return term;
-  }
-
-  public List<SearchResult> search(String searchTerm) {
-    List<SearchResult> searchResults;
-    try {
-      final Uri uri = Uri.parse("https://itunes.apple.com/search").buildUpon()
-          .appendQueryParameter("media", "podcast")
-          .appendQueryParameter("term", searchTerm)
-          .appendQueryParameter("attribute", "titleTerm").build();
       final URL url = new URL(uri.toString());
       final InputStream is = url.openConnection().getInputStream();
-      final String response = CharStreams.toString(new InputStreamReader(is, Charsets.UTF_8));
-      JSONObject jsonObj = new JSONObject(response);
-      JSONArray results = jsonObj.getJSONArray("results");
-      searchResults = new ArrayList<>(results.length());
-      for (int i = 0; i < results.length(); i++) {
-        SearchResult searchResult = parseSearchResult((JSONObject) results.get(i));
-        searchResults.add(searchResult);
-      }
+      response = CharStreams.toString(new InputStreamReader(is, Charsets.UTF_8));
     } catch (Exception e) {
       Logger.e(LOG_TAG, e.getMessage());
       e.printStackTrace();
-      return null;
+    }
+    return response;
+  }
+
+  private JSONArray parseResultsFrom(String response) {
+    JSONArray results = null;
+    try {
+      JSONObject jsonObj = new JSONObject(response);
+      results = jsonObj.getJSONArray("results");
+    } catch (JSONException e) {
+      Logger.e(LOG_TAG, e.getMessage());
+      e.printStackTrace();
+    }
+    return results;
+  }
+
+  public List<SearchResult> search(String searchTerm) {
+    List<SearchResult> searchResults = null;
+    final Uri uri = Uri.parse("https://itunes.apple.com/search").buildUpon()
+        .appendQueryParameter("media", "podcast")
+        .appendQueryParameter("term", searchTerm)
+        .appendQueryParameter("attribute", "titleTerm").build();
+    final String response = getResponse(uri);
+    final JSONArray results = parseResultsFrom(response);
+
+    if (results != null) {
+      searchResults = new ArrayList<>(results.length());
+      for (int i = 0; i < results.length(); i++) {
+        try {
+          SearchResult searchResult = parseSearchResult((JSONObject) results.get(i));
+          searchResults.add(searchResult);
+        } catch (JSONException e) {
+          // skip this one, no need to process exception
+          Logger.i(LOG_TAG, "Failed to parse item: " + searchTerm);
+          Logger.i(LOG_TAG, "Failed to parse item at location: " + i);
+        }
+      }
     }
     return searchResults;
   }
 
   private SearchResult parseSearchResult(JSONObject result) {
+    SearchResult searchResult = null;
     try {
-      SearchResult searchResult = new SearchResult();
+      searchResult = new SearchResult();
       searchResult.title = result.getString(ItunesApi.NAME);
       searchResult.feedUrl = result.getString(ItunesApi.FEED_URL);
       searchResult.imageUri = result.getString(ItunesApi.IMAGE_URL_60);
-      return searchResult;
     } catch (Exception e) {
       Logger.e(LOG_TAG, "parseSearchResult Error: " + e.getMessage());
       e.printStackTrace();
-      return null;
     }
+    return searchResult;
   }
 
   public class SearchResult {

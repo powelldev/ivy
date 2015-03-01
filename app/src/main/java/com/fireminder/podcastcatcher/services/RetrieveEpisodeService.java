@@ -11,27 +11,24 @@ import com.fireminder.podcastcatcher.provider.PodcastCatcherContract;
 import com.fireminder.podcastcatcher.utils.Logger;
 import com.google.common.io.CharStreams;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 
-/**
- * An {@link IntentService} subclass for handling asynchronous task requests in
- * a service on a separate handler thread.
- * <p/>
- * TODO: Customize class - update intent actions, extra parameters and static
- * helper methods.
- */
 public class RetrieveEpisodeService extends IntentService {
+
   private static final String LOG_TAG = RetrieveEpisodeService.class.getSimpleName();
 
   private static final String ACTION_RETRIEVE_ALL = "com.fireminder.podcastcatcher.services.action.retrieve_all";
   private static final String EXTRA_PODCAST_ID = "com.fireminder.podcastcatcher.services.extra.podcastId";
   private static final String EXTRA_FEED_URL = "com.fireminder.podcastcatcher.services.extra.podcastFeed";
 
-  String mPodcastId;
-  String mFeedUrl;
+  private String mPodcastId;
+  private String mFeedUrl;
 
   public static void startActionRetrieveAll(Context context, Podcast podcast) {
     Intent intent = new Intent(context, RetrieveEpisodeService.class);
@@ -57,30 +54,28 @@ public class RetrieveEpisodeService extends IntentService {
     }
   }
 
-  private void handleRetrieveAll(String feedUrl) {
+  private List<Episode> getEpisodes(String url) {
+    List<Episode> episodes = null;
     try {
-      InputStream is = new URL(feedUrl).openConnection().getInputStream();
-      String response = CharStreams.toString(new InputStreamReader(is, "UTF-8"));
-      List<Episode> episodes = Episode.parseEpisodesFromResponse(response);
+      final InputStream is = new URL(url).openConnection().getInputStream();
+      final String feed = CharStreams.toString(new InputStreamReader(is, "UTF-8"));
+      episodes = Episode.parseEpisodesFromResponse(feed);
+    } catch (Exception e) {
+      Logger.e(LOG_TAG, "url: " + url + " Exception: " + e.getMessage());
+      e.printStackTrace();
+    }
+    return episodes;
+  }
+  private void handleRetrieveAll(String feedUrl) {
+      final List<Episode> episodes = getEpisodes(feedUrl);
+    if (episodes != null) {
       ContentValues[] contentValues = new ContentValues[episodes.size()];
       for (int i = 0; i < episodes.size(); i++) {
-        ContentValues cv = new ContentValues();
-        cv.put(PodcastCatcherContract.Episodes.EPISODE_ID, episodes.get(i).episode_id);
+        ContentValues cv = Episode.episodeToContentValues(episodes.get(i));
         cv.put(PodcastCatcherContract.Podcasts.PODCAST_ID, mPodcastId);
-        cv.put(PodcastCatcherContract.Episodes.EPISODE_TITLE, episodes.get(i).title);
-        cv.put(PodcastCatcherContract.Episodes.EPISODE_DESCRIPTION, episodes.get(i).description);
-        cv.put(PodcastCatcherContract.Episodes.EPISODE_STREAM_URI, episodes.get(i).stream_uri);
-        cv.put(PodcastCatcherContract.Episodes.EPISODE_LOCAL_URI, episodes.get(i).local_uri);
-        cv.put(PodcastCatcherContract.Episodes.EPISODE_PUBLICATION_DATE, episodes.get(i).pubDate);
-        cv.put(PodcastCatcherContract.Episodes.EPISODE_CONTENT_DURATION, episodes.get(i).duration);
-        cv.put(PodcastCatcherContract.Episodes.EPISODE_PERCENT_ELAPSED, episodes.get(i).elapsed);
-        cv.put(PodcastCatcherContract.Episodes.EPISODE_IS_DOWNLOADED, episodes.get(i).isDownloaded ? 1 : 0);
         contentValues[i] = cv;
       }
       getContentResolver().bulkInsert(PodcastCatcherContract.Episodes.CONTENT_URI, contentValues);
-    } catch (Exception exception) {
-      Logger.e(LOG_TAG, "handleRetrieveAll( " + feedUrl + " ): error: " + exception.getMessage());
-      exception.printStackTrace();
     }
   }
 

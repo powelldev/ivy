@@ -18,6 +18,7 @@ import android.widget.ListView;
 
 import com.fireminder.podcastcatcher.R;
 import com.fireminder.podcastcatcher.mediaplayer.MediaPlayerFragment;
+import com.fireminder.podcastcatcher.services.RetrieveRecentEpisodesService;
 import com.fireminder.podcastcatcher.sync.StubAccount;
 import com.fireminder.podcastcatcher.ui.NavigationDrawerAdapter;
 import com.fireminder.podcastcatcher.ui.fragments.SubscribeDialogFragment;
@@ -50,6 +51,9 @@ public abstract class BaseActivity extends ActionBarActivity {
     if (uri != null) {
       presentSubscriptionDialog(uri.toString());
     }
+
+    Intent i = new Intent(this, RetrieveRecentEpisodesService.class);
+    startService(i);
   }
 
   @Override

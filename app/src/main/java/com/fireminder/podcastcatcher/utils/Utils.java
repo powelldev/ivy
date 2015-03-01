@@ -2,6 +2,7 @@ package com.fireminder.podcastcatcher.utils;
 
 import android.content.Context;
 import android.net.ConnectivityManager;
+import android.net.Uri;
 import android.text.format.*;
 
 import org.ocpsoft.prettytime.PrettyTime;
@@ -63,5 +64,10 @@ public class Utils {
     Date oneYearAgo = new Date(System.currentTimeMillis());
     PrettyTime prettyTime = new PrettyTime();
     return prettyTime.format(new Date(pubDate));
+  }
+
+  public static Uri createEpisodeDestination(Context applicationContext, String episodeId) {
+    return Uri.withAppendedPath(Uri.fromFile(applicationContext.getExternalFilesDir(null)),
+        episodeId);
   }
 }

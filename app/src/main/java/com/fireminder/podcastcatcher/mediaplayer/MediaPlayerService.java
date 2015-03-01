@@ -92,8 +92,8 @@ public class MediaPlayerService extends Service implements StatefulMediaPlayer.M
             sendMessage(MSG_MEDIA_DURATION, duration);
             mTimeElapsedHandler.removeCallbacks(postElapsedRunnable);
             mTimeElapsedHandler.post(postElapsedRunnable);
+            sendMessage(MSG_PING_UPDATE_VIEW, (int) mediaPlayer.getCurrentPosition(), (int) mediaPlayer.getDuration(getApplicationContext()) , null);
           }
-          sendMessage(MSG_PING_UPDATE_VIEW, (int) mediaPlayer.getCurrentPosition(), (int) mediaPlayer.getDuration(getApplicationContext()) , null);
           break;
         default:
           throw new UnsupportedOperationException("Unknown msg: " + msg.what);
