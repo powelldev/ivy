@@ -1,10 +1,12 @@
 package com.fireminder.podcastcatcher.ui.fragments;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 import android.text.ClipboardManager;
 import android.view.LayoutInflater;
@@ -29,9 +31,9 @@ public class SubscribeDialogFragment extends DialogFragment implements View.OnCl
   }
 
   @Override
-  public Dialog onCreateDialog(Bundle savedInstanceState) {
+  public Dialog onCreateDialog(@NonNull Bundle savedInstanceState) {
     LayoutInflater inflater = getActivity().getLayoutInflater();
-    View promptsView = inflater.inflate(R.layout.dialog_subscribe, null, false);
+    @SuppressLint("InflateParams") View promptsView = inflater.inflate(R.layout.dialog_subscribe, null, false);
 
 
     mUrlEditText = (EditText) promptsView.findViewById(R.id.rss_feed);

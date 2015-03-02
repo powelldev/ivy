@@ -3,8 +3,6 @@ package com.fireminder.podcastcatcher.provider;
 import android.net.Uri;
 import android.provider.BaseColumns;
 
-import com.fireminder.podcastcatcher.utils.Logger;
-
 public class PodcastCatcherContract {
 
   public static final String CONTENT_AUTHORITY = "com.fireminder.podcastcatcher";

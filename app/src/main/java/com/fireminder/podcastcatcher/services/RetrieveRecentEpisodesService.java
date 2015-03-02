@@ -22,7 +22,7 @@ public class RetrieveRecentEpisodesService extends IntentService {
   protected void onHandleIntent(Intent intent) {
     List<String> podcastIds = new ArrayList<>();
     Cursor cursor = getContentResolver().query(PodcastCatcherContract.Podcasts.CONTENT_URI,
-        new String[] {PodcastCatcherContract.Podcasts.PODCAST_ID },
+        new String[]{PodcastCatcherContract.Podcasts.PODCAST_ID},
         null,
         null,
         null);
@@ -31,6 +31,6 @@ public class RetrieveRecentEpisodesService extends IntentService {
       podcastIds.add(id);
     }
     cursor.close();
-//    throw new UnsupportedOperationException("Not yet implemented");
+    throw new UnsupportedOperationException("Not yet implemented");
   }
 }

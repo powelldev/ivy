@@ -23,6 +23,7 @@ import android.view.accessibility.AccessibilityEvent;
 import com.fireminder.podcastcatcher.R;
 import com.nineoldandroids.view.animation.AnimatorProxy;
 
+@SuppressWarnings("ALL")
 public class SlidingUpPanelLayout extends ViewGroup {
 
   private static final String TAG = SlidingUpPanelLayout.class.getSimpleName();

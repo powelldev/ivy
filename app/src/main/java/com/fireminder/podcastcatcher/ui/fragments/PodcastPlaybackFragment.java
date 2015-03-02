@@ -31,7 +31,8 @@ import com.squareup.picasso.Picasso;
 public class PodcastPlaybackFragment extends Fragment implements MediaPlayerControlView.Listener {
 
 
-  public PodcastPlaybackFragment() {}
+  public PodcastPlaybackFragment() {
+  }
 
   private static final int NO_ARG = -1;
 

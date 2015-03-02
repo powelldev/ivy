@@ -3,7 +3,6 @@ package com.fireminder.podcastcatcher.ui.fragments;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
-import android.media.MediaPlayer;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
@@ -24,7 +23,6 @@ import com.fireminder.podcastcatcher.R;
 import com.fireminder.podcastcatcher.mediaplayer.MediaPlayerService;
 import com.fireminder.podcastcatcher.models.Podcast;
 import com.fireminder.podcastcatcher.provider.PodcastCatcherContract.Podcasts;
-import com.fireminder.podcastcatcher.services.DownloadManagerService;
 import com.fireminder.podcastcatcher.utils.PrefUtils;
 import com.fireminder.podcastcatcher.utils.Utils;
 
@@ -38,10 +36,11 @@ public class PodcastsFragment extends ListFragment implements LoaderManager.Load
   PodcastAdapter mAdapter;
   private View mRoot = null;
 
-  /***
+  /**
    * Standard empty constructor
    */
-  public PodcastsFragment() {}
+  public PodcastsFragment() {
+  }
 
   @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -63,7 +62,7 @@ public class PodcastsFragment extends ListFragment implements LoaderManager.Load
 
   @Override
   public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-    if (data.getCount() == 0 ) {
+    if (data.getCount() == 0) {
       // TODO: present an empty view prompting user to add Podcasts
     } else {
       PodcastAdapter adapter = new PodcastAdapter(getActivity(), data);
@@ -158,9 +157,9 @@ public class PodcastsFragment extends ListFragment implements LoaderManager.Load
           popup.setOnMenuItemClickListener(this);
           popup.show();
           break;
-    }
+      }
 
-  }
+    }
 
     @Override
     public boolean onMenuItemClick(MenuItem menuItem) {

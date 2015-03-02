@@ -23,6 +23,7 @@ import java.util.Date;
 /**
  * Created by michael on 2/16/2015.
  */
+@SuppressWarnings("ALL")
 public class Utils {
   public static final String DL_PREF = "downloadPreferences";
 
@@ -37,6 +38,7 @@ public class Utils {
     // this regex removes those before parsing.
     return xmlResponse.replaceAll("^[^<]*<", "<");
   }
+
   public static String removeIncompleteFromFilename(String local_uri) {
     return local_uri.replace(".INCMPL", "");
   }
@@ -53,7 +55,7 @@ public class Utils {
       in = new FileInputStream(new File(from)).getChannel();
       out = new FileOutputStream(new File(from)).getChannel();
       in.transferTo(0, in.size(), out);
-      new File(from).delete();
+      boolean success = new File(from).delete();
     } finally {
       if (in != null) {
         in.close();
@@ -70,7 +72,7 @@ public class Utils {
         PodcastCatcherContract.Episodes.CONTENT_URI,
         null, /* projection */
         PodcastCatcherContract.Podcasts.PODCAST_ID + "=?",
-        new String[] {podcast.podcastId},
+        new String[]{podcast.podcastId},
         null /* sortOrder */);
 
     while (cursor.moveToNext()) {
@@ -81,8 +83,6 @@ public class Utils {
   }
 
   public static String makeTimePretty(long pubDate) {
-    Date date = new Date(pubDate);
-    Date oneYearAgo = new Date(System.currentTimeMillis());
     PrettyTime prettyTime = new PrettyTime();
     return prettyTime.format(new Date(pubDate));
   }
@@ -96,11 +96,11 @@ public class Utils {
     Cursor cursor = mContext.getContentResolver().query(PodcastCatcherContract.Episodes.CONTENT_URI,
         null,
         PodcastCatcherContract.Podcasts.PODCAST_ID + "=?",
-        new String[] {podcast.podcastId},
+        new String[]{podcast.podcastId},
         null
     );
 
-    while(cursor.moveToNext()) {
+    while (cursor.moveToNext()) {
       Episode episode = Episode.parseEpisodeFromCursor(cursor);
       if (!episode.isComplete) {
         return episode;

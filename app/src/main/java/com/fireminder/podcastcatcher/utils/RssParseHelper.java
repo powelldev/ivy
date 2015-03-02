@@ -15,6 +15,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class RssParseHelper {
 
@@ -132,7 +133,7 @@ public class RssParseHelper {
     String content = "";
 
     SimpleDateFormat pubDateFormatter = new SimpleDateFormat(
-        "EEE, dd MMM yyy HH:mm:ss zzzz");
+        "EEE, dd MMM yyy HH:mm:ss zzzz", Locale.US);
 
     Episode episode = new Episode();
     List<String> testStringList = new ArrayList<String>();

@@ -7,7 +7,6 @@ import android.database.Cursor;
 import com.fireminder.podcastcatcher.provider.PodcastCatcherContract;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 public class Playlist {
@@ -40,6 +39,8 @@ public class Playlist {
         null,
         null,
         null);
-    return c.getCount();
+    int count = c.getCount();
+    c.close();
+    return count;
   }
 }

@@ -1,32 +1,29 @@
 package com.fireminder.podcastcatcher.ui.fragments;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-
-import com.fireminder.podcastcatcher.R;
-import com.fireminder.podcastcatcher.models.Playlist;
-import com.fireminder.podcastcatcher.provider.PodcastCatcherContract;
-
-
-import android.content.Context;
 import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.support.v4.widget.CursorAdapter;
 import android.support.v7.widget.PopupMenu;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.fireminder.podcastcatcher.R;
 import com.fireminder.podcastcatcher.models.Episode;
+import com.fireminder.podcastcatcher.models.Playlist;
+import com.fireminder.podcastcatcher.provider.PodcastCatcherContract;
 import com.fireminder.podcastcatcher.services.DownloadManagerService;
 import com.fireminder.podcastcatcher.utils.Logger;
 import com.fireminder.podcastcatcher.utils.Utils;
@@ -45,7 +42,7 @@ public class RecentsFragment extends ListFragment implements LoaderManager.Loade
   @Override
   public void onActivityCreated(Bundle savedInstanceState) {
     super.onActivityCreated(savedInstanceState);
-      getLoaderManager().initLoader(0, null, this);
+    getLoaderManager().initLoader(0, null, this);
   }
 
   @Override
@@ -94,10 +91,11 @@ public class RecentsFragment extends ListFragment implements LoaderManager.Loade
       e.printStackTrace();
     }
   }
+
   private static class EpisodeAdapter extends CursorAdapter implements
       View.OnClickListener, PopupMenu.OnMenuItemClickListener {
 
-    public EpisodeAdapter (Context context, Cursor cursor) {
+    public EpisodeAdapter(Context context, Cursor cursor) {
       super(context, cursor, 0);
     }
 
@@ -159,7 +157,9 @@ public class RecentsFragment extends ListFragment implements LoaderManager.Loade
           break;
       }
     }
+
     private Episode mEpisode;
+
     private void enqueue(Episode episode) {
       Logger.e(LOG_TAG, "Enqueuing: " + episode.title);
 

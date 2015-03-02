@@ -3,7 +3,7 @@ package com.fireminder.podcastcatcher.services;
 import android.app.IntentService;
 import android.content.Intent;
 
-public class EpisodeDatabaseSync extends IntentService{
+public class EpisodeDatabaseSync extends IntentService {
 
   public EpisodeDatabaseSync() {
     super("EpisodeDataSync");

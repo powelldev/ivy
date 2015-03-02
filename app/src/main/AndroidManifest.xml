@@ -158,6 +158,9 @@
             android:exported="false" >
         </service>
 
+        <service android:name=".services.EpisodeDatabaseSync"
+                 android:exported="false"/>
+
         <receiver
             android:name=".receiver.DownloadManagerReceiver"
             android:enabled="true"

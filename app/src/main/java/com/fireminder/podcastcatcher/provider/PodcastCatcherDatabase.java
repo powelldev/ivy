@@ -5,7 +5,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.provider.BaseColumns;
 
-import com.fireminder.podcastcatcher.models.Playlist;
 import com.fireminder.podcastcatcher.provider.PodcastCatcherContract.EpisodeColumns;
 import com.fireminder.podcastcatcher.provider.PodcastCatcherContract.PlaylistColumns;
 import com.fireminder.podcastcatcher.provider.PodcastCatcherContract.PodcastColumns;
@@ -15,14 +14,11 @@ public class PodcastCatcherDatabase extends SQLiteOpenHelper {
   private static final String LOG_TAG = PodcastCatcherDatabase.class.getSimpleName();
   private static final String DATABASE_NAME = "podcastcatcher.db";
 
-  private static final int VER_2015_DEBUG_A = 32;
+  private static final int VER_2015_DEBUG_A = 34;
   private static final int CUR_DATABASE_VERSION = VER_2015_DEBUG_A;
-
-  private final Context mContext;
 
   public PodcastCatcherDatabase(Context context) {
     super(context, DATABASE_NAME, null, CUR_DATABASE_VERSION);
-    mContext = context;
   }
 
   @Override

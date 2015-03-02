@@ -56,6 +56,7 @@ import java.util.ArrayList;
  *
  * @author heycosmo
  */
+@SuppressWarnings("ALL")
 public class DragSortListView extends ListView {
 
 

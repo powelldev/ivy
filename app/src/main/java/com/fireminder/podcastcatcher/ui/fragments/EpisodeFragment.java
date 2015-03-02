@@ -79,10 +79,11 @@ public abstract class EpisodeFragment extends ListFragment implements LoaderMana
         return super.onContextItemSelected(item);
     }
   }
+
   private static class EpisodeAdapter extends CursorAdapter implements
       View.OnClickListener, PopupMenu.OnMenuItemClickListener {
 
-    public EpisodeAdapter (Context context, Cursor cursor) {
+    public EpisodeAdapter(Context context, Cursor cursor) {
       super(context, cursor, 0);
     }
 

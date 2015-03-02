@@ -51,7 +51,7 @@ public class PlaylistFragment extends ListFragment implements LoaderManager.Load
         0);
     setListAdapter(mAdapter);
     getLoaderManager().initLoader(0, null, this);
-    ((DragSortListView)getListView()).setDragSortListener(new DragSortListView.DragSortListener() {
+    ((DragSortListView) getListView()).setDragSortListener(new DragSortListView.DragSortListener() {
       @Override
       public void drag(int from, int to) {
         Logger.d(LOG_TAG, "drag(from: " + from + ", to: " + to + " )");
@@ -96,7 +96,7 @@ public class PlaylistFragment extends ListFragment implements LoaderManager.Load
   @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup container,
                            Bundle savedInstanceState) {
-    return inflater.inflate(R.layout.fragment_playlist, container, false);
+    throw new UnsupportedOperationException("Not implemented");
   }
 
   @Override

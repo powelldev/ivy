@@ -7,12 +7,8 @@ import android.net.Uri;
 import android.util.Log;
 
 import com.fireminder.podcastcatcher.models.Episode;
-import com.fireminder.podcastcatcher.utils.Logger;
 
-import java.io.File;
 import java.io.IOException;
-import java.util.Queue;
-import java.util.concurrent.LinkedBlockingQueue;
 
 public class StatefulMediaPlayer implements MediaPlayer.OnBufferingUpdateListener, MediaPlayer.OnPreparedListener, MediaPlayer.OnErrorListener, MediaPlayer.OnInfoListener, MediaPlayer.OnSeekCompleteListener, MediaPlayer.OnCompletionListener {
   private static final String LOG_TAG = StatefulMediaPlayer.class.getSimpleName();
@@ -150,7 +146,7 @@ public class StatefulMediaPlayer implements MediaPlayer.OnBufferingUpdateListene
 
   public void start() throws IOException {
     // Load media from playlist if exists
-      this.setDataSource(media, false);
+    this.setDataSource(media, false);
   }
 
   public void play() {

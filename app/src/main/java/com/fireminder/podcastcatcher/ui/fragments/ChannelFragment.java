@@ -20,10 +20,6 @@ import android.widget.TextView;
 import com.fireminder.podcastcatcher.R;
 import com.fireminder.podcastcatcher.models.Episode;
 import com.fireminder.podcastcatcher.provider.PodcastCatcherContract;
-import com.fireminder.podcastcatcher.utils.Utils;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class ChannelFragment extends ListFragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
@@ -80,7 +76,7 @@ public class ChannelFragment extends ListFragment implements LoaderManager.Loade
   @Override
   public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
     if (cursor.getCount() == 0) {
-
+      // TODO present some fancy prompt here
     } else {
       EpisodeAdapter adapter = new EpisodeAdapter(getActivity(), cursor, podcastChannelId);
       getListView().setAdapter(adapter);

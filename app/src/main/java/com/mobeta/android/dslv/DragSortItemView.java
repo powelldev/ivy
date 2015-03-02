@@ -21,6 +21,7 @@ import android.widget.AbsListView;
  * The purpose of this class is to optimize slide
  * shuffle animations.
  */
+@SuppressWarnings("ALL")
 public class DragSortItemView extends ViewGroup {
 
   private int mGravity = Gravity.TOP;

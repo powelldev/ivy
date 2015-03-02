@@ -9,14 +9,10 @@ import com.fireminder.podcastcatcher.models.Episode;
 import com.fireminder.podcastcatcher.models.Podcast;
 import com.fireminder.podcastcatcher.provider.PodcastCatcherContract;
 import com.fireminder.podcastcatcher.utils.Logger;
-import com.fireminder.podcastcatcher.utils.Utils;
 import com.google.common.io.CharStreams;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 
@@ -67,8 +63,9 @@ public class RetrieveEpisodeService extends IntentService {
     }
     return episodes;
   }
+
   private void handleRetrieveAll(String feedUrl) {
-      final List<Episode> episodes = getEpisodes(feedUrl);
+    final List<Episode> episodes = getEpisodes(feedUrl);
     if (episodes != null) {
       ContentValues[] contentValues = new ContentValues[episodes.size()];
       for (int i = 0; i < episodes.size(); i++) {

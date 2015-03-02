@@ -19,6 +19,7 @@ import android.widget.AdapterView;
  * {@link DragSortListView#setFloatViewManager()} of your
  * {@link DragSortListView} instance.
  */
+@SuppressWarnings("ALL")
 public class DragSortController extends SimpleFloatViewManager implements View.OnTouchListener, GestureDetector.OnGestureListener {
 
   /**

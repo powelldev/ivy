@@ -1,16 +1,14 @@
 package com.fireminder.podcastcatcher.ui.activities;
 
-import android.content.Intent;
 import android.os.Bundle;
 
 import com.fireminder.podcastcatcher.R;
-import com.fireminder.podcastcatcher.models.Podcast;
 import com.fireminder.podcastcatcher.ui.fragments.PodcastsFragment;
 
-/***
+/**
  * Activity responsible for presenting PodcastFragment
  */
-public class PodcastsActivity extends BaseActivity  {
+public class PodcastsActivity extends BaseActivity {
 
   private static final String LOG_TAG = PodcastsActivity.class.getSimpleName();
 

@@ -72,6 +72,7 @@ public class Episode implements Parcelable {
 
   /**
    * Note that if the cursor is newly created please call next() or moveToFirst() prior to calling this.
+   *
    * @param cursor
    * @return
    */
