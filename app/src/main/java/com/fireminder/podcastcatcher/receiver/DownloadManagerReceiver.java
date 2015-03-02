@@ -11,6 +11,7 @@ public class DownloadManagerReceiver extends BroadcastReceiver {
   public DownloadManagerReceiver() {
   }
 
+  /* Receiver to process DownloadManager completions */
   @Override
   public void onReceive(Context context, Intent intent) {
     Intent downloadCompleteIntent = new Intent(

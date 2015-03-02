@@ -40,11 +40,11 @@ public class EpisodeTest extends TestCase {
         assertNotNull(episode.title);
         assertNotNull(episode.description);
         assertNotNull(episode.pubDate);
-        assertNotNull(episode.stream_uri);
+        assertNotNull(episode.streamUri);
         assertEquals(episode.isDownloaded, false);
         assertEquals(episode.duration, 0);
         assertEquals(episode.elapsed, 0);
-        assertEquals(episode.local_uri, "");
+        assertEquals(episode.localUri, "");
       }
     }
   }

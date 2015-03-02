@@ -62,7 +62,7 @@ public class RssParseHelper {
                         content = xpp.nextText();
                         test += content + "\n";
                         episode.title = content;
-                        episode.podcast_id = podcastId;
+                        episode.podcastId = podcastId;
                     } else if (name.matches("description")
                             && xpp.getDepth() == ITEM_DEPTH) {
                         content = xpp.nextText();
@@ -81,7 +81,7 @@ public class RssParseHelper {
                         content = xpp.getAttributeValue(null, "url");
                         encl = true;
                         test += content + "\n";
-                        episode.stream_uri = content;
+                        episode.streamUri = content;
                     }
                     break;
 
@@ -174,7 +174,7 @@ public class RssParseHelper {
             content = xpp.getAttributeValue(null, "url");
             encl = true;
             test += content + "\n";
-            episode.stream_uri = content;
+            episode.streamUri = content;
           }
           break;
         case (XmlPullParser.END_TAG):
@@ -182,7 +182,7 @@ public class RssParseHelper {
             test += "item ended" + "\n";
             if (encl == true && oldEpisodeFound == false) {
               testStringList.add(test);
-              episode.podcast_id = podcastId;
+              episode.podcastId = podcastId;
               episode.elapsed = 0;
               episodes.add(episode);
               episode = new Episode();

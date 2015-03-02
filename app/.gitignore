@@ -1,1 +1,16 @@
+.gradle
+local.properties
+/.idea/workspace.xml
+/.idea/libraries
+/.idea/*
+.DS_Store
 /build
+
+gradle
+
+/.idea
+*.apk
+bin/*
+gen/*
+build/
+*.iml

@@ -8,7 +8,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 
 import com.fireminder.podcastcatcher.provider.PodcastCatcherContract.Episodes;
-import com.fireminder.podcastcatcher.provider.PodcastCatcherContract.Playlist;
 import com.fireminder.podcastcatcher.provider.PodcastCatcherContract.Podcasts;
 import com.fireminder.podcastcatcher.provider.PodcastCatcherDatabase.Tables;
 import com.fireminder.podcastcatcher.utils.Logger;
@@ -83,10 +82,6 @@ public class PodcastCatcherProvider extends ContentProvider {
         return Episodes.CONTENT_TYPE;
       case EPISODES_ID:
         return Episodes.CONTENT_ITEM_TYPE;
-      case PLAYLIST:
-        return Playlist.CONTENT_TYPE;
-      case PLAYLIST_ID:
-        return Playlist.CONTENT_ITEM_TYPE;
       default:
         throw new UnsupportedOperationException("Unknown uri: " + uri);
     }
@@ -106,10 +101,6 @@ public class PodcastCatcherProvider extends ContentProvider {
         db.insert(Tables.EPISODES, null, values);
         notifyChange(uri);
         return Episodes.buildEpisodeUri(values.getAsString(Episodes.EPISODE_ID));
-      case PLAYLIST:
-        db.insert(Tables.PLAYLIST, null, values);
-        notifyChange(uri);
-        return Playlist.CONTENT_URI;
       default:
         throw new UnsupportedOperationException("Unknown insert uri: " + uri);
     }
@@ -147,11 +138,6 @@ public class PodcastCatcherProvider extends ContentProvider {
         final String episodeId = Episodes.getEpisodeId(uri);
         return builder.table(Tables.EPISODES)
             .where(Episodes.EPISODE_ID + "=?", episodeId);
-      case PLAYLIST:
-        return builder.table(Tables.PLAYLIST);
-      case PLAYLIST_ID_EPISODES:
-        Logger.e(LOG_TAG, "returning table playlist_on_episodes");
-        return builder.table(Tables.PLAYLIST_ON_EPISODES);
       default:
         throw new UnsupportedOperationException("Unknown uri " + uri);
     }
@@ -178,11 +164,6 @@ public class PodcastCatcherProvider extends ContentProvider {
         final String episodePodcastId = Podcasts.getPodcastId(uri);
         return builder.table(Tables.EPISODES)
             .where(Podcasts.PODCAST_ID + "=?", episodePodcastId);
-      case PLAYLIST:
-        return builder.table(Tables.PLAYLIST);
-      case PLAYLIST_ID_EPISODES:
-        Logger.e(LOG_TAG, "returning table playlist_on_episodes");
-        return builder.table(Tables.PLAYLIST_ON_EPISODES);
       default:
         throw new UnsupportedOperationException("Unknown uri " + uri);
     }

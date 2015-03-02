@@ -115,7 +115,7 @@ public class MediaPlayerControlView implements View.OnClickListener, SeekBar.OnS
     if (millis < 1000 * 60 * 60) {
       return String.format("%02d:%02d", mm, ss);
     } else {
-      int hh = millis / 1000 / 360 % 60;
+      int hh = ((millis / (1000*60*60)) % 24);
       return String.format("%d:%02d:%02d", hh, mm, ss);
     }
   }

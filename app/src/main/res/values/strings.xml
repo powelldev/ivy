@@ -26,4 +26,5 @@
     <string name="search_hint">Search by Name or Subject</string>
     <string name="download">Download</string>
     <string name="title_activity_podcast_playback">PodcastPlaybackActivity</string>
+    <string name="reset">Reset</string>
 </resources>

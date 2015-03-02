@@ -13,15 +13,9 @@
         android:layout_marginLeft="@dimen/keyline_1"
         tools:background="@android:color/black"
         android:layout_marginTop="16dp"
-        android:layout_width="40dp"
-        android:layout_height="40dp"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
         />
-    <ImageView
-        android:id="@+id/downloaded_image"
-        android:layout_gravity="center"
-        android:src="@drawable/ic_add_box_grey600_18dp"
-        android:layout_width="16dp"
-        android:layout_height="16dp"/>
 
     <ImageButton
         android:id="@+id/actions"

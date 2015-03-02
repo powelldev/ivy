@@ -1,6 +1,7 @@
 package com.fireminder.podcastcatcher.mediaplayer;
 
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -14,7 +15,8 @@ import android.widget.Toast;
 import com.fireminder.podcastcatcher.R;
 import com.fireminder.podcastcatcher.models.Episode;
 import com.fireminder.podcastcatcher.models.Podcast;
-import com.fireminder.podcastcatcher.utils.Utils;
+import com.fireminder.podcastcatcher.utils.PlaybackUtils;
+import com.fireminder.podcastcatcher.utils.PrefUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -23,6 +25,7 @@ import java.util.List;
 public class MediaPlayerService extends Service implements StatefulMediaPlayer.MediaStateListener {
 
   public static final String ACTION_PLAY = "action_play";
+  public static final String ACTION_PLAY_PAUSE = "action_play_pause";
   public static final String EXTRA_MEDIA = "extra_item_to_play";
   public static final String EXTRA_MEDIA_CONTENT = "extra_media_content";
 
@@ -89,7 +92,7 @@ public class MediaPlayerService extends Service implements StatefulMediaPlayer.M
             mTimeElapsedHandler.post(postElapsedRunnable);
             Bundle bundle = new Bundle();
             bundle.putParcelable(EXTRA_MEDIA, mediaPlayer.getMedia());
-            bundle.putString(EXTRA_MEDIA_CONTENT, Utils.getEpisodeImage(getApplicationContext(), mediaPlayer.getMedia()));
+            bundle.putString(EXTRA_MEDIA_CONTENT, PlaybackUtils.getEpisodeImage(getApplicationContext(), mediaPlayer.getMedia()));
             sendMessage(MSG_HANDSHAKE_WITH_VIEW, (int) mediaPlayer.getCurrentPosition(), (int) mediaPlayer.getDuration(getApplicationContext()), bundle);
           }
           break;
@@ -108,6 +111,9 @@ public class MediaPlayerService extends Service implements StatefulMediaPlayer.M
   public int onStartCommand(Intent intent, int flags, int startId) {
     if (intent != null && intent.getAction() != null) {
       if (intent.getAction().equals(ACTION_PLAY)) {
+        Episode media = intent.getParcelableExtra(EXTRA_MEDIA);
+        setData(media);
+      } else if (intent.getAction().equals(ACTION_PLAY_PAUSE)) {
         Episode media = intent.getParcelableExtra(EXTRA_MEDIA);
         setData(media);
       }
@@ -151,7 +157,11 @@ public class MediaPlayerService extends Service implements StatefulMediaPlayer.M
               .addAction(R.drawable.ic_skip_next_white_48dp, "test", null)
               .build()
       );
+      Podcast podcast = PlaybackUtils.getPodcastOf(getApplicationContext(), media);
+      int prefetch = PrefUtils.getNumEpisodesToPrefetch(getApplicationContext());
+      PlaybackUtils.downloadNextXEpisodes(getApplicationContext(), podcast, prefetch);
     } catch (IOException e) {
+      Toast.makeText(getApplicationContext(), "Out of episodes", Toast.LENGTH_SHORT).show();
       e.printStackTrace();
     }
   }
@@ -177,12 +187,23 @@ public class MediaPlayerService extends Service implements StatefulMediaPlayer.M
   public void onStateUpdated(StatefulMediaPlayer.State state) {
     sendInfoMessage("State Change: " + state.name());
     int duration;
+    Bundle bundle;
     switch (state) {
       case STARTED:
         duration = (int) mediaPlayer.getDuration(getApplicationContext());
         sendMessage(MSG_MEDIA_DURATION, duration);
         mTimeElapsedHandler.removeCallbacks(postElapsedRunnable);
         mTimeElapsedHandler.post(postElapsedRunnable);
+
+        duration = (int) mediaPlayer.getDuration(getApplicationContext());
+        sendMessage(MSG_MEDIA_DURATION, duration);
+        mTimeElapsedHandler.removeCallbacks(postElapsedRunnable);
+        mTimeElapsedHandler.post(postElapsedRunnable);
+        bundle = new Bundle();
+        bundle.putParcelable(EXTRA_MEDIA, mediaPlayer.getMedia());
+        bundle.putString(EXTRA_MEDIA_CONTENT, PlaybackUtils.getEpisodeImage(getApplicationContext(), mediaPlayer.getMedia()));
+        sendMessage(MSG_HANDSHAKE_WITH_VIEW, (int) mediaPlayer.getCurrentPosition(), (int) mediaPlayer.getDuration(getApplicationContext()), bundle);
+
         break;
       case PREPARED:
         // TODO this is written twice
@@ -191,14 +212,14 @@ public class MediaPlayerService extends Service implements StatefulMediaPlayer.M
           sendMessage(MSG_MEDIA_DURATION, duration);
           mTimeElapsedHandler.removeCallbacks(postElapsedRunnable);
           mTimeElapsedHandler.post(postElapsedRunnable);
-          Bundle bundle = new Bundle();
+          bundle = new Bundle();
           bundle.putParcelable(EXTRA_MEDIA, mediaPlayer.getMedia());
-          bundle.putString(EXTRA_MEDIA_CONTENT, Utils.getEpisodeImage(getApplicationContext(), mediaPlayer.getMedia()));
+          bundle.putString(EXTRA_MEDIA_CONTENT, PlaybackUtils.getEpisodeImage(getApplicationContext(), mediaPlayer.getMedia()));
           sendMessage(MSG_HANDSHAKE_WITH_VIEW, (int) mediaPlayer.getCurrentPosition(), (int) mediaPlayer.getDuration(getApplicationContext()), bundle);
         }
         break;
       case PAUSED:
-        Utils.updateEpisodeElapsed(getApplicationContext(),
+        PlaybackUtils.updateEpisodeElapsed(getApplicationContext(),
             mediaPlayer.getMedia(), mediaPlayer.getCurrentPosition());
         break;
       case COMPLETED:
@@ -215,11 +236,11 @@ public class MediaPlayerService extends Service implements StatefulMediaPlayer.M
     sendMessage(MSG_MEDIA_COMPLETE, -1, bundle);
 
     // Set Episode as complete
-    Utils.setEpisodeComplete(getApplicationContext(), completed);
+    PlaybackUtils.setEpisodeComplete(getApplicationContext(), completed);
 
     // Play next or stop playing
-    Podcast podcast = Utils.getPodcastOf(getApplicationContext(), completed);
-    Episode next = Utils.getNextEpisode(getApplicationContext(), podcast);
+    Podcast podcast = PlaybackUtils.getPodcastOf(getApplicationContext(), completed);
+    Episode next = PlaybackUtils.getNextEpisode(getApplicationContext(), podcast);
 
     if (next == null) {
       stopForeground(true);
@@ -290,4 +311,16 @@ public class MediaPlayerService extends Service implements StatefulMediaPlayer.M
       }
     }
   };
+
+  public static void playOrResumePodcast(Context context, Podcast podcast) {
+    Intent intent = new Intent(context, MediaPlayerService.class);
+    if (!PrefUtils.getPodcastPlaying(context).equals(podcast.podcastId)) {
+      PrefUtils.setPodcastPlaying(context, podcast.podcastId);
+      intent.setAction(MediaPlayerService.ACTION_PLAY);
+    } else {
+      intent.setAction(MediaPlayerService.ACTION_PLAY_PAUSE);
+    }
+    intent.putExtra(MediaPlayerService.EXTRA_MEDIA, PlaybackUtils.getNextEpisode(context, podcast));
+    context.startService(intent);
+  }
 }

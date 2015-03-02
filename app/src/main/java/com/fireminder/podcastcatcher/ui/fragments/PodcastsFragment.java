@@ -1,8 +1,12 @@
 package com.fireminder.podcastcatcher.ui.fragments;
 
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
-import android.content.Intent;
 import android.database.Cursor;
+import android.drm.DrmStore;
+import android.graphics.Color;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
@@ -19,12 +23,18 @@ import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 
+import com.amulyakhare.textdrawable.TextDrawable;
 import com.fireminder.podcastcatcher.R;
 import com.fireminder.podcastcatcher.mediaplayer.MediaPlayerService;
 import com.fireminder.podcastcatcher.models.Podcast;
+import com.fireminder.podcastcatcher.provider.PodcastCatcherContract;
 import com.fireminder.podcastcatcher.provider.PodcastCatcherContract.Podcasts;
+import com.fireminder.podcastcatcher.ui.activities.BaseActivity;
+import com.fireminder.podcastcatcher.utils.PlaybackUtils;
 import com.fireminder.podcastcatcher.utils.PrefUtils;
-import com.fireminder.podcastcatcher.utils.Utils;
+import com.squareup.picasso.Picasso;
+
+import java.io.File;
 
 /**
  * Responsible for displaying a list of all podcasts added to library.
@@ -131,6 +141,8 @@ public class PodcastsFragment extends ListFragment implements LoaderManager.Load
       holder.title.setText(podcast.title);
       holder.description.setText(podcast.description);
       holder.timestamp.setVisibility(View.GONE);
+      holder.image.setImageDrawable(TextDrawable.builder().buildRound(podcast.title.substring(0, 1), Color.BLUE));
+      Picasso.with(mContext).load(podcast.imagePath).into(holder.image);
     }
 
     @Override
@@ -144,11 +156,8 @@ public class PodcastsFragment extends ListFragment implements LoaderManager.Load
       switch (v.getId()) {
         case R.id.container:
           //TODO getNextEpisode will return null
-          PrefUtils.setPodcastPlaying(mContext, podcast.podcastId);
-          Intent intent = new Intent(mContext, MediaPlayerService.class);
-          intent.setAction(MediaPlayerService.ACTION_PLAY);
-          intent.putExtra(MediaPlayerService.EXTRA_MEDIA, Utils.getNextEpisode(mContext, podcast));
-          mContext.startService(intent);
+          PlaybackUtils.downloadNextXEpisodes(mContext, podcast, 1);
+          MediaPlayerService.playOrResumePodcast(mContext, podcast);
           break;
         case R.id.actions:
           mPodcast = podcast;
@@ -168,7 +177,19 @@ public class PodcastsFragment extends ListFragment implements LoaderManager.Load
           new DeletePodcastTask(mContext, mPodcast).execute();
           break;
         case R.id.download:
-          Utils.downloadAllEpisodes(mContext, mPodcast);
+          int prefetch = PrefUtils.getNumEpisodesToPrefetch(mContext);
+          PlaybackUtils.downloadNextXEpisodes(mContext, mPodcast, prefetch);
+          break;
+        case R.id.reset:
+          // mark all episodes not listened to
+          ContentValues cv = new ContentValues();
+          cv.put(PodcastCatcherContract.Episodes.EPISODE_IS_COMPLETE, 0);
+          mContext.getContentResolver().update(
+              PodcastCatcherContract.Episodes.CONTENT_URI,
+              cv,
+              Podcasts.PODCAST_ID + "=?",
+              new String[] {mPodcast.podcastId}
+          );
           break;
       }
       return false;
@@ -195,6 +216,17 @@ public class PodcastsFragment extends ListFragment implements LoaderManager.Load
 
       @Override
       protected Void doInBackground(Void... params) {
+        Cursor cursor = context.getContentResolver().query(
+            PodcastCatcherContract.Episodes.CONTENT_URI,
+            null,
+            Podcasts.PODCAST_ID + "=?",
+            new String[] {podcast.podcastId},
+            null
+        );
+        while (cursor.moveToNext()) {
+          Uri loc = Uri.parse(cursor.getString(cursor.getColumnIndex(PodcastCatcherContract.Episodes.EPISODE_LOCAL_URI)));
+          new File(loc.getPath()).delete();
+        }
         context.getContentResolver().delete(Podcasts.buildPodcastUri(podcast.podcastId), null, null);
         return null;
       }

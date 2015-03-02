@@ -67,21 +67,6 @@ public class Utils {
 
   }
 
-  public static void downloadAllEpisodes(Context context, Podcast podcast) {
-    Cursor cursor = context.getContentResolver().query(
-        PodcastCatcherContract.Episodes.CONTENT_URI,
-        null, /* projection */
-        PodcastCatcherContract.Podcasts.PODCAST_ID + "=?",
-        new String[]{podcast.podcastId},
-        null /* sortOrder */);
-
-    while (cursor.moveToNext()) {
-      Episode episode = Episode.parseEpisodeFromCursor(cursor);
-      DownloadManagerService.download(context, episode);
-    }
-
-  }
-
   public static String makeTimePretty(long pubDate) {
     PrettyTime prettyTime = new PrettyTime();
     return prettyTime.format(new Date(pubDate));
@@ -92,62 +77,4 @@ public class Utils {
         episodeId);
   }
 
-  public static Episode getNextEpisode(Context mContext, Podcast podcast) {
-    Cursor cursor = mContext.getContentResolver().query(PodcastCatcherContract.Episodes.CONTENT_URI,
-        null,
-        PodcastCatcherContract.Podcasts.PODCAST_ID + "=?",
-        new String[]{podcast.podcastId},
-        null
-    );
-
-    while (cursor.moveToNext()) {
-      Episode episode = Episode.parseEpisodeFromCursor(cursor);
-      if (!episode.isComplete) {
-        return episode;
-      }
-    }
-
-    return null;
-  }
-
-  public static String getEpisodeImage(Context context, Episode media) {
-    Podcast podcast = getPodcastOf(context, media);
-    return podcast.imagePath;
-  }
-
-  public static void updateEpisodeElapsed(Context context, Episode media, long currentPosition) {
-    media.elapsed = currentPosition;
-    ContentValues cv = Episode.episodeToContentValues(media);
-    context.getContentResolver().update(
-        PodcastCatcherContract.Episodes.buildEpisodeUri(media.episode_id),
-        cv,
-        null /* where */,
-        null /* selectionArgs */
-    );
-  }
-
-  public static Podcast getPodcastOf(Context context, Episode episode) {
-    Cursor cursor = context.getContentResolver().query(PodcastCatcherContract.Podcasts.buildPodcastUri(episode.podcast_id),
-        null,
-        null,
-        null,
-        null
-    );
-
-    cursor.moveToNext();
-    Podcast podcast = Podcast.parsePodcastFromCursor(cursor);
-    return podcast;
-  }
-
-  public static void setEpisodeComplete(Context context, Episode episode) {
-    episode.isComplete = true;
-    episode.elapsed = 0;
-    ContentValues cv = Episode.episodeToContentValues(episode);
-    context.getContentResolver().update(
-        PodcastCatcherContract.Episodes.buildEpisodeUri(episode.episode_id),
-        cv,
-        null /* where */,
-        null /* selectionArgs */
-    );
-  }
 }

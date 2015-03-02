@@ -16,6 +16,10 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.List;
 
+/**
+ * Background service for parsing all the episodes from a podcast. Episodes are
+ * automatically updated with podcastId and inserted into the database.
+ */
 public class RetrieveEpisodeService extends IntentService {
 
   private static final String LOG_TAG = RetrieveEpisodeService.class.getSimpleName();
@@ -51,19 +55,6 @@ public class RetrieveEpisodeService extends IntentService {
     }
   }
 
-  private List<Episode> getEpisodes(String url) {
-    List<Episode> episodes = null;
-    try {
-      final InputStream is = new URL(url).openConnection().getInputStream();
-      final String feed = CharStreams.toString(new InputStreamReader(is, "UTF-8"));
-      episodes = Episode.parseEpisodesFromResponse(feed);
-    } catch (Exception e) {
-      Logger.e(LOG_TAG, "url: " + url + " Exception: " + e.getMessage());
-      e.printStackTrace();
-    }
-    return episodes;
-  }
-
   private void handleRetrieveAll(String feedUrl) {
     final List<Episode> episodes = getEpisodes(feedUrl);
     if (episodes != null) {
@@ -75,6 +66,19 @@ public class RetrieveEpisodeService extends IntentService {
       }
       getContentResolver().bulkInsert(PodcastCatcherContract.Episodes.CONTENT_URI, contentValues);
     }
+  }
+
+  private List<Episode> getEpisodes(String url) {
+    List<Episode> episodes = null;
+    try {
+      final InputStream is = new URL(url).openConnection().getInputStream();
+      final String feed = CharStreams.toString(new InputStreamReader(is, "UTF-8"));
+      episodes = Episode.parseEpisodesFromResponse(feed);
+    } catch (Exception e) {
+      Logger.e(LOG_TAG, "url: " + url + " Exception: " + e.getMessage());
+      e.printStackTrace();
+    }
+    return episodes;
   }
 
 }

@@ -14,7 +14,7 @@ public class EpisodeDatabaseSync extends IntentService {
     if (intent != null) {
       // for episode in episodes
       // if episode.isDownloaded
-      // if episode.local_uri dne
+      // if episode.localUri dne
       // episode.isDownloaded = false
     }
     throw new UnsupportedOperationException("Not yet implemented");

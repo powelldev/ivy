@@ -23,7 +23,7 @@ public class PlaybackService extends Service implements Target,
     public static final String FOREGROUND_OFF_ACTION = "fireminder.podcastcatcher.services.PlaybackService.FOREGROUND_OFF";
 
     public static final String EPISODE_CHANGE_INTENT = "fireminder.podcastcatcher.services.PlaybackService.EPISODE_CHANGE";
-    public static final String EPISODE_ID_EXTRA = "episode_id";
+    public static final String EPISODE_ID_EXTRA = "episodeId";
 
     public static final long NO_EPISODE = -1;
 

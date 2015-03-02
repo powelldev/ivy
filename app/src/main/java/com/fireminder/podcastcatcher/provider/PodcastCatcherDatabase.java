@@ -5,16 +5,14 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.provider.BaseColumns;
 
-import com.fireminder.podcastcatcher.provider.PodcastCatcherContract.EpisodeColumns;
-import com.fireminder.podcastcatcher.provider.PodcastCatcherContract.PlaylistColumns;
-import com.fireminder.podcastcatcher.provider.PodcastCatcherContract.PodcastColumns;
+import com.fireminder.podcastcatcher.provider.PodcastCatcherContract.*;
 
 public class PodcastCatcherDatabase extends SQLiteOpenHelper {
 
   private static final String LOG_TAG = PodcastCatcherDatabase.class.getSimpleName();
   private static final String DATABASE_NAME = "podcastcatcher.db";
 
-  private static final int VER_2015_DEBUG_A = 34;
+  private static final int VER_2015_DEBUG_A = 39;
   private static final int CUR_DATABASE_VERSION = VER_2015_DEBUG_A;
 
   public PodcastCatcherDatabase(Context context) {
@@ -55,32 +53,18 @@ public class PodcastCatcherDatabase extends SQLiteOpenHelper {
             + ") "
     );
 
-    db.execSQL("CREATE TABLE " + Tables.PLAYLIST + " ("
-            + BaseColumns._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
-            //+ PlaylistColumns.PLAYLIST_ID + " TEXT UNIQUE NOT NULL, "
-            + EpisodeColumns.EPISODE_ID + " TEXT UNIQUE NOT NULL, "
-            + PlaylistColumns.PLAYLIST_ORDER + " INTEGER UNIQUE NOT NULL"
-            + ") "
-    );
-
   }
 
   @Override
   public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
     db.execSQL("DROP TABLE IF EXISTS " + Tables.PODCASTS);
     db.execSQL("DROP TABLE IF EXISTS " + Tables.EPISODES);
-    db.execSQL("DROP TABLE IF EXISTS " + Tables.PLAYLIST);
     onCreate(db);
   }
 
   public interface Tables {
     String PODCASTS = "podcasts";
     String EPISODES = "episodes";
-    String PLAYLIST = "playlist";
-
-    String PLAYLIST_ON_EPISODES = PLAYLIST + " LEFT JOIN " + EPISODES + " ON " +
-        PLAYLIST + "." + PodcastCatcherContract.Episodes.EPISODE_ID + "=" +
-        EPISODES + "." + PodcastCatcherContract.Episodes.EPISODE_ID;
   }
 
 }

@@ -40,7 +40,7 @@ public abstract class EpisodeFragment extends ListFragment implements LoaderMana
     getActivity().startService(i);
     ContentValues values = new ContentValues();
     values.put(PodcastCatcherContract.Playlist.PLAYLIST_ORDER, position);
-    values.put(PodcastCatcherContract.Episodes.EPISODE_ID, e.episode_id);
+    values.put(PodcastCatcherContract.Episodes.EPISODE_ID, e.episodeId);
     getActivity().getContentResolver().insert(PodcastCatcherContract.Playlist.CONTENT_URI, values);
   }
     */

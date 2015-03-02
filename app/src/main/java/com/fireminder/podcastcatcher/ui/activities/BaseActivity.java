@@ -26,7 +26,7 @@ import com.fireminder.podcastcatcher.utils.Logger;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 
-public abstract class BaseActivity extends ActionBarActivity {
+public abstract class BaseActivity extends ActionBarActivity implements AdapterView.OnItemClickListener {
 
   private static final String LOG_TAG = BaseActivity.class.getSimpleName();
 
@@ -39,7 +39,6 @@ public abstract class BaseActivity extends ActionBarActivity {
   protected static final String[] NAVDRAWER_ITEMS = new String[]{
       "Recently Added",
       "Podcast Channels",
-      "Playlist"
   };
 
   @Override
@@ -94,25 +93,18 @@ public abstract class BaseActivity extends ActionBarActivity {
     final ListView mDrawerList = (ListView) findViewById(R.id.drawer_listview);
     final NavigationDrawerAdapter adapter = new NavigationDrawerAdapter(getApplicationContext(), R.layout.drawer_item, NAVDRAWER_ITEMS);
     mDrawerList.setAdapter(adapter);
-    mDrawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-      @Override
-      public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        switch (position) {
-          case 0:
-            startActivity(new Intent(getApplicationContext(), RecentsActivity.class));
-            finish();
-            break;
-          case 1:
-            startActivity(new Intent(getApplicationContext(), PodcastsActivity.class));
-            finish();
-            break;
-          case 2:
-            startActivity(new Intent(getApplicationContext(), PlaylistActivity.class));
-            finish();
-            break;
-        }
-      }
-    });
+    mDrawerList.setOnItemClickListener(this);
+
+  }
+
+  public void setNavDrawerItems(String[] episodeList) {
+    final ListView mDrawerList = (ListView) findViewById(R.id.drawer_listview);
+    final NavigationDrawerAdapter adapter = new NavigationDrawerAdapter(getApplicationContext(), R.layout.drawer_item, episodeList);
+    mDrawerList.setAdapter(adapter);
+  }
+
+  @Override
+  public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
   }
 

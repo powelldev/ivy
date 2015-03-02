@@ -1,8 +1,6 @@
 package com.fireminder.podcastcatcher.ui.fragments;
 
-import android.content.ContentValues;
 import android.content.Context;
-import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -22,10 +20,8 @@ import android.widget.TextView;
 
 import com.fireminder.podcastcatcher.R;
 import com.fireminder.podcastcatcher.models.Episode;
-import com.fireminder.podcastcatcher.models.Playlist;
 import com.fireminder.podcastcatcher.provider.PodcastCatcherContract;
 import com.fireminder.podcastcatcher.services.DownloadManagerService;
-import com.fireminder.podcastcatcher.utils.Logger;
 import com.fireminder.podcastcatcher.utils.Utils;
 
 public class RecentsFragment extends ListFragment implements LoaderManager.LoaderCallbacks<Cursor> {
@@ -107,7 +103,6 @@ public class RecentsFragment extends ListFragment implements LoaderManager.Loade
       holder.description = (TextView) view.findViewById(R.id.description);
       holder.title = (TextView) view.findViewById(R.id.title);
       holder.image = (ImageView) view.findViewById(R.id.image);
-      holder.downloadedIcon = (ImageView) view.findViewById(R.id.downloaded_image);
       holder.actions = (ImageButton) view.findViewById(R.id.actions);
       view.setTag(holder);
       return view;
@@ -116,19 +111,14 @@ public class RecentsFragment extends ListFragment implements LoaderManager.Loade
     @Override
     public void bindView(View view, Context context, Cursor cursor) {
       Episode episode = Episode.parseEpisodeFromCursor(cursor);
-      view.setTag(R.id.TAG_EPISODE_KEY, episode.episode_id);
+      view.setTag(R.id.TAG_EPISODE_KEY, episode.episodeId);
       ViewHolder holder = (ViewHolder) view.getTag();
       view.setOnClickListener(this);
       holder.actions.setOnClickListener(this);
-      holder.actions.setTag(R.id.TAG_EPISODE_KEY, episode.episode_id);
+      holder.actions.setTag(R.id.TAG_EPISODE_KEY, episode.episodeId);
       holder.title.setText(episode.title);
       holder.description.setText(episode.description);
       holder.timestamp.setText(Utils.makeTimePretty(episode.pubDate));
-      if (episode.isDownloaded) {
-        holder.downloadedIcon.setVisibility(View.VISIBLE);
-      } else {
-        holder.downloadedIcon.setVisibility(View.INVISIBLE);
-      }
     }
 
     @Override
@@ -142,14 +132,11 @@ public class RecentsFragment extends ListFragment implements LoaderManager.Loade
         case R.id.container:
           if (!episode.isDownloaded) {
             DownloadManagerService.download(mContext.getApplicationContext(), episode);
-          } else {
-            enqueue(episode);
           }
           break;
         case R.id.actions:
           // onMenuItemClick is a member method, set mEpisode as a means of
           // passing an episode to it.
-          mEpisode = episode;
           PopupMenu popup = new PopupMenu(mContext, v);
           popup.getMenuInflater().inflate(R.menu.menu_recents, popup.getMenu());
           popup.setOnMenuItemClickListener(this);
@@ -158,24 +145,6 @@ public class RecentsFragment extends ListFragment implements LoaderManager.Loade
       }
     }
 
-    private Episode mEpisode;
-
-    private void enqueue(Episode episode) {
-      Logger.e(LOG_TAG, "Enqueuing: " + episode.title);
-
-      if (!episode.isDownloaded) {
-        Intent i = new Intent(mContext, DownloadManagerService.class);
-        i.setAction(DownloadManagerService.ACTION_START_DOWNLOAD);
-        i.putExtra(DownloadManagerService.EXTRA_EPISODE, episode);
-        mContext.startService(i);
-      }
-
-      ContentValues values = new ContentValues();
-      values.put(PodcastCatcherContract.Playlist.PLAYLIST_ORDER, Playlist.getItemCount(mContext));
-      values.put(PodcastCatcherContract.Episodes.EPISODE_ID, episode.episode_id);
-      mContext.getContentResolver().insert(PodcastCatcherContract.Playlist.CONTENT_URI, values);
-
-    }
 
     @Override
     public boolean onMenuItemClick(MenuItem item) {
@@ -184,7 +153,6 @@ public class RecentsFragment extends ListFragment implements LoaderManager.Loade
 
     private static class ViewHolder {
       ImageView image;
-      ImageView downloadedIcon;
       TextView title;
       TextView timestamp;
       TextView description;
