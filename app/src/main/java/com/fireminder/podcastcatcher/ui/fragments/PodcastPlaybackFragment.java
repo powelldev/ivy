@@ -17,10 +17,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.fireminder.podcastcatcher.R;
 import com.fireminder.podcastcatcher.mediaplayer.MediaPlayerControlView;
 import com.fireminder.podcastcatcher.mediaplayer.MediaPlayerService;
+import com.fireminder.podcastcatcher.models.Episode;
 import com.squareup.picasso.Picasso;
 
 /**
@@ -50,7 +52,11 @@ public class PodcastPlaybackFragment extends Fragment implements MediaPlayerCont
         case MediaPlayerService.MSG_MEDIA_COMPLETE:
           mediaPlayerControlView.setProgress(0);
           break;
-        case MediaPlayerService.MSG_PING_UPDATE_VIEW:
+        case MediaPlayerService.MSG_HANDSHAKE_WITH_VIEW:
+          Episode episode = (Episode) msg.getData().getParcelable(MediaPlayerService.EXTRA_MEDIA);
+          String imageUri = msg.getData().getString(MediaPlayerService.EXTRA_MEDIA_CONTENT);
+          setAlbumArt(imageUri);
+          mEpisodeTitleTextView.setText(episode.title);
           mediaPlayerControlView.setProgress(msg.arg1);
           mediaPlayerControlView.setDuration(msg.arg2);
           break;
@@ -70,7 +76,7 @@ public class PodcastPlaybackFragment extends Fragment implements MediaPlayerCont
         Message msg = Message.obtain(null, MediaPlayerService.MSG_ADD_CLIENT);
         msg.replyTo = messengerToService;
         mService.send(msg);
-        sendMessage(MediaPlayerService.MSG_PING_UPDATE_VIEW);
+        sendMessage(MediaPlayerService.MSG_HANDSHAKE_WITH_VIEW);
       } catch (RemoteException e) {
         e.printStackTrace();
       }
@@ -84,6 +90,7 @@ public class PodcastPlaybackFragment extends Fragment implements MediaPlayerCont
 
   MediaPlayerControlView mediaPlayerControlView;
   ImageView mAlbumArtImageView;
+  TextView mEpisodeTitleTextView;
 
   @Override
   public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -92,6 +99,7 @@ public class PodcastPlaybackFragment extends Fragment implements MediaPlayerCont
     mediaPlayerControlView = new MediaPlayerControlView(getActivity(), rootView);
     mediaPlayerControlView.setListener(this);
     mAlbumArtImageView = (ImageView) rootView.findViewById(R.id.episode_image);
+    mEpisodeTitleTextView = (TextView) rootView.findViewById(R.id.episode_title);
     return rootView;
   }
 

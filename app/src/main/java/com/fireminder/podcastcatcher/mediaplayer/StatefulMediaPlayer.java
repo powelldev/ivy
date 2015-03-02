@@ -47,6 +47,9 @@ public class StatefulMediaPlayer implements MediaPlayer.OnBufferingUpdateListene
   public void onPrepared(MediaPlayer mp) {
     Log.e(LOG_TAG, "onPrepared");
     transitionToState(State.PREPARED);
+    if (media.elapsed != 0) {
+      mediaPlayer.seekTo((int) media.elapsed);
+    }
     if (beginPlaybackWhenMediaIsPrepared) {
       play();
     }

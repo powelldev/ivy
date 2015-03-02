@@ -40,7 +40,7 @@ public class MediaPlayerFragment extends Fragment implements MediaPlayerControlV
         case MediaPlayerService.MSG_MEDIA_COMPLETE:
           mediaPlayerControlView.setProgress(0);
           break;
-        case MediaPlayerService.MSG_PING_UPDATE_VIEW:
+        case MediaPlayerService.MSG_HANDSHAKE_WITH_VIEW:
           mediaPlayerControlView.setProgress(msg.arg1);
           mediaPlayerControlView.setDuration(msg.arg2);
           break;
@@ -60,7 +60,7 @@ public class MediaPlayerFragment extends Fragment implements MediaPlayerControlV
         Message msg = Message.obtain(null, MediaPlayerService.MSG_ADD_CLIENT);
         msg.replyTo = messengerToService;
         mService.send(msg);
-        sendMessage(MediaPlayerService.MSG_PING_UPDATE_VIEW);
+        sendMessage(MediaPlayerService.MSG_HANDSHAKE_WITH_VIEW);
       } catch (RemoteException e) {
         e.printStackTrace();
       }
