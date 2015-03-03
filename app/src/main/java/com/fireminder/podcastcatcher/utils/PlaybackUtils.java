@@ -57,8 +57,8 @@ public class PlaybackUtils {
     return podcast;
   }
 
-  public static void setEpisodeComplete(Context context, Episode episode) {
-    episode.isComplete = true;
+  public static void setEpisodeComplete(Context context, Episode episode, boolean isComplete) {
+    episode.isComplete = isComplete;
     episode.elapsed = 0;
     ContentValues cv = Episode.episodeToContentValues(episode);
     context.getContentResolver().update(
@@ -101,6 +101,26 @@ public class PlaybackUtils {
       }
     }
 
+    return null;
+  }
+
+  public static Episode getPreviousEpisode(Context context, Podcast podcast, Episode episode) {
+    Cursor cursor = context.getContentResolver().query(PodcastCatcherContract.Episodes.CONTENT_URI,
+        null,
+        PodcastCatcherContract.Podcasts.PODCAST_ID + "=?",
+        new String[]{podcast.podcastId},
+        null
+    );
+
+    Episode previousEpisode = null;
+    while (cursor.moveToNext()) {
+      Episode temp = Episode.parseEpisodeFromCursor(cursor);
+      if (episode.episodeId.equals(temp.episodeId)) {
+        return previousEpisode;
+      } else {
+        previousEpisode = temp;
+      }
+    }
     return null;
   }
 }

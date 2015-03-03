@@ -31,6 +31,8 @@ public class MediaPlayerControlView implements View.OnClickListener, SeekBar.OnS
     rootView.findViewById(R.id.button_play_pause).setOnClickListener(this);
     rootView.findViewById(R.id.button_back_thirty).setOnClickListener(this);
     rootView.findViewById(R.id.button_forward_thirty).setOnClickListener(this);
+    rootView.findViewById(R.id.button_next).setOnClickListener(this);
+    rootView.findViewById(R.id.button_previous).setOnClickListener(this);
     textViewElapsed = (TextView) rootView.findViewById(R.id.text_view_elapsed);
     textViewDuration = (TextView) rootView.findViewById(R.id.text_view_duration);
     textViewTitle = (TextView) rootView.findViewById(R.id.text_view_title);
@@ -56,20 +58,6 @@ public class MediaPlayerControlView implements View.OnClickListener, SeekBar.OnS
     textViewTitle.setText(title);
   }
 
-  public interface Listener {
-    public void onPlayPauseClicked();
-
-    public void onRewindThirtyClicked();
-
-    public void onForwardThirtyClicked();
-
-    public void onSeekBarStarted();
-
-    public void onSeekBarStopped(int progress);
-
-    public void onSeekBarProgressChanged(int progress);
-  }
-
   @Override
   public void onClick(View v) {
     switch (v.getId()) {
@@ -82,10 +70,15 @@ public class MediaPlayerControlView implements View.OnClickListener, SeekBar.OnS
       case R.id.button_forward_thirty:
         listener.onForwardThirtyClicked();
         break;
+      case R.id.button_next:
+        listener.onNextClicked();
+        break;
+      case R.id.button_previous:
+        listener.onPreviousClicked();
+        break;
       default:
         throw new UnsupportedOperationException("Not yet implemented");
     }
-
   }
 
   @Override
@@ -97,19 +90,14 @@ public class MediaPlayerControlView implements View.OnClickListener, SeekBar.OnS
   @Override
   public void onStartTrackingTouch(SeekBar seekBar) {
     listener.onSeekBarStarted();
-
   }
 
   @Override
   public void onStopTrackingTouch(SeekBar seekBar) {
     listener.onSeekBarStopped(seekBar.getProgress());
-
   }
 
-
   private static String millisToTimeView(int millis) {
-    // I don't desire the overhead TimeUtils or Date formatting would cause
-    // and I don't expect this arithmetic to produce bugs often.
     int ss = millis / 1000 % 60;
     int mm = millis / 1000 / 60 % 60;
     if (millis < 1000 * 60 * 60) {
@@ -119,4 +107,23 @@ public class MediaPlayerControlView implements View.OnClickListener, SeekBar.OnS
       return String.format("%d:%02d:%02d", hh, mm, ss);
     }
   }
+
+  public interface Listener {
+    public void onPlayPauseClicked();
+
+    public void onRewindThirtyClicked();
+
+    public void onForwardThirtyClicked();
+
+    public void onSeekBarStarted();
+
+    public void onSeekBarStopped(int progress);
+
+    public void onSeekBarProgressChanged(int progress);
+
+    public void onPreviousClicked();
+
+    public void onNextClicked();
+  }
+
 }

@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+
     <com.sothree.slidinguppanel.SlidingUpPanelLayout
         android:id="@+id/sliding_layout"
         android:layout_width="match_parent"
@@ -11,19 +12,26 @@
         android:gravity="bottom"
         >
 
-        <FrameLayout
-            android:id="@+id/fragment_container_upper"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            />
 
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <include layout="@layout/toolbar" />
+
+            <FrameLayout
+                android:id="@+id/fragment_container_upper"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"/>
+        </LinearLayout>
 
 
         <FrameLayout
             android:id="@+id/fragment_container_lower"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            />
+            android:layout_height="match_parent" />
+
     </com.sothree.slidinguppanel.SlidingUpPanelLayout>
 
     <include layout="@layout/navdrawer" />

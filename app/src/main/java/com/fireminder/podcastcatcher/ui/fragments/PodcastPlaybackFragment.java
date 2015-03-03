@@ -95,7 +95,6 @@ public class PodcastPlaybackFragment extends Fragment implements MediaPlayerCont
 
   @Override
   public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-
     View rootView = inflater.inflate(R.layout.fragment_podcast_playback, container, false);
     mediaPlayerControlView = new MediaPlayerControlView(getActivity(), rootView);
     mediaPlayerControlView.setListener(this);
@@ -166,6 +165,16 @@ public class PodcastPlaybackFragment extends Fragment implements MediaPlayerCont
   @Override
   public void onSeekBarProgressChanged(int progress) {
     // Since seekBar changes are handled in onSeekBarStopped I don't see a reason to use this yet.
+  }
+
+  @Override
+  public void onPreviousClicked() {
+    sendMessage(MediaPlayerService.MSG_PREVIOUS);
+  }
+
+  @Override
+  public void onNextClicked() {
+    sendMessage(MediaPlayerService.MSG_NEXT);
   }
 
 }

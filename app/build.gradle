@@ -10,6 +10,7 @@ android {
         targetSdkVersion 21
         versionCode 2
         versionName "1.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     lintOptions {
         abortOnError false
@@ -32,8 +33,5 @@ dependencies {
     compile 'com.google.guava:guava:18.0'
     compile 'com.squareup.picasso:picasso:2.5.0'
     compile 'com.amulyakhare:com.amulyakhare.textdrawable:1.0.1'
-    testCompile 'junit:junit:4.12'
-    testCompile 'org.robolectric:robolectric:2.4'
-
 }
 

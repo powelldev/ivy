@@ -68,6 +68,21 @@
             tools:text="forward"
             />
 
+        <Button
+            android:id="@+id/button_next"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/button_forward_thirty"
+            tools:text="next"
+            />
+
+        <Button
+            android:id="@+id/button_previous"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toLeftOf="@id/button_back_thirty"
+            tools:text="previous"
+            />
     </RelativeLayout>
 
     <FrameLayout

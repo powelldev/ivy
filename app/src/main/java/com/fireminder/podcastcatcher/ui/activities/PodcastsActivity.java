@@ -1,6 +1,8 @@
 package com.fireminder.podcastcatcher.ui.activities;
 
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
+import android.support.v7.widget.Toolbar;
 
 import com.fireminder.podcastcatcher.R;
 import com.fireminder.podcastcatcher.ui.fragments.PodcastsFragment;

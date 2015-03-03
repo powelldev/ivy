@@ -144,4 +144,14 @@ public class MediaPlayerFragment extends Fragment implements MediaPlayerControlV
     // Since seekBar changes are handled in onSeekBarStopped I don't see a reason to use this yet.
   }
 
+  @Override
+  public void onPreviousClicked() {
+    sendMessage(MediaPlayerService.MSG_PREVIOUS);
+  }
+
+  @Override
+  public void onNextClicked() {
+    sendMessage(MediaPlayerService.MSG_NEXT);
+  }
+
 }

@@ -9,6 +9,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -29,6 +30,8 @@ import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 public abstract class BaseActivity extends ActionBarActivity implements AdapterView.OnItemClickListener {
 
   private static final String LOG_TAG = BaseActivity.class.getSimpleName();
+
+  private Toolbar mToolbar;
 
   //Navigation navdrawer_item
   private DrawerLayout mDrawerLayout;
@@ -57,8 +60,8 @@ public abstract class BaseActivity extends ActionBarActivity implements AdapterV
   protected void onPostCreate(Bundle savedInstanceState) {
     super.onPostCreate(savedInstanceState);
 
-    getSupportActionBar().setHomeButtonEnabled(true);
-    getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+//    getSupportActionBar().setHomeButtonEnabled(true);
+ //   getSupportActionBar().setDisplayHomeAsUpEnabled(false);
 
     setupNavDrawer();
     mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -94,8 +97,34 @@ public abstract class BaseActivity extends ActionBarActivity implements AdapterV
     final NavigationDrawerAdapter adapter = new NavigationDrawerAdapter(getApplicationContext(), R.layout.drawer_item, NAVDRAWER_ITEMS);
     mDrawerList.setAdapter(adapter);
     mDrawerList.setOnItemClickListener(this);
+    if (mToolbar != null) {
+      mToolbar.setNavigationIcon(R.mipmap.ic_launcher);
+      mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+          mDrawerLayout.openDrawer(Gravity.START);
+        }
+      });
+    }
 
   }
+
+  @Override
+  public void setContentView(int layoutResID) {
+    super.setContentView(layoutResID);
+    getToolbar();
+  }
+
+  protected Toolbar getToolbar() {
+    if (mToolbar == null) {
+      mToolbar = (Toolbar) findViewById(R.id.toolbar);
+      if (mToolbar != null) {
+        setSupportActionBar(mToolbar);
+      }
+    }
+    return mToolbar;
+  }
+
 
   public void setNavDrawerItems(String[] episodeList) {
     final ListView mDrawerList = (ListView) findViewById(R.id.drawer_listview);
