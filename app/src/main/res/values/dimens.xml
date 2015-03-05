@@ -10,4 +10,5 @@
     <dimen name="text_size_xlarge">20sp</dimen>
     <dimen name="keyline_2">72dp</dimen>
     <dimen name="keyline_1">16dp</dimen>
+    <dimen name="control_panel_size">56dp</dimen>
 </resources>

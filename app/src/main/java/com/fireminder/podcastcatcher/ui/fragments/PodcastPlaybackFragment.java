@@ -1,10 +1,17 @@
 package com.fireminder.podcastcatcher.ui.fragments;
 
 
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.AnimationDrawable;
+import android.media.MediaMetadataRetriever;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -16,6 +23,9 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -25,9 +35,9 @@ import com.fireminder.podcastcatcher.mediaplayer.MediaPlayerService;
 import com.fireminder.podcastcatcher.models.Episode;
 import com.squareup.picasso.Picasso;
 
-/**
- *
- */
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+
 public class PodcastPlaybackFragment extends Fragment implements MediaPlayerControlView.Listener {
 
 
@@ -56,7 +66,8 @@ public class PodcastPlaybackFragment extends Fragment implements MediaPlayerCont
         case MediaPlayerService.MSG_HANDSHAKE_WITH_VIEW:
           Episode episode = (Episode) msg.getData().getParcelable(MediaPlayerService.EXTRA_MEDIA);
           String imageUri = msg.getData().getString(MediaPlayerService.EXTRA_MEDIA_CONTENT);
-          setAlbumArt(imageUri);
+          setAlbumArt(episode, imageUri);
+          startAnim();
           mEpisodeTitleTextView.setText(episode.title);
           mediaPlayerControlView.setProgress(msg.arg1);
           mediaPlayerControlView.setDuration(msg.arg2);
@@ -103,8 +114,27 @@ public class PodcastPlaybackFragment extends Fragment implements MediaPlayerCont
     return rootView;
   }
 
-  public void setAlbumArt(String imageUri) {
-    Picasso.with(getActivity()).load(imageUri).into(mAlbumArtImageView);
+  // TODO handle orientation redraw of imageview
+  public void setAlbumArt(Episode episode, String backupImage) {
+    MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+    retriever.setDataSource(getActivity(), Uri.parse(episode.localUri));
+    byte[] bArray = retriever.getEmbeddedPicture();
+    if (bArray != null) {
+      InputStream is = new ByteArrayInputStream(bArray);
+      Bitmap bm = BitmapFactory.decodeStream(is);
+      mAlbumArtImageView.setImageBitmap(bm);
+    } else {
+      Picasso.with(getActivity()).load(backupImage).into(mAlbumArtImageView);
+    }
+  }
+
+  private void startAnim() {
+    try {
+      Animation animation = AnimationUtils.loadAnimation(getActivity(), R.anim.animation);
+      mAlbumArtImageView.startAnimation(animation);
+    } catch (NullPointerException e) {
+      e.printStackTrace();
+    }
   }
 
   @Override

@@ -7,7 +7,7 @@
     <RelativeLayout
         android:id="@+id/top_controls"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="@dimen/control_panel_size">
 
         <SeekBar
             android:id="@+id/seek_bar"
@@ -90,17 +90,10 @@
         android:layout_height="match_parent"
         android:layout_above="@id/controls"
         android:layout_below="@id/top_controls"
+        android:clipChildren="false"
         >
 
-        <ImageView
-            android:id="@+id/episode_image"
-            android:layout_gravity="center"
-            android:scaleType="fitCenter"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_margin="8dp"
-            tools:src="@mipmap/ic_launcher"
-            />
+        <include layout="@layout/image_view_album"/>
 
     </FrameLayout>
 
