@@ -9,27 +9,27 @@
     >
         <Button
             android:id="@+id/button_set_data"
-            android:text="set_data"
+            tools:text="set_data"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
         <Button
             android:id="@+id/button_play_pause"
-            android:text="playpause"
+            tools:text="playpause"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
         <Button
             android:id="@+id/button_back_thirty"
-            android:text="back_thirty"
+            tools:text="back_thirty"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
         <Button
             android:id="@+id/button_forward_thirty"
-            android:text="forward_thirty"
+            tools:text="forward_thirty"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
         <Button
             android:id="@+id/button_set_playlist"
-            android:text="button_set_playlist"
+            tools:text="button_set_playlist"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
         <RelativeLayout

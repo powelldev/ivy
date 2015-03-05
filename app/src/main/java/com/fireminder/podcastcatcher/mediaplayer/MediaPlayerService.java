@@ -194,6 +194,7 @@ public class MediaPlayerService extends Service implements StatefulMediaPlayer.M
       startForeground(1, notification);
       Podcast podcast = PlaybackUtils.getPodcastOf(getApplicationContext(), media);
       int prefetch = PrefUtils.getNumEpisodesToPrefetch(getApplicationContext());
+      PrefUtils.setEpisodePlaying(this, media.episodeId);
       PlaybackUtils.downloadNextXEpisodes(getApplicationContext(), podcast, prefetch);
     } catch (IOException e) {
       Toast.makeText(getApplicationContext(), "Out of episodes", Toast.LENGTH_SHORT).show();

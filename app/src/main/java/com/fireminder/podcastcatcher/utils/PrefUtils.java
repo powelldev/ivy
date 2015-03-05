@@ -10,6 +10,7 @@ import android.preference.PreferenceManager;
 public class PrefUtils {
 
   private static final String PREF_PODCAST_PLAYING = "pref_podcast_playing";
+  private static final String PREF_EPISODE_PLAYING = "pref_episode_playing";
   private static final String PREF_PREFETCH_NUM = "pref_prefetch_num";
 
   public static void setPodcastPlaying(Context context, String podcastId) {
@@ -22,6 +23,15 @@ public class PrefUtils {
     return sp.getString(PREF_PODCAST_PLAYING, "");
   }
 
+  public static void setEpisodePlaying(Context context, String episodeId) {
+    SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
+    sp.edit().putString(PREF_EPISODE_PLAYING, episodeId).apply();
+  }
+
+  public static String getEpisodePlaying(Context context) {
+    SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
+    return sp.getString(PREF_EPISODE_PLAYING, "");
+  }
   public static int getNumEpisodesToPrefetch(Context context) {
     SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
     return sp.getInt(PREF_PREFETCH_NUM, 5);

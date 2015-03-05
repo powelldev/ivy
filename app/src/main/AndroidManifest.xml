@@ -101,12 +101,6 @@
             android:configChanges="orientation|screenSize"
             android:label="@string/app_name" >
         </activity>
-        <activity
-            android:name=".ui.activities.PlaylistActivity"
-            android:configChanges="orientation|screenSize"
-            android:label="@string/title_activity_playlist" >
-        </activity>
-
         <service
             android:name=".services.SubscriptionService"
             android:enabled="true"

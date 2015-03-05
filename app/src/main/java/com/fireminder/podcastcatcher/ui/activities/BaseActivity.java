@@ -155,7 +155,7 @@ public abstract class BaseActivity extends ActionBarActivity implements AdapterV
         @Override
         public void onPanelExpanded(View panel) {
           Logger.d(LOG_TAG, "onPanelExpanded()");
-          getSupportFragmentManager().beginTransaction().add(R.id.fragment_container_lower, new PodcastPlaybackFragment(), "player").commit();
+          getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container_lower, new PodcastPlaybackFragment(), "player").commit();
         }
 
         @Override

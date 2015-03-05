@@ -2,6 +2,7 @@ package com.fireminder.podcastcatcher.mediaplayer;
 
 import android.content.Context;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -17,6 +18,7 @@ public class MediaPlayerControlView implements View.OnClickListener, SeekBar.OnS
   TextView textViewDuration;
   TextView textViewTitle;
   SeekBar seekbar;
+  ImageButton mPlayPauseButton;
 
   Listener listener;
 
@@ -28,7 +30,8 @@ public class MediaPlayerControlView implements View.OnClickListener, SeekBar.OnS
   }
 
   private void initView(Context context, View rootView) {
-    rootView.findViewById(R.id.button_play_pause).setOnClickListener(this);
+    mPlayPauseButton = (ImageButton) rootView.findViewById(R.id.button_play_pause);
+    mPlayPauseButton.setOnClickListener(this);
     rootView.findViewById(R.id.button_back_thirty).setOnClickListener(this);
     rootView.findViewById(R.id.button_forward_thirty).setOnClickListener(this);
     rootView.findViewById(R.id.button_next).setOnClickListener(this);
@@ -38,6 +41,10 @@ public class MediaPlayerControlView implements View.OnClickListener, SeekBar.OnS
     textViewTitle = (TextView) rootView.findViewById(R.id.text_view_title);
     seekbar = (SeekBar) rootView.findViewById(R.id.seek_bar);
     seekbar.setOnSeekBarChangeListener(this);
+  }
+
+  public void isPlaying(boolean isPlaying) {
+    mPlayPauseButton.setImageResource(!isPlaying ? R.drawable.ic_play_arrow_black_48dp : R.drawable.ic_pause_black_48dp);
   }
 
   public void setListener(Listener listener) {

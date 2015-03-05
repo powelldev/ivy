@@ -32,6 +32,7 @@
             android:id="@+id/episode_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
             android:layout_centerHorizontal="true"
             tools:text="Blueprint For Armageddon Part I"
             />
@@ -46,41 +47,56 @@
         android:layout_alignParentBottom="true"
         >
 
-        <Button
+        <ImageButton
             android:id="@+id/button_play_pause"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
-            tools:text="PlayPause"
+            android:src="@null"
+            android:padding="8dp"
+            android:background="?android:selectableItemBackground"
+            tools:src="@drawable/ic_play_arrow_black_48dp"
             />
-        <Button
+
+        <ImageButton
             android:id="@+id/button_back_thirty"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_toLeftOf="@id/button_play_pause"
-            tools:text="backward"
+            android:background="?android:selectableItemBackground"
+            android:padding="8dp"
+            android:src="@drawable/ic_fast_rewind_black_48dp"
             />
-        <Button
+
+        <ImageButton
             android:id="@+id/button_forward_thirty"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_toRightOf="@id/button_play_pause"
-            tools:text="forward"
+            android:background="?android:selectableItemBackground"
+            android:padding="8dp"
+            android:src="@drawable/ic_fast_forward_black_48dp"
             />
 
-        <Button
+        <ImageButton
             android:id="@+id/button_next"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_toRightOf="@id/button_forward_thirty"
+            android:src="@drawable/ic_skip_next_black_48dp"
+            android:background="?android:selectableItemBackground"
+            android:padding="8dp"
             tools:text="next"
             />
 
-        <Button
+        <ImageButton
             android:id="@+id/button_previous"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_toLeftOf="@id/button_back_thirty"
+            android:src="@drawable/ic_skip_previous_black_48dp"
+            android:background="?android:selectableItemBackground"
+            android:padding="8dp"
             tools:text="previous"
             />
     </RelativeLayout>

@@ -71,6 +71,7 @@ public class PodcastPlaybackFragment extends Fragment implements MediaPlayerCont
           mEpisodeTitleTextView.setText(episode.title);
           mediaPlayerControlView.setProgress(msg.arg1);
           mediaPlayerControlView.setDuration(msg.arg2);
+          mediaPlayerControlView.isPlaying(true);
           break;
       }
       // All cases are handled
