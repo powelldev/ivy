@@ -17,7 +17,7 @@ import android.widget.Toast;
 import com.fireminder.podcastcatcher.R;
 import com.fireminder.podcastcatcher.models.Episode;
 import com.fireminder.podcastcatcher.models.Podcast;
-import com.fireminder.podcastcatcher.ui.activities.PodcastPlaybackActivity;
+import com.fireminder.podcastcatcher.ui.activities.PodcastsActivity;
 import com.fireminder.podcastcatcher.utils.PlaybackUtils;
 import com.fireminder.podcastcatcher.utils.PrefUtils;
 
@@ -27,10 +27,17 @@ import java.util.List;
 
 public class MediaPlayerService extends Service implements StatefulMediaPlayer.MediaStateListener {
 
+  private static final String LOG_TAG = MediaPlayerService.class.getSimpleName();
+
+  private static final int SKIP_TIME_MILLIS = 30 * 1000;
+
+  // Actions to perform media controls
   public static final String ACTION_PLAY = "action_play";
   public static final String ACTION_SKIP = "action_skip";
   public static final String ACTION_RESUME = "action_resume";
   public static final String ACTION_PAUSE_TOGGLE = "action_pause_toggle";
+
+  // Extras for communicating episode data 
   public static final String EXTRA_MEDIA = "extra_item_to_play";
   public static final String EXTRA_MEDIA_CONTENT = "extra_media_content";
 
@@ -55,21 +62,20 @@ public class MediaPlayerService extends Service implements StatefulMediaPlayer.M
   public static final int MSG_MEDIA_COMPLETE = 201;
   public static final int MSG_MEDIA_DURATION = 600;
   public static final int MSG_MEDIA_ELAPSED = 601;
-  public static final int MSG_MEDIA_TITLE = 602;
-  /* Flag to send duration, elapsed, album art, and episode data to the view to be updated */
-  public static final int MSG_HANDSHAKE_WITH_VIEW = 700;
+  public static final int MSG_MEDIA_TITLE = 602; 
+  public static final int MSG_HANDSHAKE_WITH_VIEW = 700; // Flag to send duration, elapsed, album art, and episode data to the view to be updated 
 
-  private static final String LOG_TAG = MediaPlayerService.class.getSimpleName();
 
+  // TODO this could be better named
   private final StatefulMediaPlayer mediaPlayer = new StatefulMediaPlayer(this);
 
+  // TODO this could be better named.
   private final Handler myHandler = new Handler(new Handler.Callback() {
     @Override
     public boolean handleMessage(Message msg) {
       switch (msg.what) {
         case MSG_ADD_CLIENT:
           clients.add(msg.replyTo);
-          sendInfoMessage("Bound to client");
           break;
         case MSG_SET_DATA:
           final Episode media = msg.getData().getParcelable(EXTRA_MEDIA);
@@ -88,10 +94,10 @@ public class MediaPlayerService extends Service implements StatefulMediaPlayer.M
           seekEnd(msg.arg1);
           break;
         case MSG_BACK_THIRTY:
-          seekEnd((int) mediaPlayer.getCurrentPosition() - (30 * 1000));
+          seekEnd((int) mediaPlayer.getCurrentPosition() - (SKIP_TIME_MILLIS));
           break;
         case MSG_FORWARD_THIRTY:
-          seekEnd((int) mediaPlayer.getCurrentPosition() + (30 * 1000));
+          seekEnd((int) mediaPlayer.getCurrentPosition() + (SKIP_TIME_MILLIS));
           break;
         case MSG_NEXT:
           next();
@@ -101,14 +107,7 @@ public class MediaPlayerService extends Service implements StatefulMediaPlayer.M
           break;
         case MSG_HANDSHAKE_WITH_VIEW:
           if (mediaPlayer.isPlaying()) {
-            int duration = (int) mediaPlayer.getDuration(getApplicationContext());
-            sendMessage(MSG_MEDIA_DURATION, duration);
-            mTimeElapsedHandler.removeCallbacks(postElapsedRunnable);
-            mTimeElapsedHandler.post(postElapsedRunnable);
-            Bundle bundle = new Bundle();
-            bundle.putParcelable(EXTRA_MEDIA, mediaPlayer.getMedia());
-            bundle.putString(EXTRA_MEDIA_CONTENT, PlaybackUtils.getEpisodeImage(getApplicationContext(), mediaPlayer.getMedia()));
-            sendMessage(MSG_HANDSHAKE_WITH_VIEW, (int) mediaPlayer.getCurrentPosition(), (int) mediaPlayer.getDuration(getApplicationContext()), bundle);
+            renamethis();
           }
           break;
         default:
@@ -117,6 +116,19 @@ public class MediaPlayerService extends Service implements StatefulMediaPlayer.M
       return true;
     }
   });
+
+  private void performViewHandshake() {
+    if (mediaPlayer.isPlaying()) {
+        int duration = (int) mediaPlayer.getDuration(getApplicationContext());
+        sendMessage(MSG_MEDIA_DURATION, duration);
+        mTimeElapsedHandler.removeCallbacks(postElapsedRunnable);
+        mTimeElapsedHandler.post(postElapsedRunnable);
+        Bundle bundle = new Bundle();
+        bundle.putParcelable(EXTRA_MEDIA, mediaPlayer.getMedia());
+        bundle.putString(EXTRA_MEDIA_CONTENT, PlaybackUtils.getEpisodeImage(getApplicationContext(), mediaPlayer.getMedia()));
+        sendMessage(MSG_HANDSHAKE_WITH_VIEW, (int) mediaPlayer.getCurrentPosition(), (int) mediaPlayer.getDuration(getApplicationContext()), bundle);
+      }
+  }
 
   private final List<Messenger> clients = new ArrayList<>();
   private final Messenger mMessenger = new Messenger(myHandler);
@@ -204,7 +216,7 @@ public class MediaPlayerService extends Service implements StatefulMediaPlayer.M
 
   /* Create icons and pending intents associated with this Service's notification */
   private Notification setupNotification(Episode episode) {
-    Intent mainActivityIntent = new Intent(this, PodcastPlaybackActivity.class);
+    Intent mainActivityIntent = new Intent(this, PodcastsActivity.class);
     Intent pauseToggleIntent = new Intent(this, MediaPlayerService.class).setAction(ACTION_PAUSE_TOGGLE);
     Intent skipIntent = new Intent(this, MediaPlayerService.class).setAction(ACTION_SKIP);
 
@@ -255,39 +267,29 @@ public class MediaPlayerService extends Service implements StatefulMediaPlayer.M
     return mMessenger.getBinder();
   }
 
+  private void renamethis() {
+    int duration = (int) mediaPlayer.getDuration(getApplicationContext());
+    sendMessage(MSG_MEDIA_DURATION, duration);
+    mTimeElapsedHandler.removeCallbacks(postElapsedRunnable);
+    mTimeElapsedHandler.post(postElapsedRunnable);
+    Bundle bundle = new Bundle();
+    bundle.putParcelable(EXTRA_MEDIA, mediaPlayer.getMedia());
+    bundle.putString(EXTRA_MEDIA_CONTENT, PlaybackUtils.getEpisodeImage(getApplicationContext(), mediaPlayer.getMedia()));
+    sendMessage(MSG_HANDSHAKE_WITH_VIEW, (int) mediaPlayer.getCurrentPosition(), duration, bundle);
+  }
+
   @Override
   public void onStateUpdated(StatefulMediaPlayer.State state) {
     sendInfoMessage("State Change: " + state.name());
-    int duration;
     Bundle bundle;
+    int duration;
     switch (state) {
       case STARTED:
-        duration = (int) mediaPlayer.getDuration(getApplicationContext());
-        sendMessage(MSG_MEDIA_DURATION, duration);
-        mTimeElapsedHandler.removeCallbacks(postElapsedRunnable);
-        mTimeElapsedHandler.post(postElapsedRunnable);
-
-        duration = (int) mediaPlayer.getDuration(getApplicationContext());
-        sendMessage(MSG_MEDIA_DURATION, duration);
-        mTimeElapsedHandler.removeCallbacks(postElapsedRunnable);
-        mTimeElapsedHandler.post(postElapsedRunnable);
-        bundle = new Bundle();
-        bundle.putParcelable(EXTRA_MEDIA, mediaPlayer.getMedia());
-        bundle.putString(EXTRA_MEDIA_CONTENT, PlaybackUtils.getEpisodeImage(getApplicationContext(), mediaPlayer.getMedia()));
-        sendMessage(MSG_HANDSHAKE_WITH_VIEW, (int) mediaPlayer.getCurrentPosition(), (int) mediaPlayer.getDuration(getApplicationContext()), bundle);
-
+          renamethis();
         break;
       case PREPARED:
-        // TODO this is written twice
         if (mediaPlayer.isPlaying()) {
-          duration = (int) mediaPlayer.getDuration(getApplicationContext());
-          sendMessage(MSG_MEDIA_DURATION, duration);
-          mTimeElapsedHandler.removeCallbacks(postElapsedRunnable);
-          mTimeElapsedHandler.post(postElapsedRunnable);
-          bundle = new Bundle();
-          bundle.putParcelable(EXTRA_MEDIA, mediaPlayer.getMedia());
-          bundle.putString(EXTRA_MEDIA_CONTENT, PlaybackUtils.getEpisodeImage(getApplicationContext(), mediaPlayer.getMedia()));
-          sendMessage(MSG_HANDSHAKE_WITH_VIEW, (int) mediaPlayer.getCurrentPosition(), (int) mediaPlayer.getDuration(getApplicationContext()), bundle);
+            renamethis();
         }
         break;
       case PAUSED:

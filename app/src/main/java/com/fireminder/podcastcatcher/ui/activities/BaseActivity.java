@@ -3,6 +3,7 @@ package com.fireminder.podcastcatcher.ui.activities;
 import android.accounts.Account;
 import android.content.ContentResolver;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -30,6 +31,7 @@ import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 public abstract class BaseActivity extends ActionBarActivity implements AdapterView.OnItemClickListener {
 
   private static final String LOG_TAG = BaseActivity.class.getSimpleName();
+  private static final String PLAYER_FRAGMENT_TAG = "player";
 
   private Toolbar mToolbar;
 
@@ -57,13 +59,18 @@ public abstract class BaseActivity extends ActionBarActivity implements AdapterV
   }
 
   @Override
+  protected void onResume() {
+    super.onResume();
+    getSupportFragmentManager().
+        beginTransaction().
+        replace(R.id.fragment_container_lower, new PodcastPlaybackFragment(), PLAYER_FRAGMENT_TAG)
+        .commit();
+  }
+
+  @Override
   protected void onPostCreate(Bundle savedInstanceState) {
     super.onPostCreate(savedInstanceState);
 
-//    getSupportActionBar().setHomeButtonEnabled(true);
- //   getSupportActionBar().setDisplayHomeAsUpEnabled(false);
-
-    setupNavDrawer();
     mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
     setupSlidingPanel();
     if (mDrawerLayout == null) {
@@ -98,7 +105,6 @@ public abstract class BaseActivity extends ActionBarActivity implements AdapterV
     mDrawerList.setAdapter(adapter);
     mDrawerList.setOnItemClickListener(this);
     if (mToolbar != null) {
-      mToolbar.setNavigationIcon(R.mipmap.ic_launcher);
       mToolbar.setNavigationOnClickListener(new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -134,7 +140,7 @@ public abstract class BaseActivity extends ActionBarActivity implements AdapterV
 
   @Override
   public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
+    throw new UnsupportedOperationException("Not yet implemented");
   }
 
   private void setupSlidingPanel() {
@@ -155,7 +161,12 @@ public abstract class BaseActivity extends ActionBarActivity implements AdapterV
         @Override
         public void onPanelExpanded(View panel) {
           Logger.d(LOG_TAG, "onPanelExpanded()");
-          getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container_lower, new PodcastPlaybackFragment(), "player").commit();
+          /*
+          getSupportFragmentManager().
+              beginTransaction().
+              replace(R.id.fragment_container_lower, new PodcastPlaybackFragment(), PLAYER_FRAGMENT_TAG)
+              .commit();
+             */
         }
 
         @Override
@@ -171,8 +182,13 @@ public abstract class BaseActivity extends ActionBarActivity implements AdapterV
     }
   }
 
-  private void setupNavDrawer() {
-
+  @Override
+  public void onConfigurationChanged(Configuration newConfig) {
+    super.onConfigurationChanged(newConfig);
+    getSupportFragmentManager().
+        beginTransaction().
+        replace(R.id.fragment_container_lower, new PodcastPlaybackFragment(), PLAYER_FRAGMENT_TAG)
+        .commit();
   }
 
   @Override
@@ -220,5 +236,6 @@ public abstract class BaseActivity extends ActionBarActivity implements AdapterV
     SubscribeDialogFragment subscribeDialogFragment = SubscribeDialogFragment.newInstance(emptyOrUri);
     subscribeDialogFragment.show(ft, "dialog");
   }
+
 
 }

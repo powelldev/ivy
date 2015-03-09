@@ -13,6 +13,7 @@ import java.io.IOException;
 public class StatefulMediaPlayer implements MediaPlayer.OnBufferingUpdateListener, MediaPlayer.OnPreparedListener, MediaPlayer.OnErrorListener, MediaPlayer.OnInfoListener, MediaPlayer.OnSeekCompleteListener, MediaPlayer.OnCompletionListener {
   private static final String LOG_TAG = StatefulMediaPlayer.class.getSimpleName();
 
+  // TODO double check members in functions
 
   private Episode media;
   private MediaPlayer mediaPlayer;
@@ -75,12 +76,15 @@ public class StatefulMediaPlayer implements MediaPlayer.OnBufferingUpdateListene
   }
 
   public long getDuration(Context context) {
-    MediaMetadataRetriever retriever = new MediaMetadataRetriever();
-    retriever.setDataSource(context, Uri.parse(media.getUri()));
-    String duration =
-        retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
-    long durationLong = Long.parseLong(duration);
-    retriever.release();
+    long durationLong = 0;
+    if (media != null) {
+      MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+      retriever.setDataSource(context, Uri.parse(media.getUri()));
+      String duration =
+          retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
+      durationLong = Long.parseLong(duration);
+      retriever.release();
+    }
     return durationLong;
   }
 

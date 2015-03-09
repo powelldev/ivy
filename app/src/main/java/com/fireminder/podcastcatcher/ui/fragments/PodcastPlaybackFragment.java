@@ -7,6 +7,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.AnimationDrawable;
@@ -206,6 +207,10 @@ public class PodcastPlaybackFragment extends Fragment implements MediaPlayerCont
   @Override
   public void onNextClicked() {
     sendMessage(MediaPlayerService.MSG_NEXT);
+  }
+
+  public void orientationChange(Configuration config) {
+
   }
 
 }
