@@ -3,12 +3,14 @@ package com.fireminder.podcastcatcher.ui.fragments;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.drm.DrmStore;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -190,6 +192,11 @@ public class PodcastsFragment extends ListFragment implements LoaderManager.Load
               Podcasts.PODCAST_ID + "=?",
               new String[] {mPodcast.podcastId}
           );
+          // if we're playing and we reset the playing podcast, stop and reset as well
+          // TODO only stop playback if we reset a playing podcast
+          Intent intent = new Intent(mContext, MediaPlayerService.class);
+          intent.setAction(MediaPlayerService.ACTION_STOP);
+          mContext.startService(intent);
           break;
       }
       return false;

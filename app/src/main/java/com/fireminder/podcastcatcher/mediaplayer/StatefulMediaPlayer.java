@@ -153,6 +153,12 @@ public class StatefulMediaPlayer implements MediaPlayer.OnBufferingUpdateListene
     this.setDataSource(media, false);
   }
 
+  public void stop() {
+    mediaPlayer.stop();
+    transitionToState(State.STOPPED);
+  }
+
+
   public void play() {
     switch (mState) {
       case PREPARED:

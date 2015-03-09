@@ -30,12 +30,14 @@ public class MediaPlayerService extends Service implements StatefulMediaPlayer.M
   private static final String LOG_TAG = MediaPlayerService.class.getSimpleName();
 
   private static final int SKIP_TIME_MILLIS = 30 * 1000;
+  private static final int NO_ARG = -1;
 
   // Actions to perform media controls
   public static final String ACTION_PLAY = "action_play";
   public static final String ACTION_SKIP = "action_skip";
   public static final String ACTION_RESUME = "action_resume";
   public static final String ACTION_PAUSE_TOGGLE = "action_pause_toggle";
+  public static final String ACTION_STOP = "action_stop";
 
   // Extras for communicating episode data 
   public static final String EXTRA_MEDIA = "extra_item_to_play";
@@ -64,6 +66,7 @@ public class MediaPlayerService extends Service implements StatefulMediaPlayer.M
   public static final int MSG_MEDIA_ELAPSED = 601;
   public static final int MSG_MEDIA_TITLE = 602; 
   public static final int MSG_HANDSHAKE_WITH_VIEW = 700; // Flag to send duration, elapsed, album art, and episode data to the view to be updated 
+  public static final int MSG_NOTHING_PLAYING = 701; // Flag to send duration, elapsed, album art, and episode data to the view to be updated
 
 
   // TODO this could be better named
@@ -107,7 +110,7 @@ public class MediaPlayerService extends Service implements StatefulMediaPlayer.M
           break;
         case MSG_HANDSHAKE_WITH_VIEW:
           if (mediaPlayer.isPlaying()) {
-            renamethis();
+            renamethis(true); // do not wish to reset view in this case
           }
           break;
         default:
@@ -148,6 +151,9 @@ public class MediaPlayerService extends Service implements StatefulMediaPlayer.M
           break;
         case ACTION_PAUSE_TOGGLE:
           playPause();
+          break;
+        case ACTION_STOP:
+          stop();
           break;
         default:
           throw new UnsupportedOperationException("Unsupported action: " + intent.getAction());
@@ -196,6 +202,15 @@ public class MediaPlayerService extends Service implements StatefulMediaPlayer.M
 
   private void seekStart() {
     mediaPlayer.seekStart();
+  }
+
+  private void stop() {
+    try {
+      mediaPlayer.stop();
+    } catch (IllegalStateException e) {
+      sendErrorMessage(e.getMessage());
+      e.printStackTrace();
+    }
   }
 
 
@@ -267,15 +282,19 @@ public class MediaPlayerService extends Service implements StatefulMediaPlayer.M
     return mMessenger.getBinder();
   }
 
-  private void renamethis() {
-    int duration = (int) mediaPlayer.getDuration(getApplicationContext());
-    sendMessage(MSG_MEDIA_DURATION, duration);
-    mTimeElapsedHandler.removeCallbacks(postElapsedRunnable);
-    mTimeElapsedHandler.post(postElapsedRunnable);
-    Bundle bundle = new Bundle();
-    bundle.putParcelable(EXTRA_MEDIA, mediaPlayer.getMedia());
-    bundle.putString(EXTRA_MEDIA_CONTENT, PlaybackUtils.getEpisodeImage(getApplicationContext(), mediaPlayer.getMedia()));
-    sendMessage(MSG_HANDSHAKE_WITH_VIEW, (int) mediaPlayer.getCurrentPosition(), duration, bundle);
+  private void renamethis(boolean isPlaying) {
+    if (isPlaying) {
+      int duration = (int) mediaPlayer.getDuration(getApplicationContext());
+      sendMessage(MSG_MEDIA_DURATION, duration);
+      mTimeElapsedHandler.removeCallbacks(postElapsedRunnable);
+      mTimeElapsedHandler.post(postElapsedRunnable);
+      Bundle bundle = new Bundle();
+      bundle.putParcelable(EXTRA_MEDIA, mediaPlayer.getMedia());
+      bundle.putString(EXTRA_MEDIA_CONTENT, PlaybackUtils.getEpisodeImage(getApplicationContext(), mediaPlayer.getMedia()));
+      sendMessage(MSG_HANDSHAKE_WITH_VIEW, (int) mediaPlayer.getCurrentPosition(), duration, bundle);
+    } else {
+     sendMessage(MSG_NOTHING_PLAYING);
+    }
   }
 
   @Override
@@ -285,11 +304,11 @@ public class MediaPlayerService extends Service implements StatefulMediaPlayer.M
     int duration;
     switch (state) {
       case STARTED:
-          renamethis();
+          renamethis(true);
         break;
       case PREPARED:
         if (mediaPlayer.isPlaying()) {
-            renamethis();
+            renamethis(true);
         }
         break;
       case PAUSED:
@@ -298,6 +317,9 @@ public class MediaPlayerService extends Service implements StatefulMediaPlayer.M
         break;
       case COMPLETED:
         onMediaCompleted();
+        break;
+      case STOPPED:
+        renamethis(false);
         break;
     }
   }
@@ -371,6 +393,9 @@ public class MediaPlayerService extends Service implements StatefulMediaPlayer.M
     }
   }
 
+  private void sendMessage(int what) {
+    sendMessage(what, NO_ARG);
+  }
   private void sendMessage(int what, int arg1) {
     sendMessage(what, arg1, null);
   }
@@ -397,4 +422,5 @@ public class MediaPlayerService extends Service implements StatefulMediaPlayer.M
     intent.putExtra(MediaPlayerService.EXTRA_MEDIA, PlaybackUtils.getNextEpisode(context, podcast));
     context.startService(intent);
   }
+
 }

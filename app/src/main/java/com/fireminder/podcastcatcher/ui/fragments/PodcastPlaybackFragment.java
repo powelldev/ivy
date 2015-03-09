@@ -74,6 +74,13 @@ public class PodcastPlaybackFragment extends Fragment implements MediaPlayerCont
           mediaPlayerControlView.setDuration(msg.arg2);
           mediaPlayerControlView.isPlaying(true);
           break;
+        case MediaPlayerService.MSG_NOTHING_PLAYING:
+          mAlbumArtImageView.setImageResource(R.mipmap.ic_launcher);
+          mEpisodeTitleTextView.setText("");
+          mediaPlayerControlView.setProgress(0);
+          mediaPlayerControlView.setDuration(0);
+          mediaPlayerControlView.isPlaying(false);
+          break;
       }
       // All cases are handled
       return true;
@@ -116,7 +123,6 @@ public class PodcastPlaybackFragment extends Fragment implements MediaPlayerCont
     return rootView;
   }
 
-  // TODO handle orientation redraw of imageview
   public void setAlbumArt(Episode episode, String backupImage) {
     MediaMetadataRetriever retriever = new MediaMetadataRetriever();
     retriever.setDataSource(getActivity(), Uri.parse(episode.localUri));
@@ -207,10 +213,6 @@ public class PodcastPlaybackFragment extends Fragment implements MediaPlayerCont
   @Override
   public void onNextClicked() {
     sendMessage(MediaPlayerService.MSG_NEXT);
-  }
-
-  public void orientationChange(Configuration config) {
-
   }
 
 }
