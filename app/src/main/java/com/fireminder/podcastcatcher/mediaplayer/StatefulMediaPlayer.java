@@ -104,7 +104,7 @@ public class StatefulMediaPlayer implements MediaPlayer.OnBufferingUpdateListene
     STARTED, STOPPED, PAUSED, PREPARED, COMPLETED, CREATED, RELEASED
   }
 
-  /* VERIFY DATA BEFORE PASSED TO MEDIAPLAYER*/
+  /* VERIFY DATA BEFORE PASSED TO MEDIAPLAYER */
   public void setDataSource(Episode media, boolean playWhenReady) throws IOException {
     if (media == null)
       throw new IOException("media null");

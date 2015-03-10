@@ -6,6 +6,7 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -28,7 +29,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MediaPlayerService extends Service implements StatefulMediaPlayer.MediaStateListener {
+// TODO make sure stopForeground releases mediaplyer
+public class MediaPlayerService extends Service implements StatefulMediaPlayer.MediaStateListener, AudioManager.OnAudioFocusChangeListener {
 
   private static final String LOG_TAG = MediaPlayerService.class.getSimpleName();
 
@@ -99,7 +101,7 @@ public class MediaPlayerService extends Service implements StatefulMediaPlayer.M
           // if we are returning from having closed the application, load
           // the last playing episode and begin playback, otherwise toggle play/pause
           String episodeId = PrefUtils.getEpisodePlaying(getApplicationContext());
-          if (!TextUtils.isEmpty(episodeId) && mediaPlayer.getMedia() == null) {
+          if (!TextUtils.isEmpty(episodeId) && !mediaPlayer.isPlaying()) {
             Cursor cursor = getApplicationContext().getContentResolver().query(PodcastCatcherContract.Episodes.buildEpisodeUri(episodeId), null, null, null, null);
             cursor.moveToFirst();
             setData(Episode.parseEpisodeFromCursor(cursor), true);
@@ -238,8 +240,6 @@ public class MediaPlayerService extends Service implements StatefulMediaPlayer.M
   private void setData(Episode media, boolean beginPlaybackImmediately) {
     try {
       mediaPlayer.setDataSource(media, beginPlaybackImmediately);
-      Notification notification = setupNotification(media);
-      startForeground(1, notification);
       Podcast podcast = PlaybackUtils.getPodcastOf(getApplicationContext(), media);
       int prefetch = PrefUtils.getNumEpisodesToPrefetch(getApplicationContext());
       PrefUtils.setEpisodePlaying(this, media.episodeId);
@@ -281,8 +281,8 @@ public class MediaPlayerService extends Service implements StatefulMediaPlayer.M
         .setPriority(Integer.MAX_VALUE)
         .setWhen(0)
         .setContentIntent(pIntent)
-        .addAction(R.drawable.ic_play_arrow_white_48dp, "test", pauseTogglePendingIntent)
-        .addAction(R.drawable.ic_skip_next_white_48dp, "test", skipPendingIntent)
+        .addAction(R.drawable.ic_play_arrow_white_48dp, getString(R.string.play), pauseTogglePendingIntent)
+        .addAction(R.drawable.ic_skip_next_white_48dp, getString(R.string.next), skipPendingIntent)
         .build();
   }
 
@@ -334,6 +334,11 @@ public class MediaPlayerService extends Service implements StatefulMediaPlayer.M
         startForeground(1, notification);
         break;
       case PREPARED:
+        AudioManager am = (AudioManager) getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
+        int result = am.requestAudioFocus(this,
+            AudioManager.STREAM_MUSIC,
+            AudioManager.AUDIOFOCUS_GAIN);
+
         if (mediaPlayer.isPlaying()) {
             renamethis(true);
         }
@@ -450,4 +455,29 @@ public class MediaPlayerService extends Service implements StatefulMediaPlayer.M
     context.startService(intent);
   }
 
+  boolean wasPlayingBeforeAudioLoss = false;
+  @Override
+  public void onAudioFocusChange(int focusChange) {
+    switch (focusChange) {
+      case AudioManager.AUDIOFOCUS_GAIN:
+        if (wasPlayingBeforeAudioLoss) {
+          mediaPlayer.play(); // Should only be called after LOSS_TRANSIENT
+        }
+        break;
+      case AudioManager.AUDIOFOCUS_LOSS:
+        // Will not be getting focus back, stop playback.
+        if (mediaPlayer.isPlaying()) {
+          PrefUtils.setEpisodePlaying(getApplicationContext(), mediaPlayer.getMedia().episodeId);
+        }
+        stop();
+        stopForeground(true);
+        break;
+      case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT: // Podcast Pet Peeve: Never lower volume.
+                                                   // Stop, then resume if necessary
+      case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
+        wasPlayingBeforeAudioLoss = mediaPlayer.isPlaying();
+        mediaPlayer.pause();
+        break;
+    }
+  }
 }

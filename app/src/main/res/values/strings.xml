@@ -28,4 +28,6 @@
     <string name="title_activity_podcast_playback">PodcastPlaybackActivity</string>
     <string name="reset">Reset</string>
     <string name="reverse_order">Reverse playback order</string>
+    <string name="next">Next</string>
+    <string name="play">Play</string>
 </resources>

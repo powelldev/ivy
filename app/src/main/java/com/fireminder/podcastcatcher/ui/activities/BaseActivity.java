@@ -4,6 +4,7 @@ import android.accounts.Account;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -63,6 +64,7 @@ public abstract class BaseActivity extends ActionBarActivity implements AdapterV
   @Override
   protected void onResume() {
     super.onResume();
+    setVolumeControlStream(AudioManager.STREAM_MUSIC);
     getSupportFragmentManager().
         beginTransaction().
         replace(R.id.fragment_container_lower, new PodcastPlaybackFragment(), PLAYER_FRAGMENT_TAG)
