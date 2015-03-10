@@ -24,6 +24,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.amulyakhare.textdrawable.TextDrawable;
 import com.fireminder.podcastcatcher.R;
@@ -84,29 +85,6 @@ public class PodcastsFragment extends ListFragment implements LoaderManager.Load
 
   @Override
   public void onLoaderReset(Loader<Cursor> loader) { /*Fragment closing, nothing to free*/ }
-
-  /*
-  @Override
-  public void onCreateContextMenu(ContextMenu menu, View view, ContextMenu.ContextMenuInfo menuInfo) {
-    super.onCreateContextMenu(menu, view, menuInfo);
-    MenuInflater inflater = getActivity().getMenuInflater();
-    inflater.inflate(R.menu.menu_podcasts, menu);
-  }
-
-  @Override
-  public boolean onContextItemSelected(MenuItem item) {
-    AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
-    switch (item.getItemId()) {
-      case R.id.menu_podcasts_delete:
-        getActivity().getContentResolver().delete(Podcasts.CONTENT_URI,
-            BaseColumns._ID + "=?",
-            new String[]{Long.toString(info.id)});
-        return true;
-      default:
-        return super.onContextItemSelected(item);
-    }
-  }
-  */
 
   private static class PodcastAdapter extends CursorAdapter implements
       View.OnClickListener, PopupMenu.OnMenuItemClickListener {
@@ -175,6 +153,10 @@ public class PodcastsFragment extends ListFragment implements LoaderManager.Load
     @Override
     public boolean onMenuItemClick(MenuItem menuItem) {
       switch (menuItem.getItemId()) {
+        case R.id.flip:
+          // TODO
+          Toast.makeText(mContext, "Not yet implemented", Toast.LENGTH_SHORT).show();
+          break;
         case R.id.delete:
           new DeletePodcastTask(mContext, mPodcast).execute();
           break;

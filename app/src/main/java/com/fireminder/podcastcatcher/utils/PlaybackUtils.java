@@ -69,21 +69,28 @@ public class PlaybackUtils {
     );
   }
 
-  public static void downloadNextXEpisodes(Context context, Podcast podcast, int numToDownload) {
-    Cursor cursor = context.getContentResolver().query(PodcastCatcherContract.Episodes.CONTENT_URI,
-        null,
-        PodcastCatcherContract.Podcasts.PODCAST_ID + "=?",
-        new String[]{podcast.podcastId},
-        null
-    );
+  public static void downloadNextXEpisodes(final Context context, final Podcast podcast, final int numToDownload) {
+    new Thread() {
+      @Override
+      public void run() {
+        int numRemaining = numToDownload;
+        Cursor cursor = context.getContentResolver().query(PodcastCatcherContract.Episodes.CONTENT_URI,
+            null,
+            PodcastCatcherContract.Podcasts.PODCAST_ID + "=?",
+            new String[]{podcast.podcastId},
+            PodcastCatcherContract.Episodes.EPISODE_PUBLICATION_DATE + " ASC"
+        );
 
-    while (cursor.moveToNext() && numToDownload > 0) {
-      Episode episode = Episode.parseEpisodeFromCursor(cursor);
-      if (!episode.isComplete) {
-        DownloadManagerService.download(context, episode);
-        numToDownload--;
+        while (cursor.moveToNext() && numRemaining > 0) {
+          Episode episode = Episode.parseEpisodeFromCursor(cursor);
+          if (!episode.isComplete) {
+            DownloadManagerService.download(context, episode);
+            numRemaining--;
+          }
+        }
       }
-    }
+    }.start();
+
   }
 
   public static Episode getNextEpisode(Context mContext, Podcast podcast) {
@@ -91,7 +98,7 @@ public class PlaybackUtils {
         null,
         PodcastCatcherContract.Podcasts.PODCAST_ID + "=?",
         new String[]{podcast.podcastId},
-        null
+        PodcastCatcherContract.Episodes.EPISODE_PUBLICATION_DATE + " ASC"
     );
 
     while (cursor.moveToNext()) {
@@ -109,7 +116,7 @@ public class PlaybackUtils {
         null,
         PodcastCatcherContract.Podcasts.PODCAST_ID + "=?",
         new String[]{podcast.podcastId},
-        null
+        PodcastCatcherContract.Episodes.EPISODE_PUBLICATION_DATE + " ASC"
     );
 
     Episode previousEpisode = null;

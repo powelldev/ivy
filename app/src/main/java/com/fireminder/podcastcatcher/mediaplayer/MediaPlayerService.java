@@ -5,6 +5,7 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -12,11 +13,13 @@ import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
 import android.support.v4.app.NotificationCompat;
+import android.text.TextUtils;
 import android.widget.Toast;
 
 import com.fireminder.podcastcatcher.R;
 import com.fireminder.podcastcatcher.models.Episode;
 import com.fireminder.podcastcatcher.models.Podcast;
+import com.fireminder.podcastcatcher.provider.PodcastCatcherContract;
 import com.fireminder.podcastcatcher.ui.activities.PodcastsActivity;
 import com.fireminder.podcastcatcher.utils.PlaybackUtils;
 import com.fireminder.podcastcatcher.utils.PrefUtils;
@@ -39,7 +42,12 @@ public class MediaPlayerService extends Service implements StatefulMediaPlayer.M
   public static final String ACTION_PAUSE_TOGGLE = "action_pause_toggle";
   public static final String ACTION_STOP = "action_stop";
 
-  // Extras for communicating episode data 
+  // Action to determine if we shut down this service when the user exits the app
+  // if we're playing, stay alive, if we're paused, exit
+  // if headphones are taken out while we're paused, exit
+  public static final String ACTION_LEAVING = "action_leaving";
+
+  // Extras for communicating episode data
   public static final String EXTRA_MEDIA = "extra_item_to_play";
   public static final String EXTRA_MEDIA_CONTENT = "extra_media_content";
 
@@ -82,13 +90,22 @@ public class MediaPlayerService extends Service implements StatefulMediaPlayer.M
           break;
         case MSG_SET_DATA:
           final Episode media = msg.getData().getParcelable(EXTRA_MEDIA);
-          setData(media);
+          setData(media, true);
           break;
         case MSG_START:
           start();
           break;
         case MSG_PLAY_PAUSE:
-          playPause();
+          // if we are returning from having closed the application, load
+          // the last playing episode and begin playback, otherwise toggle play/pause
+          String episodeId = PrefUtils.getEpisodePlaying(getApplicationContext());
+          if (!TextUtils.isEmpty(episodeId) && mediaPlayer.getMedia() == null) {
+            Cursor cursor = getApplicationContext().getContentResolver().query(PodcastCatcherContract.Episodes.buildEpisodeUri(episodeId), null, null, null, null);
+            cursor.moveToFirst();
+            setData(Episode.parseEpisodeFromCursor(cursor), true);
+          } else {
+            playPause();
+          }
           break;
         case MSG_SEEK_START:
           seekStart();
@@ -144,7 +161,7 @@ public class MediaPlayerService extends Service implements StatefulMediaPlayer.M
         case ACTION_PLAY:
         case ACTION_RESUME:
           Episode media = intent.getParcelableExtra(EXTRA_MEDIA);
-          setData(media);
+          setData(media, true);
           break;
         case ACTION_SKIP:
           next();
@@ -155,11 +172,15 @@ public class MediaPlayerService extends Service implements StatefulMediaPlayer.M
         case ACTION_STOP:
           stop();
           break;
+        case ACTION_LEAVING:
+          sendInfoMessage("Leaving... ");
+          if (mediaPlayer.mState != StatefulMediaPlayer.State.STARTED) {
+            stopForeground(true);
+            sendInfoMessage("service stopped");
+          }
+          break;
         default:
           throw new UnsupportedOperationException("Unsupported action: " + intent.getAction());
-      }
-      if (intent.getAction().equals(ACTION_PLAY)) {
-      } else if (intent.getAction().equals(ACTION_RESUME)) {
       }
     }
     return START_STICKY;
@@ -174,7 +195,7 @@ public class MediaPlayerService extends Service implements StatefulMediaPlayer.M
 
     if (previous != null) {
       PlaybackUtils.setEpisodeComplete(getApplicationContext(), previous, false);
-      setData(previous);
+      setData(previous, true);
     }
   }
 
@@ -214,9 +235,9 @@ public class MediaPlayerService extends Service implements StatefulMediaPlayer.M
   }
 
 
-  private void setData(Episode media) {
+  private void setData(Episode media, boolean beginPlaybackImmediately) {
     try {
-      mediaPlayer.setDataSource(media, true);
+      mediaPlayer.setDataSource(media, beginPlaybackImmediately);
       Notification notification = setupNotification(media);
       startForeground(1, notification);
       Podcast podcast = PlaybackUtils.getPodcastOf(getApplicationContext(), media);
@@ -297,14 +318,20 @@ public class MediaPlayerService extends Service implements StatefulMediaPlayer.M
     }
   }
 
+  /*
+  Here we should react to changes in the media player. Because the media player only utilizes this listener to
+  communicate, it is inappropriate to react in other places.
+   */
   @Override
   public void onStateUpdated(StatefulMediaPlayer.State state) {
     sendInfoMessage("State Change: " + state.name());
-    Bundle bundle;
-    int duration;
     switch (state) {
       case STARTED:
           renamethis(true);
+        PrefUtils.setEpisodePlaying(getApplicationContext(), mediaPlayer.getMedia().episodeId);
+        PrefUtils.setPodcastPlaying(getApplicationContext(), mediaPlayer.getMedia().podcastId);
+        Notification notification = setupNotification(mediaPlayer.getMedia());
+        startForeground(1, notification);
         break;
       case PREPARED:
         if (mediaPlayer.isPlaying()) {
@@ -341,7 +368,7 @@ public class MediaPlayerService extends Service implements StatefulMediaPlayer.M
     if (next == null) {
       stopForeground(true);
     } else {
-      setData(next);
+      setData(next, true);
       // TODO Delete old episode if configured that way.
     }
   }

@@ -4,11 +4,13 @@ import android.app.IntentService;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 
 import com.fireminder.podcastcatcher.models.Episode;
 import com.fireminder.podcastcatcher.models.Podcast;
 import com.fireminder.podcastcatcher.provider.PodcastCatcherContract;
 import com.fireminder.podcastcatcher.utils.Logger;
+import com.fireminder.podcastcatcher.utils.PlaybackUtils;
 import com.google.common.io.CharStreams;
 
 import java.io.InputStream;
@@ -66,6 +68,10 @@ public class RetrieveEpisodeService extends IntentService {
       }
       getContentResolver().bulkInsert(PodcastCatcherContract.Episodes.CONTENT_URI, contentValues);
     }
+    Cursor cursor = getContentResolver().query(PodcastCatcherContract.Podcasts.buildPodcastUri(mPodcastId), null, null, null, null);
+    cursor.moveToFirst();
+    Podcast podcast = Podcast.parsePodcastFromCursor(cursor);
+    PlaybackUtils.downloadNextXEpisodes(getApplicationContext(), podcast, 1);
   }
 
   private List<Episode> getEpisodes(String url) {

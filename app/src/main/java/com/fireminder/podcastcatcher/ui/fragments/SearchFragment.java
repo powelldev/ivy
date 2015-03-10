@@ -14,6 +14,7 @@ import android.widget.Toast;
 import com.fireminder.podcastcatcher.R;
 import com.fireminder.podcastcatcher.services.SearchAsyncTask;
 import com.fireminder.podcastcatcher.services.SubscriptionService;
+import com.fireminder.podcastcatcher.utils.PlaybackUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -93,6 +94,7 @@ public class SearchFragment extends ListFragment implements View.OnClickListener
   public void onListItemClick(ListView l, View v, int position, long id) {
     super.onListItemClick(l, v, position, id);
     SubscriptionService.launchSubscriptionService(getActivity(), mPodcasts.get(position).feedUrl);
+    // TODO download first episode
     Toast.makeText(getActivity(), "Adding " + mPodcasts.get(position).title, Toast.LENGTH_SHORT).show();
   }
 

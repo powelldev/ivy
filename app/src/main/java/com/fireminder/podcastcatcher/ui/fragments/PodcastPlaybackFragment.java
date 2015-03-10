@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.res.Configuration;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.AnimationDrawable;
@@ -34,6 +35,9 @@ import com.fireminder.podcastcatcher.R;
 import com.fireminder.podcastcatcher.mediaplayer.MediaPlayerControlView;
 import com.fireminder.podcastcatcher.mediaplayer.MediaPlayerService;
 import com.fireminder.podcastcatcher.models.Episode;
+import com.fireminder.podcastcatcher.provider.PodcastCatcherContract;
+import com.fireminder.podcastcatcher.utils.PlaybackUtils;
+import com.fireminder.podcastcatcher.utils.PrefUtils;
 import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayInputStream;
@@ -120,7 +124,24 @@ public class PodcastPlaybackFragment extends Fragment implements MediaPlayerCont
     mediaPlayerControlView.setListener(this);
     mAlbumArtImageView = (ImageView) rootView.findViewById(R.id.episode_image);
     mEpisodeTitleTextView = (TextView) rootView.findViewById(R.id.episode_title);
+
+    String episodeId = PrefUtils.getEpisodePlaying(getActivity());
+    Cursor cursor = getActivity().getContentResolver().query(PodcastCatcherContract.Episodes.buildEpisodeUri(episodeId), null, null, null, null);
+    cursor.moveToFirst();
+    if (cursor.getCount() > 0) {
+      Episode episode = Episode.parseEpisodeFromCursor(cursor);
+      String imageUri = PlaybackUtils.getEpisodeImage(getActivity(), episode);
+      setAlbumArt(episode, imageUri);
+      mEpisodeTitleTextView.setText(episode.title);
+      mediaPlayerControlView.setProgress((int) episode.elapsed);
+      mediaPlayerControlView.setDuration((int) episode.duration);
+      mediaPlayerControlView.isPlaying(false);
+    }
     return rootView;
+  }
+
+  public void getAlbumArt(Episode episode) {
+
   }
 
   public void setAlbumArt(Episode episode, String backupImage) {
@@ -175,7 +196,8 @@ public class PodcastPlaybackFragment extends Fragment implements MediaPlayerCont
         msg.setData(bundle);
       }
       mService.send(msg);
-    } catch (RemoteException e) {
+    } catch (Exception e) {
+      // Messenger not linked or not started yet.
       e.printStackTrace();
     }
   }

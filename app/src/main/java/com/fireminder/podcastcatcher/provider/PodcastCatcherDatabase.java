@@ -12,7 +12,7 @@ public class PodcastCatcherDatabase extends SQLiteOpenHelper {
   private static final String LOG_TAG = PodcastCatcherDatabase.class.getSimpleName();
   private static final String DATABASE_NAME = "podcastcatcher.db";
 
-  private static final int VER_2015_DEBUG_A = 39;
+  private static final int VER_2015_DEBUG_A = 40;
   private static final int CUR_DATABASE_VERSION = VER_2015_DEBUG_A;
 
   public PodcastCatcherDatabase(Context context) {

@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
@@ -19,6 +20,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.fireminder.podcastcatcher.R;
+import com.fireminder.podcastcatcher.mediaplayer.MediaPlayerService;
 import com.fireminder.podcastcatcher.services.RetrieveRecentEpisodesService;
 import com.fireminder.podcastcatcher.sync.StubAccount;
 import com.fireminder.podcastcatcher.ui.NavigationDrawerAdapter;
@@ -66,6 +68,15 @@ public abstract class BaseActivity extends ActionBarActivity implements AdapterV
         replace(R.id.fragment_container_lower, new PodcastPlaybackFragment(), PLAYER_FRAGMENT_TAG)
         .commit();
   }
+
+  @Override
+  protected void onPause() {
+    super.onPause();
+    Intent intent = new Intent(this, MediaPlayerService.class);
+    intent.setAction(MediaPlayerService.ACTION_LEAVING);
+    startService(intent);
+  }
+
 
   @Override
   protected void onPostCreate(Bundle savedInstanceState) {
