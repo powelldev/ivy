@@ -25,14 +25,6 @@ android:background="?android:selectableItemBackground">
         >
 
         <ImageButton
-            android:id="@+id/button_previous"
-            android:background="?android:selectableItemBackground"
-            android:layout_width="48dp"
-            android:layout_height="match_parent"
-            android:scaleType="center"
-            android:src="@drawable/ic_skip_previous_black_48dp"
-            />
-        <ImageButton
             android:id="@+id/button_play_pause"
             android:background="?android:selectableItemBackground"
             android:layout_width="48dp"

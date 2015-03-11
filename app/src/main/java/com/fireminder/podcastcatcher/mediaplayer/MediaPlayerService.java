@@ -384,6 +384,7 @@ public class MediaPlayerService extends Service implements StatefulMediaPlayer.M
         .addAction(R.drawable.ic_skip_next_white_48dp, getString(R.string.next), skipPendingIntent);
         */
 
+    remoteViews.setImageViewResource(R.id.button_play_pause, mediaPlayer.isPlaying() ? R.drawable.ic_pause_black_48dp : R.drawable.ic_play_arrow_black_48dp);
     remoteViews.setOnClickPendingIntent(R.id.button_next, skipPendingIntent);
     remoteViews.setOnClickPendingIntent(R.id.button_play_pause, pauseTogglePendingIntent);
     remoteViews.setImageViewResource(R.id.image, R.drawable.ic_white_icon);
@@ -414,12 +415,13 @@ public class MediaPlayerService extends Service implements StatefulMediaPlayer.M
   @Override
   public void onStateUpdated(StatefulMediaPlayer.State state) {
     sendInfoMessage("State Change: " + state.name());
+    Notification notification;
     switch (state) {
       case STARTED:
           renamethis(true);
         PrefUtils.setEpisodePlaying(getApplicationContext(), mediaPlayer.getMedia().episodeId);
         PrefUtils.setPodcastPlaying(getApplicationContext(), mediaPlayer.getMedia().podcastId);
-        Notification notification = setupNotification(mediaPlayer.getMedia());
+        notification = setupNotification(mediaPlayer.getMedia());
         startForeground(1, notification);
         sendMessage(MSG_IS_PLAYING, mediaPlayer.isPlaying() ? 1 : 0);
         break;
@@ -437,6 +439,8 @@ public class MediaPlayerService extends Service implements StatefulMediaPlayer.M
         PlaybackUtils.updateEpisodeElapsed(getApplicationContext(),
             mediaPlayer.getMedia(), mediaPlayer.getCurrentPosition());
         sendMessage(MSG_IS_PLAYING, mediaPlayer.isPlaying() ? 1 : 0);
+        notification = setupNotification(mediaPlayer.getMedia());
+        startForeground(1, notification);
         break;
       case COMPLETED:
         onMediaCompleted();
