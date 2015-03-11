@@ -1,9 +1,5 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <item android:id="@+id/flip"
-          android:title="@string/reverse_order"
-          android:orderInCategory="10"
-        />
     <item android:id="@+id/delete"
           android:title="@string/delete"
           android:orderInCategory="40"
@@ -12,12 +8,6 @@
     <item android:id="@+id/download"
           android:title="@string/download"
           android:orderInCategory="20"
-        />
-
-    <item
-        android:id="@+id/reset"
-        android:title="@string/reset"
-        android:orderInCategory="30"
         />
 
 </menu>

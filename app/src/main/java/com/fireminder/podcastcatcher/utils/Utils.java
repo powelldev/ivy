@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.Uri;
+import android.util.Log;
 
 import com.fireminder.podcastcatcher.models.Episode;
 import com.fireminder.podcastcatcher.models.Podcast;
@@ -19,6 +20,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.channels.FileChannel;
 import java.util.Date;
+import java.util.HashSet;
 
 /**
  * Created by michael on 2/16/2015.
@@ -77,4 +79,29 @@ public class Utils {
         episodeId);
   }
 
+  /* Over time, episode mp3s can get abandoned. That is their podcast is deleted but they remain.
+   * This should be run fairly regularly to delete these orphaned episodes
+   */
+  public static void cleanUpStorage(Context context) {
+    // get all filenames in directory
+    // for each filename, check if it exists in the database
+    // if it does not, delete it
+    HashSet hashSet = new HashSet();
+    //Cursor cursor = context.getContentResolver().query(uri, projection, selection, args, sort);
+    Cursor cursor = context.getContentResolver().query(PodcastCatcherContract.Episodes.CONTENT_URI,
+        new String[] {PodcastCatcherContract.Episodes.EPISODE_ID},
+        null,
+        null,
+        null);
+    while (cursor.moveToNext()) {
+      hashSet.add(cursor.getString(0));
+    }
+    File episodeDir = context.getExternalFilesDir(null);
+    File[] episodes = episodeDir.listFiles();
+    for (int i = 0; i < episodes.length; i++) {
+      if (!hashSet.contains(episodes[i].getName())) {
+        episodes[i].delete();
+      }
+    }
+  }
 }

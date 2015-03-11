@@ -68,6 +68,9 @@ public class PodcastPlaybackFragment extends Fragment implements MediaPlayerCont
         case MediaPlayerService.MSG_MEDIA_COMPLETE:
           mediaPlayerControlView.setProgress(0);
           break;
+        case MediaPlayerService.MSG_IS_PLAYING:
+          mediaPlayerControlView.isPlaying(msg.arg1 == 1);
+          break;
         case MediaPlayerService.MSG_HANDSHAKE_WITH_VIEW:
           Episode episode = (Episode) msg.getData().getParcelable(MediaPlayerService.EXTRA_MEDIA);
           String imageUri = msg.getData().getString(MediaPlayerService.EXTRA_MEDIA_CONTENT);
@@ -145,15 +148,20 @@ public class PodcastPlaybackFragment extends Fragment implements MediaPlayerCont
   }
 
   public void setAlbumArt(Episode episode, String backupImage) {
-    MediaMetadataRetriever retriever = new MediaMetadataRetriever();
-    retriever.setDataSource(getActivity(), Uri.parse(episode.localUri));
-    byte[] bArray = retriever.getEmbeddedPicture();
-    if (bArray != null) {
-      InputStream is = new ByteArrayInputStream(bArray);
-      Bitmap bm = BitmapFactory.decodeStream(is);
-      mAlbumArtImageView.setImageBitmap(bm);
-    } else {
-      Picasso.with(getActivity()).load(backupImage).into(mAlbumArtImageView);
+    try {
+      MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+      retriever.setDataSource(getActivity(), Uri.parse(episode.localUri));
+      byte[] bArray = retriever.getEmbeddedPicture();
+      if (bArray != null) {
+        InputStream is = new ByteArrayInputStream(bArray);
+        Bitmap bm = BitmapFactory.decodeStream(is);
+        mAlbumArtImageView.setImageBitmap(bm);
+      } else {
+        Picasso.with(getActivity()).load(backupImage).into(mAlbumArtImageView);
+      }
+    } catch (Exception e) {
+      // Episode art DNE, consume
+      e.printStackTrace();
     }
   }
 

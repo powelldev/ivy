@@ -13,6 +13,7 @@ import android.text.TextUtils;
 
 import com.fireminder.podcastcatcher.models.Episode;
 import com.fireminder.podcastcatcher.provider.PodcastCatcherContract;
+import com.fireminder.podcastcatcher.utils.PrefUtils;
 import com.fireminder.podcastcatcher.utils.Utils;
 
 import java.io.File;
@@ -59,6 +60,11 @@ public class DownloadManagerService extends Service {
     File file = new File(uri.getPath());
     if (!file.exists()) {
       request.setDestinationUri(uri);
+      if (PrefUtils.isMobileAllowed(getApplicationContext())) {
+        request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_MOBILE | DownloadManager.Request.NETWORK_WIFI);
+      } else {
+        request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI);
+      }
       final long downloadId = dm.enqueue(request);
       final SharedPreferences.Editor editor = getApplicationContext().getSharedPreferences(Utils.DL_PREF, MODE_PRIVATE).edit();
       editor.putString(Long.toString(downloadId), episode.episodeId).apply();
@@ -94,10 +100,12 @@ public class DownloadManagerService extends Service {
     final Cursor cursor = getApplicationContext().getContentResolver()
         .query(PodcastCatcherContract.Episodes.buildEpisodeUri(episodeId), null, null, null, null);
     cursor.moveToFirst();
-    final Episode episode = Episode.parseEpisodeFromCursor(cursor);
+    if (cursor.getCount() > 0) {
+      final Episode episode = Episode.parseEpisodeFromCursor(cursor);
     cursor.close();
 
     updateEpisodeAsDownloaded(episode);
+    }
   }
 
   @Override

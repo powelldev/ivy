@@ -17,5 +17,8 @@
         android:id="@+id/menu_refresh"
         android:title="@string/refresh"
         />
-
+    <item
+        android:id="@+id/menu_cleanup"
+        android:title="@string/cleanup"
+        />
 </menu>

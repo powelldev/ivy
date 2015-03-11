@@ -1,0 +1,48 @@
+<RelativeLayout
+xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:app="http://schemas.android.com/apk/res-auto"
+xmlns:tools="http://schemas.android.com/tools"
+android:id="@+id/container"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"
+>
+
+<ImageView
+    android:id="@+id/image"
+    android:layout_width="match_parent"
+    android:layout_height="160dp"
+    tools:src="@mipmap/ic_launcher"
+    />
+
+
+<FrameLayout
+    android:layout_below="@id/image"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="56dp"
+    >
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="48dp"
+        android:layout_marginLeft="4dp"
+        android:textColor="@color/body_text_1"
+        android:textSize="@dimen/text_size_medium"
+        android:maxLines="2"
+        tools:text="this title is excessively long on purpose to check how this wrapping works"
+        />
+
+    <ImageButton
+        android:id="@+id/actions"
+        android:background="?android:selectableItemBackground"
+        android:layout_width="16dp"
+        android:layout_height="match_parent"
+        android:scaleType="center"
+        android:layout_gravity="right"
+        android:src="@drawable/ic_more_vert_black_36dp" />
+
+</FrameLayout>
+
+</RelativeLayout>

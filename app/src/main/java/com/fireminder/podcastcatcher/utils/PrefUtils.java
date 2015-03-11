@@ -12,6 +12,7 @@ public class PrefUtils {
   private static final String PREF_PODCAST_PLAYING = "pref_podcast_playing";
   private static final String PREF_EPISODE_PLAYING = "pref_episode_playing";
   private static final String PREF_PREFETCH_NUM = "pref_prefetch_num";
+  private static final String PREF_MOBILE_ALLOWED= "pref_mobile_allowed";
 
   public static void setPodcastPlaying(Context context, String podcastId) {
     SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
@@ -35,5 +36,10 @@ public class PrefUtils {
   public static int getNumEpisodesToPrefetch(Context context) {
     SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
     return sp.getInt(PREF_PREFETCH_NUM, 5);
+  }
+
+  public static boolean isMobileAllowed(Context context) {
+    SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
+    return sp.getBoolean(PREF_MOBILE_ALLOWED, true);
   }
 }

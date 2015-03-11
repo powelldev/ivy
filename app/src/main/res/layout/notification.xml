@@ -1,0 +1,88 @@
+<FrameLayout
+xmlns:android="http://schemas.android.com/apk/res/android"
+xmlns:app="http://schemas.android.com/apk/res-auto"
+xmlns:tools="http://schemas.android.com/tools"
+android:id="@+id/container"
+android:orientation="horizontal"
+android:layout_width="match_parent"
+android:layout_height="wrap_content"
+android:background="?android:selectableItemBackground">
+
+<ImageView
+    android:id="@+id/image"
+    android:layout_marginLeft="@dimen/keyline_1"
+    tools:background="@android:color/black"
+    android:layout_marginTop="16dp"
+    android:layout_width="48dp"
+    android:layout_height="48dp"
+    />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="right"
+        android:orientation="horizontal"
+        >
+
+        <ImageButton
+            android:id="@+id/button_previous"
+            android:background="?android:selectableItemBackground"
+            android:layout_width="48dp"
+            android:layout_height="match_parent"
+            android:scaleType="center"
+            android:src="@drawable/ic_skip_previous_black_48dp"
+            />
+        <ImageButton
+            android:id="@+id/button_play_pause"
+            android:background="?android:selectableItemBackground"
+            android:layout_width="48dp"
+            android:layout_height="match_parent"
+            android:scaleType="center"
+            tools:src="@drawable/ic_play_arrow_black_48dp"
+            />
+
+        <ImageButton
+            android:id="@+id/button_next"
+            android:background="?android:selectableItemBackground"
+            android:layout_width="48dp"
+            android:layout_height="match_parent"
+            android:scaleType="center"
+            android:src="@drawable/ic_skip_next_black_48dp"
+            />
+    </LinearLayout>
+
+<LinearLayout
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginLeft="@dimen/keyline_2"
+    android:layout_marginRight="144dp"
+    android:layout_marginTop="16dp"
+    android:layout_marginBottom="16dp">
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/body_text_1"
+        android:textSize="@dimen/text_size_medium"
+        android:maxLines="1"
+        android:ellipsize="end"
+        tools:text="title the quick brown fox jumped over the lazy dog"
+        />
+
+    <TextView
+        android:id="@+id/description"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:textColor="@color/body_text_2"
+        android:textSize="@dimen/text_size_small"
+        android:textStyle="italic"
+        android:maxLines="3"
+        tools:text="description"
+        android:ellipsize="end" />
+
+</LinearLayout>
+
+</FrameLayout>

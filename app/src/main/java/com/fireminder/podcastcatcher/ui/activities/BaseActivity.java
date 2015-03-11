@@ -28,6 +28,7 @@ import com.fireminder.podcastcatcher.ui.NavigationDrawerAdapter;
 import com.fireminder.podcastcatcher.ui.fragments.PodcastPlaybackFragment;
 import com.fireminder.podcastcatcher.ui.fragments.SubscribeDialogFragment;
 import com.fireminder.podcastcatcher.utils.Logger;
+import com.fireminder.podcastcatcher.utils.Utils;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 
@@ -224,6 +225,8 @@ public abstract class BaseActivity extends ActionBarActivity implements AdapterV
       case R.id.menu_refresh:
         requestImmediateSync();
         break;
+      case R.id.menu_cleanup:
+        Utils.cleanUpStorage(getApplicationContext());
       default:
         return super.onOptionsItemSelected(item);
     }

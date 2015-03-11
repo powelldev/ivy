@@ -98,7 +98,8 @@ public class SearchAsyncTask extends AsyncTask<Void, Void, List<SearchAsyncTask.
       searchResult = new SearchResult();
       searchResult.title = result.getString(ItunesApi.NAME);
       searchResult.feedUrl = result.getString(ItunesApi.FEED_URL);
-      searchResult.imageUri = result.getString(ItunesApi.IMAGE_URL_60);
+      searchResult.imageUri = result.getString(ItunesApi.IMAGE_URL_100);
+      searchResult.description = result.getString(ItunesApi.DESCRIPTION);
     } catch (Exception e) {
       Logger.e(LOG_TAG, "parseSearchResult Error: " + e.getMessage());
       e.printStackTrace();
@@ -110,6 +111,7 @@ public class SearchAsyncTask extends AsyncTask<Void, Void, List<SearchAsyncTask.
     public String title;
     public String feedUrl;
     public String imageUri;
+    public String description;
   }
 
   private static class ItunesApi {
@@ -125,6 +127,8 @@ public class SearchAsyncTask extends AsyncTask<Void, Void, List<SearchAsyncTask.
     static final String IMAGE_URL_30 = "artworkUrl30";
     static final String IMAGE_URL_60 = "artworkUrl60";
     static final String IMAGE_URL_100 = "artworkUrl100";
+    
+    static final String DESCRIPTION = "artistName";
   }
 
 }

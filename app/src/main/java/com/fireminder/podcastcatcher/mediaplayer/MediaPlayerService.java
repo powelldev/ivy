@@ -15,6 +15,7 @@ import android.os.Messenger;
 import android.os.RemoteException;
 import android.support.v4.app.NotificationCompat;
 import android.text.TextUtils;
+import android.widget.RemoteViews;
 import android.widget.Toast;
 
 import com.fireminder.podcastcatcher.R;
@@ -29,13 +30,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-// TODO make sure stopForeground releases mediaplyer
 public class MediaPlayerService extends Service implements StatefulMediaPlayer.MediaStateListener, AudioManager.OnAudioFocusChangeListener {
 
   private static final String LOG_TAG = MediaPlayerService.class.getSimpleName();
 
   private static final int SKIP_TIME_MILLIS = 30 * 1000;
-  private static final int NO_ARG = -1;
 
   // Actions to perform media controls
   public static final String ACTION_PLAY = "action_play";
@@ -79,10 +78,38 @@ public class MediaPlayerService extends Service implements StatefulMediaPlayer.M
   public static final int MSG_NOTHING_PLAYING = 701; // Flag to send duration, elapsed, album art, and episode data to the view to be updated
 
 
-  // TODO this could be better named
+  // Flag for messages that do not contain an argument
+  private static final int NO_ARG = -1;
+  public static final int MSG_IS_PLAYING = 702;
+
+  final int NOTIFICATION_ID = 1;
+
   private final StatefulMediaPlayer mediaPlayer = new StatefulMediaPlayer(this);
 
-  // TODO this could be better named.
+
+  /**
+   * If we are playing this podcast, resume. Otherwise start playing it.
+   */
+  public static void playOrResumePodcast(Context context, Podcast podcast) {
+    Intent intent = new Intent(context, MediaPlayerService.class);
+    if (!PrefUtils.getPodcastPlaying(context).equals(podcast.podcastId)) {
+      PrefUtils.setPodcastPlaying(context, podcast.podcastId);
+      intent.setAction(MediaPlayerService.ACTION_PLAY);
+    } else {
+      intent.setAction(MediaPlayerService.ACTION_RESUME);
+    }
+    intent.putExtra(MediaPlayerService.EXTRA_MEDIA, PlaybackUtils.getNextEpisode(context, podcast));
+    context.startService(intent);
+  }
+
+  /* COMMUNICATION TOOLS WITH REMOTES */
+
+  /*
+   * We utilize two methods of communication: actions passed along with intents and
+   * binding the service. This allows us to use remote controls and update the playback
+   * view without excessive broadcasts.
+   */
+
   private final Handler myHandler = new Handler(new Handler.Callback() {
     @Override
     public boolean handleMessage(Message msg) {
@@ -92,7 +119,7 @@ public class MediaPlayerService extends Service implements StatefulMediaPlayer.M
           break;
         case MSG_SET_DATA:
           final Episode media = msg.getData().getParcelable(EXTRA_MEDIA);
-          setData(media, true);
+          processSetDataRequest(media, true);
           break;
         case MSG_START:
           start();
@@ -104,22 +131,22 @@ public class MediaPlayerService extends Service implements StatefulMediaPlayer.M
           if (!TextUtils.isEmpty(episodeId) && !mediaPlayer.isPlaying()) {
             Cursor cursor = getApplicationContext().getContentResolver().query(PodcastCatcherContract.Episodes.buildEpisodeUri(episodeId), null, null, null, null);
             cursor.moveToFirst();
-            setData(Episode.parseEpisodeFromCursor(cursor), true);
+            processSetDataRequest(Episode.parseEpisodeFromCursor(cursor), true);
           } else {
             playPause();
           }
           break;
         case MSG_SEEK_START:
-          seekStart();
+          processSeek();
           break;
         case MSG_SEEK_END:
-          seekEnd(msg.arg1);
+          processSeekEnding(msg.arg1);
           break;
         case MSG_BACK_THIRTY:
-          seekEnd((int) mediaPlayer.getCurrentPosition() - (SKIP_TIME_MILLIS));
+          processSeekEnding((int) mediaPlayer.getCurrentPosition() - (SKIP_TIME_MILLIS));
           break;
         case MSG_FORWARD_THIRTY:
-          seekEnd((int) mediaPlayer.getCurrentPosition() + (SKIP_TIME_MILLIS));
+          processSeekEnding((int) mediaPlayer.getCurrentPosition() + (SKIP_TIME_MILLIS));
           break;
         case MSG_NEXT:
           next();
@@ -139,6 +166,11 @@ public class MediaPlayerService extends Service implements StatefulMediaPlayer.M
     }
   });
 
+  private final List<Messenger> clients = new ArrayList<>();
+  private final Messenger mMessenger = new Messenger(myHandler);
+  private final Handler mTimeElapsedHandler = new Handler();
+
+  // Alert view which episode we are playing, this may be replaced in future by using SharedPrefs to store playing episode
   private void performViewHandshake() {
     if (mediaPlayer.isPlaying()) {
         int duration = (int) mediaPlayer.getDuration(getApplicationContext());
@@ -152,10 +184,6 @@ public class MediaPlayerService extends Service implements StatefulMediaPlayer.M
       }
   }
 
-  private final List<Messenger> clients = new ArrayList<>();
-  private final Messenger mMessenger = new Messenger(myHandler);
-  private final Handler mTimeElapsedHandler = new Handler();
-
   @Override
   public int onStartCommand(Intent intent, int flags, int startId) {
     if (intent != null && intent.getAction() != null) {
@@ -163,7 +191,7 @@ public class MediaPlayerService extends Service implements StatefulMediaPlayer.M
         case ACTION_PLAY:
         case ACTION_RESUME:
           Episode media = intent.getParcelableExtra(EXTRA_MEDIA);
-          setData(media, true);
+          processSetDataRequest(media, true);
           break;
         case ACTION_SKIP:
           next();
@@ -188,23 +216,65 @@ public class MediaPlayerService extends Service implements StatefulMediaPlayer.M
     return START_STICKY;
   }
 
-  private void previous() {
-    Episode current = mediaPlayer.getMedia();
+  private void sendMessage(int what) {
+    sendMessage(what, NO_ARG);
+  }
+  private void sendMessage(int what, int arg1) {
+    sendMessage(what, arg1, null);
+  }
 
-    // Play next or stop playing
-    Podcast podcast = PlaybackUtils.getPodcastOf(getApplicationContext(), current);
-    Episode previous = PlaybackUtils.getPreviousEpisode(getApplicationContext(), podcast, current);
-
-    if (previous != null) {
-      PlaybackUtils.setEpisodeComplete(getApplicationContext(), previous, false);
-      setData(previous, true);
+  private void sendMessage(int what, int arg1, Bundle bundle) {
+    for (Messenger messenger : clients) {
+      try {
+        Message msg = Message.obtain(null, what);
+        msg.arg1 = arg1;
+        if (bundle != null) {
+          msg.setData(bundle);
+        }
+        messenger.send(msg);
+      } catch (RemoteException e) {
+        clients.remove(messenger);
+      }
     }
   }
 
-  private void next() {
-    onMediaCompleted();
+  /**
+   * Wrapper for sending messages to all clients.
+   *
+   * @param what   argument for Message object
+   * @param arg1   argument for Message object
+   * @param arg2   argument for Message object
+   * @param bundle optional argument for data to pass to messenger
+   */
+  private void sendMessage(int what, int arg1, int arg2, Bundle bundle) {
+    for (Messenger messenger : clients) {
+      try {
+        Message msg = Message.obtain(null, what);
+        msg.arg1 = arg1;
+        msg.arg2 = arg2;
+        if (bundle != null) {
+          msg.setData(bundle);
+        }
+        messenger.send(msg);
+      } catch (RemoteException e) {
+        clients.remove(messenger);
+      }
+    }
   }
 
+  @Override
+  public IBinder onBind(Intent intent) {
+    return mMessenger.getBinder();
+  }
+
+  /* Media Playback control requests */
+
+  /*
+   * Here we wrap actions for our media player.
+   * Their responses will be handled in our MediaPlayer Listener
+   */
+
+  // Start media playback. This assumes that the media data has already been set.
   private void start() {
     try {
       mediaPlayer.start();
@@ -214,19 +284,8 @@ public class MediaPlayerService extends Service implements StatefulMediaPlayer.M
     }
   }
 
-  private void playPause() {
-    try {
-      mediaPlayer.playPause();
-    } catch (IllegalStateException e) {
-      sendErrorMessage(e.getMessage());
-      e.printStackTrace();
-    }
-  }
-
-  private void seekStart() {
-    mediaPlayer.seekStart();
-  }
-
+  /* Stop media playback with the assumption that setData will need to be called again
+    prior to resuming playback  */
   private void stop() {
     try {
       mediaPlayer.stop();
@@ -236,8 +295,43 @@ public class MediaPlayerService extends Service implements StatefulMediaPlayer.M
     }
   }
 
+  // Toggle play/pause
+  private void playPause() {
+    try {
+      mediaPlayer.playPause();
+    } catch (IllegalStateException e) {
+      sendErrorMessage(e.getMessage());
+      e.printStackTrace();
+    }
+  }
 
-  private void setData(Episode media, boolean beginPlaybackImmediately) {
+  private void next() {
+    onMediaCompleted();
+  }
+
+  private void previous() {
+    Episode current = mediaPlayer.getMedia();
+
+    // Play next or stop playing
+    Podcast podcast = PlaybackUtils.getPodcastOf(getApplicationContext(), current);
+    Episode previous = PlaybackUtils.getPreviousEpisode(getApplicationContext(), podcast, current);
+
+    if (previous != null) {
+      PlaybackUtils.setEpisodeComplete(getApplicationContext(), previous, false);
+      processSetDataRequest(previous, true);
+    }
+  }
+
+  private void processSeek() {
+    mediaPlayer.seekStart();
+  }
+
+  private void processSeekEnding(int position) {
+    mediaPlayer.seekTo(position);
+  }
+
+
+  private void processSetDataRequest(Episode media, boolean beginPlaybackImmediately) {
     try {
       mediaPlayer.setDataSource(media, beginPlaybackImmediately);
       Podcast podcast = PlaybackUtils.getPodcastOf(getApplicationContext(), media);
@@ -274,33 +368,28 @@ public class MediaPlayerService extends Service implements StatefulMediaPlayer.M
         skipIntent,
         PendingIntent.FLAG_UPDATE_CURRENT);
 
-    return new NotificationCompat.Builder(getApplicationContext())
-        .setSmallIcon(R.mipmap.ic_launcher)
+    RemoteViews remoteViews = new RemoteViews(getPackageName(), R.layout.notification);
+
+    NotificationCompat.Builder builder = new NotificationCompat.Builder(getApplicationContext())
+        .setSmallIcon(R.drawable.ic_white_icon)
+        .setContent(remoteViews)
+        .setContentIntent(pIntent);
+        /*
         .setContentText(episode.description)
         .setContentTitle(episode.title)
         .setPriority(Integer.MAX_VALUE)
         .setWhen(0)
         .setContentIntent(pIntent)
         .addAction(R.drawable.ic_play_arrow_white_48dp, getString(R.string.play), pauseTogglePendingIntent)
-        .addAction(R.drawable.ic_skip_next_white_48dp, getString(R.string.next), skipPendingIntent)
-        .build();
-  }
+        .addAction(R.drawable.ic_skip_next_white_48dp, getString(R.string.next), skipPendingIntent);
+        */
 
-  private void seekEnd(int position) {
-    mediaPlayer.seekTo(position);
-  }
-
-  private void sendInfoMessage(String message) {
-    Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
-  }
-
-  private void sendErrorMessage(String message) {
-    Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
-  }
-
-  @Override
-  public IBinder onBind(Intent intent) {
-    return mMessenger.getBinder();
+    remoteViews.setOnClickPendingIntent(R.id.button_next, skipPendingIntent);
+    remoteViews.setOnClickPendingIntent(R.id.button_play_pause, pauseTogglePendingIntent);
+    remoteViews.setImageViewResource(R.id.image, R.drawable.ic_white_icon);
+    remoteViews.setTextViewText(R.id.title, episode.title);
+    remoteViews.setTextViewText(R.id.description, episode.description);
+    return builder.build();
   }
 
   private void renamethis(boolean isPlaying) {
@@ -332,6 +421,7 @@ public class MediaPlayerService extends Service implements StatefulMediaPlayer.M
         PrefUtils.setPodcastPlaying(getApplicationContext(), mediaPlayer.getMedia().podcastId);
         Notification notification = setupNotification(mediaPlayer.getMedia());
         startForeground(1, notification);
+        sendMessage(MSG_IS_PLAYING, mediaPlayer.isPlaying() ? 1 : 0);
         break;
       case PREPARED:
         AudioManager am = (AudioManager) getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
@@ -346,6 +436,7 @@ public class MediaPlayerService extends Service implements StatefulMediaPlayer.M
       case PAUSED:
         PlaybackUtils.updateEpisodeElapsed(getApplicationContext(),
             mediaPlayer.getMedia(), mediaPlayer.getCurrentPosition());
+        sendMessage(MSG_IS_PLAYING, mediaPlayer.isPlaying() ? 1 : 0);
         break;
       case COMPLETED:
         onMediaCompleted();
@@ -373,7 +464,7 @@ public class MediaPlayerService extends Service implements StatefulMediaPlayer.M
     if (next == null) {
       stopForeground(true);
     } else {
-      setData(next, true);
+      processSetDataRequest(next, true);
       // TODO Delete old episode if configured that way.
     }
   }
@@ -386,52 +477,7 @@ public class MediaPlayerService extends Service implements StatefulMediaPlayer.M
     }
   }
 
-
-  /**
-   * Wrapper for sending messages to all clients.
-   *
-   * @param what   argument for Message object
-   * @param arg1   argument for Message object
-   * @param bundle optional argument for data to pass to messenger
-   */
-  private void sendMessage(int what, int arg1, Bundle bundle) {
-    for (Messenger messenger : clients) {
-      try {
-        Message msg = Message.obtain(null, what);
-        msg.arg1 = arg1;
-        if (bundle != null) {
-          msg.setData(bundle);
-        }
-        messenger.send(msg);
-      } catch (RemoteException e) {
-        clients.remove(messenger);
-      }
-    }
-  }
-
-  private void sendMessage(int what, int arg1, int arg2, Bundle bundle) {
-    for (Messenger messenger : clients) {
-      try {
-        Message msg = Message.obtain(null, what);
-        msg.arg1 = arg1;
-        msg.arg2 = arg2;
-        if (bundle != null) {
-          msg.setData(bundle);
-        }
-        messenger.send(msg);
-      } catch (RemoteException e) {
-        clients.remove(messenger);
-      }
-    }
-  }
-
-  private void sendMessage(int what) {
-    sendMessage(what, NO_ARG);
-  }
-  private void sendMessage(int what, int arg1) {
-    sendMessage(what, arg1, null);
-  }
-
+  /* Runnable to update the view with elapsed time. */
   Runnable postElapsedRunnable = new Runnable() {
     @Override
     public void run() {
@@ -442,18 +488,6 @@ public class MediaPlayerService extends Service implements StatefulMediaPlayer.M
       }
     }
   };
-
-  public static void playOrResumePodcast(Context context, Podcast podcast) {
-    Intent intent = new Intent(context, MediaPlayerService.class);
-    if (!PrefUtils.getPodcastPlaying(context).equals(podcast.podcastId)) {
-      PrefUtils.setPodcastPlaying(context, podcast.podcastId);
-      intent.setAction(MediaPlayerService.ACTION_PLAY);
-    } else {
-      intent.setAction(MediaPlayerService.ACTION_RESUME);
-    }
-    intent.putExtra(MediaPlayerService.EXTRA_MEDIA, PlaybackUtils.getNextEpisode(context, podcast));
-    context.startService(intent);
-  }
 
   boolean wasPlayingBeforeAudioLoss = false;
   @Override
@@ -480,4 +514,18 @@ public class MediaPlayerService extends Service implements StatefulMediaPlayer.M
         break;
     }
   }
+
+  private boolean DEBUG = false;
+  private void sendInfoMessage(String message) {
+    if (DEBUG) {
+      Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+    }
+  }
+
+  private void sendErrorMessage(String message) {
+    if (DEBUG) {
+      Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+    }
+  }
+
 }

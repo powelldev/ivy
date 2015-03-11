@@ -116,9 +116,7 @@ public class PodcastCatcherProvider extends ContentProvider {
     final SelectionBuilder builder = buildSimpleSelection(uri);
     final int match = sUrlMatcher.match(uri);
     int retVal = builder.where(selection, selectionArgs).delete(db);
-    if (retVal > 0) {
-      notifyChange(uri);
-    }
+    notifyChange(uri);
     return retVal;
   }
 

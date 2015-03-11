@@ -13,8 +13,6 @@ import java.io.IOException;
 public class StatefulMediaPlayer implements MediaPlayer.OnBufferingUpdateListener, MediaPlayer.OnPreparedListener, MediaPlayer.OnErrorListener, MediaPlayer.OnInfoListener, MediaPlayer.OnSeekCompleteListener, MediaPlayer.OnCompletionListener {
   private static final String LOG_TAG = StatefulMediaPlayer.class.getSimpleName();
 
-  // TODO double check members in functions
-
   private Episode media;
   private MediaPlayer mediaPlayer;
   private MediaStateListener mListener;
