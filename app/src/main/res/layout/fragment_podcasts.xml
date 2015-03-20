@@ -8,6 +8,7 @@
     android:paddingTop="8dp"
     android:paddingRight="8dp"
     android:paddingLeft="8dp"
+    android:background="@android:color/darker_gray"
     android:drawSelectorOnTop="false"
     android:fadingEdgeLength="0dp"
     android:scrollbars="none" />

@@ -13,6 +13,8 @@ public class PrefUtils {
   private static final String PREF_EPISODE_PLAYING = "pref_episode_playing";
   private static final String PREF_PREFETCH_NUM = "pref_prefetch_num";
   private static final String PREF_MOBILE_ALLOWED= "pref_mobile_allowed";
+  private static final String PREF_SORTING_ASCENDING = "pref_sorting_ascending";
+  private static final String PREF_DELETE_OLD = "pref_delete_old";
 
   public static void setPodcastPlaying(Context context, String podcastId) {
     SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
@@ -40,6 +42,21 @@ public class PrefUtils {
 
   public static boolean isMobileAllowed(Context context) {
     SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
-    return sp.getBoolean(PREF_MOBILE_ALLOWED, true);
+    return sp.getBoolean(PREF_MOBILE_ALLOWED, false);
+  }
+
+  public static void setSortAscending(Context context, boolean ascending) {
+    SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
+    sp.edit().putBoolean(PREF_SORTING_ASCENDING, ascending).apply();
+  }
+
+  public static String isSortingAscending(Context context) {
+    SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
+    return sp.getBoolean(PREF_SORTING_ASCENDING, true) ? " ASC" : " DESC";
+  }
+
+  public static boolean isDeletingOld(Context context) {
+    SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(context);
+    return sp.getBoolean(PREF_DELETE_OLD, false);
   }
 }

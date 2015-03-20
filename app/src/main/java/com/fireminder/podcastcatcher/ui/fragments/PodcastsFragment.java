@@ -167,6 +167,9 @@ public class PodcastsFragment extends ListFragment implements LoaderManager.Load
                   @Override
                   public void onClick(DialogInterface dialog, int which) {
                     new DeletePodcastTask(mContext, mPodcast).execute();
+                    Intent intent = new Intent(mContext, MediaPlayerService.class);
+                    intent.setAction(MediaPlayerService.ACTION_STOP);
+                    mContext.startService(intent);
                   }
                 }
               )

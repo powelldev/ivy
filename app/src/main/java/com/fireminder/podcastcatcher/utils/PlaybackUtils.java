@@ -3,15 +3,15 @@ package com.fireminder.podcastcatcher.utils;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.net.Uri;
 
 import com.fireminder.podcastcatcher.models.Episode;
 import com.fireminder.podcastcatcher.models.Podcast;
 import com.fireminder.podcastcatcher.provider.PodcastCatcherContract;
 import com.fireminder.podcastcatcher.services.DownloadManagerService;
 
-/**
- * Created by powelldev on 3/1/15.
- */
+import java.io.File;
+
 public class PlaybackUtils {
   public static void downloadAllEpisodes(Context context, Podcast podcast) {
     Cursor cursor = context.getContentResolver().query(
@@ -74,11 +74,12 @@ public class PlaybackUtils {
       @Override
       public void run() {
         int numRemaining = numToDownload;
+        String sort = PrefUtils.isSortingAscending(context);
         Cursor cursor = context.getContentResolver().query(PodcastCatcherContract.Episodes.CONTENT_URI,
             null,
             PodcastCatcherContract.Podcasts.PODCAST_ID + "=?",
             new String[]{podcast.podcastId},
-            PodcastCatcherContract.Episodes.EPISODE_PUBLICATION_DATE + " ASC"
+            PodcastCatcherContract.Episodes.EPISODE_PUBLICATION_DATE + sort
         );
 
         while (cursor.moveToNext() && numRemaining > 0) {
@@ -94,11 +95,12 @@ public class PlaybackUtils {
   }
 
   public static Episode getNextEpisode(Context mContext, Podcast podcast) {
+    String sort = PrefUtils.isSortingAscending(mContext);
     Cursor cursor = mContext.getContentResolver().query(PodcastCatcherContract.Episodes.CONTENT_URI,
         null,
         PodcastCatcherContract.Podcasts.PODCAST_ID + "=?",
         new String[]{podcast.podcastId},
-        PodcastCatcherContract.Episodes.EPISODE_PUBLICATION_DATE + " ASC"
+        PodcastCatcherContract.Episodes.EPISODE_PUBLICATION_DATE + sort
     );
 
     while (cursor.moveToNext()) {
@@ -112,11 +114,12 @@ public class PlaybackUtils {
   }
 
   public static Episode getPreviousEpisode(Context context, Podcast podcast, Episode episode) {
+    String sort = PrefUtils.isSortingAscending(context);
     Cursor cursor = context.getContentResolver().query(PodcastCatcherContract.Episodes.CONTENT_URI,
         null,
         PodcastCatcherContract.Podcasts.PODCAST_ID + "=?",
         new String[]{podcast.podcastId},
-        PodcastCatcherContract.Episodes.EPISODE_PUBLICATION_DATE + " ASC"
+        PodcastCatcherContract.Episodes.EPISODE_PUBLICATION_DATE + sort
     );
 
     Episode previousEpisode = null;
@@ -129,5 +132,29 @@ public class PlaybackUtils {
       }
     }
     return null;
+  }
+
+  public static void clearOldEpisodes(Context context, Podcast podcast, Episode completed) {
+    String sort = PrefUtils.isSortingAscending(context);
+    Cursor cursor = context.getContentResolver().query(PodcastCatcherContract.Episodes.CONTENT_URI,
+        null,
+        PodcastCatcherContract.Podcasts.PODCAST_ID + "=?",
+        new String[]{podcast.podcastId},
+        PodcastCatcherContract.Episodes.EPISODE_PUBLICATION_DATE + sort
+    );
+
+    while (cursor.moveToNext()) {
+      Episode episode = Episode.parseEpisodeFromCursor(cursor);
+      if (episode.isComplete && new File(Uri.parse(episode.localUri).getPath()).exists()) {
+        new File(Uri.parse(episode.localUri).getPath()).delete();
+        episode.localUri = "";
+        episode.isDownloaded = false;
+        ContentValues cv = Episode.episodeToContentValues(episode);
+        context.getContentResolver().update(PodcastCatcherContract.Episodes.buildEpisodeUri(episode.episodeId),
+            cv,
+            null,
+            null);
+      }
+    }
   }
 }

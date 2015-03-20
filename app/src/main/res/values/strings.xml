@@ -31,4 +31,11 @@
     <string name="next">Next</string>
     <string name="play">Play</string>
     <string name="cleanup">Clean Up Storage</string>
+    <string name="pref_allow_mobile">Allow downloads via mobile networks</string>
+    <string name="pref_allow_mobile_summary">To reduce carrier charges, avoid downloading over mobile networks</string>
+    <string name="title_activity_preference">PreferenceActivity</string>
+    <string name="pref_sort_ascending">Reverse playback order</string>
+    <string name="pref_sort_ascending_summary">Some podcasts types such as novels and archives are intentionally reversed, use this to play in order.</string>
+    <string name="pref_delete_old_summary">Delete episodes once completed</string>
+    <string name="pref_delete_old">Delete completed episodes</string>
 </resources>

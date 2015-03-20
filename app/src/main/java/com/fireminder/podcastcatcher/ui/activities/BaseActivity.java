@@ -227,6 +227,10 @@ public abstract class BaseActivity extends ActionBarActivity implements AdapterV
         break;
       case R.id.menu_cleanup:
         Utils.cleanUpStorage(getApplicationContext());
+        break;
+      case R.id.menu_settings:
+        startActivity(new Intent(this, PreferenceActivity.class));
+        break;
       default:
         return super.onOptionsItemSelected(item);
     }

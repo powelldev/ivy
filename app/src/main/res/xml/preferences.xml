@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <CheckBoxPreference
+        android:key="pref_mobile_allowed"
+        android:title="@string/pref_allow_mobile"
+        android:summary="@string/pref_allow_mobile_summary"
+        android:defaultValue="false"
+        />
+
+    <CheckBoxPreference
+        android:key="pref_delete_old"
+        android:title="@string/pref_delete_old"
+        android:summary="@string/pref_delete_old_summary"
+        android:defaultValue="false"
+        />
+</PreferenceScreen>

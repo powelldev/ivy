@@ -55,7 +55,6 @@ public class DownloadManagerService extends Service {
   private void startDownload(Episode episode) {
     final DownloadManager dm = (DownloadManager) getApplicationContext().getSystemService(DOWNLOAD_SERVICE);
     final DownloadManager.Request request = new DownloadManager.Request(Uri.parse(episode.streamUri));
-    // TODO: Allow mobile radio vs wifi settings
     final Uri uri = Utils.createEpisodeDestination(getApplicationContext(), episode.episodeId);
     File file = new File(uri.getPath());
     if (!file.exists()) {

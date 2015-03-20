@@ -6,6 +6,7 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.drm.DrmStore;
 import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.Handler;
@@ -22,6 +23,7 @@ import com.fireminder.podcastcatcher.R;
 import com.fireminder.podcastcatcher.models.Episode;
 import com.fireminder.podcastcatcher.models.Podcast;
 import com.fireminder.podcastcatcher.provider.PodcastCatcherContract;
+import com.fireminder.podcastcatcher.services.DownloadManagerService;
 import com.fireminder.podcastcatcher.ui.activities.PodcastsActivity;
 import com.fireminder.podcastcatcher.utils.PlaybackUtils;
 import com.fireminder.podcastcatcher.utils.PrefUtils;
@@ -86,6 +88,7 @@ public class MediaPlayerService extends Service implements StatefulMediaPlayer.M
 
   private final StatefulMediaPlayer mediaPlayer = new StatefulMediaPlayer(this);
 
+  private boolean tryingToPlayOldEpisode = false;
 
   /**
    * If we are playing this podcast, resume. Otherwise start playing it.
@@ -310,6 +313,7 @@ public class MediaPlayerService extends Service implements StatefulMediaPlayer.M
   }
 
   private void previous() {
+    tryingToPlayOldEpisode = true;
     Episode current = mediaPlayer.getMedia();
 
     // Play next or stop playing
@@ -317,8 +321,13 @@ public class MediaPlayerService extends Service implements StatefulMediaPlayer.M
     Episode previous = PlaybackUtils.getPreviousEpisode(getApplicationContext(), podcast, current);
 
     if (previous != null) {
-      PlaybackUtils.setEpisodeComplete(getApplicationContext(), previous, false);
-      processSetDataRequest(previous, true);
+      if (!previous.isDownloaded) {
+        DownloadManagerService.download(getApplicationContext(), previous);
+        Toast.makeText(getApplicationContext(), "Loading previous episode.", Toast.LENGTH_SHORT).show();
+      } else {
+        PlaybackUtils.setEpisodeComplete(getApplicationContext(), previous, false);
+        processSetDataRequest(previous, true);
+      }
     }
   }
 
@@ -332,14 +341,14 @@ public class MediaPlayerService extends Service implements StatefulMediaPlayer.M
 
 
   private void processSetDataRequest(Episode media, boolean beginPlaybackImmediately) {
+    Podcast podcast = PlaybackUtils.getPodcastOf(getApplicationContext(), media);
+    int prefetch = PrefUtils.getNumEpisodesToPrefetch(getApplicationContext());
+    PrefUtils.setEpisodePlaying(this, media.episodeId);
+    PlaybackUtils.downloadNextXEpisodes(getApplicationContext(), podcast, prefetch);
     try {
       mediaPlayer.setDataSource(media, beginPlaybackImmediately);
-      Podcast podcast = PlaybackUtils.getPodcastOf(getApplicationContext(), media);
-      int prefetch = PrefUtils.getNumEpisodesToPrefetch(getApplicationContext());
-      PrefUtils.setEpisodePlaying(this, media.episodeId);
-      PlaybackUtils.downloadNextXEpisodes(getApplicationContext(), podcast, prefetch);
     } catch (IOException e) {
-      Toast.makeText(getApplicationContext(), "Out of episodes", Toast.LENGTH_SHORT).show();
+      Toast.makeText(getApplicationContext(), "Downloading episodes, please wait.", Toast.LENGTH_SHORT).show();
       e.printStackTrace();
     }
   }
@@ -453,6 +462,13 @@ public class MediaPlayerService extends Service implements StatefulMediaPlayer.M
 
   private void onMediaCompleted() {
     Episode completed = mediaPlayer.getMedia();
+    if (completed == null) {
+      return;
+    }
+    if (tryingToPlayOldEpisode) {
+      tryingToPlayOldEpisode = false;
+      return;
+    }
     // Update View
     Bundle bundle = new Bundle();
     bundle.putParcelable(MediaPlayerService.EXTRA_MEDIA, completed);
@@ -463,6 +479,8 @@ public class MediaPlayerService extends Service implements StatefulMediaPlayer.M
 
     // Play next or stop playing
     Podcast podcast = PlaybackUtils.getPodcastOf(getApplicationContext(), completed);
+    int prefetch = PrefUtils.getNumEpisodesToPrefetch(getApplicationContext());
+    PlaybackUtils.downloadNextXEpisodes(getApplicationContext(), podcast, prefetch);
     Episode next = PlaybackUtils.getNextEpisode(getApplicationContext(), podcast);
 
     if (next == null) {
@@ -470,6 +488,9 @@ public class MediaPlayerService extends Service implements StatefulMediaPlayer.M
     } else {
       processSetDataRequest(next, true);
       // TODO Delete old episode if configured that way.
+      if (PrefUtils.isDeletingOld(getApplicationContext())) {
+        PlaybackUtils.clearOldEpisodes(getApplicationContext(), podcast, completed);
+      }
     }
   }
 
@@ -496,14 +517,17 @@ public class MediaPlayerService extends Service implements StatefulMediaPlayer.M
   boolean wasPlayingBeforeAudioLoss = false;
   @Override
   public void onAudioFocusChange(int focusChange) {
+    sendInfoMessage("audiofocus change");
     switch (focusChange) {
       case AudioManager.AUDIOFOCUS_GAIN:
+        sendInfoMessage("audiofocus gain");
         if (wasPlayingBeforeAudioLoss) {
           mediaPlayer.play(); // Should only be called after LOSS_TRANSIENT
         }
         break;
       case AudioManager.AUDIOFOCUS_LOSS:
         // Will not be getting focus back, stop playback.
+        sendInfoMessage("audiofocus loss");
         if (mediaPlayer.isPlaying()) {
           PrefUtils.setEpisodePlaying(getApplicationContext(), mediaPlayer.getMedia().episodeId);
         }
@@ -513,13 +537,15 @@ public class MediaPlayerService extends Service implements StatefulMediaPlayer.M
       case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT: // Podcast Pet Peeve: Never lower volume.
                                                    // Stop, then resume if necessary
       case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
+        sendInfoMessage("audiofocus loss transient");
         wasPlayingBeforeAudioLoss = mediaPlayer.isPlaying();
         mediaPlayer.pause();
         break;
     }
   }
 
-  private boolean DEBUG = false;
+  private boolean DEBUG = true;
+
   private void sendInfoMessage(String message) {
     if (DEBUG) {
       Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();

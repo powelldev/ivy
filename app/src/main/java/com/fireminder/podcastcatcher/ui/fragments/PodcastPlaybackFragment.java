@@ -72,7 +72,7 @@ public class PodcastPlaybackFragment extends Fragment implements MediaPlayerCont
           mediaPlayerControlView.isPlaying(msg.arg1 == 1);
           break;
         case MediaPlayerService.MSG_HANDSHAKE_WITH_VIEW:
-          Episode episode = (Episode) msg.getData().getParcelable(MediaPlayerService.EXTRA_MEDIA);
+          Episode episode = msg.getData().getParcelable(MediaPlayerService.EXTRA_MEDIA);
           String imageUri = msg.getData().getString(MediaPlayerService.EXTRA_MEDIA_CONTENT);
           setAlbumArt(episode, imageUri);
           startAnim();
@@ -182,6 +182,11 @@ public class PodcastPlaybackFragment extends Fragment implements MediaPlayerCont
     getActivity().bindService(new Intent(getActivity(), MediaPlayerService.class), mConnection, Context.BIND_ABOVE_CLIENT);
   }
 
+  @Override
+  public void onPause() {
+    super.onPause();
+    getActivity().unbindService(mConnection);
+  }
 
   @Override
   public void onPlayPauseClicked() {

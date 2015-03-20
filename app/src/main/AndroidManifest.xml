@@ -165,8 +165,8 @@
         </receiver>
 
         <activity
-            android:name=".ui.activities.PodcastPlaybackActivity"
-            android:label="@string/title_activity_podcast_playback" >
+            android:name=".ui.activities.PreferenceActivity"
+            android:label="@string/title_activity_preference" >
         </activity>
     </application>
 
