@@ -13,6 +13,7 @@ import com.fireminder.podcastcatcher.services.DownloadManagerService;
 import java.io.File;
 
 public class PlaybackUtils {
+
   public static void downloadAllEpisodes(Context context, Podcast podcast) {
     Cursor cursor = context.getContentResolver().query(
         PodcastCatcherContract.Episodes.CONTENT_URI,

@@ -19,6 +19,7 @@ import android.text.TextUtils;
 import android.widget.RemoteViews;
 import android.widget.Toast;
 
+import com.fireminder.podcastcatcher.BuildConfig;
 import com.fireminder.podcastcatcher.R;
 import com.fireminder.podcastcatcher.models.Episode;
 import com.fireminder.podcastcatcher.models.Podcast;
@@ -544,16 +545,15 @@ public class MediaPlayerService extends Service implements StatefulMediaPlayer.M
     }
   }
 
-  private boolean DEBUG = true;
 
   private void sendInfoMessage(String message) {
-    if (DEBUG) {
+    if (BuildConfig.DEBUG) {
       Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
     }
   }
 
   private void sendErrorMessage(String message) {
-    if (DEBUG) {
+    if (BuildConfig.DEBUG) {
       Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
     }
   }

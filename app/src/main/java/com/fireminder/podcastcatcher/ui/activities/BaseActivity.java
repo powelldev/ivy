@@ -54,7 +54,6 @@ public abstract class BaseActivity extends ActionBarActivity implements AdapterV
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
 
-
     Uri uri = getIntent().getData();
     if (uri != null) {
       presentSubscriptionDialog(uri.toString());
@@ -126,6 +125,9 @@ public abstract class BaseActivity extends ActionBarActivity implements AdapterV
         }
       });
     }
+
+    // TODO: Decide what to display with the nav drawer
+    mDrawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
 
   }
 

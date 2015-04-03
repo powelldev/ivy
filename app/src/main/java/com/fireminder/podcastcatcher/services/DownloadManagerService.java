@@ -38,38 +38,80 @@ public class DownloadManagerService extends Service {
   @Override
   public int onStartCommand(Intent intent, int flags, int startId) {
     if (intent != null && intent.getAction() != null) {
-      switch (intent.getAction()) {
-        case ACTION_DOWNLOAD_COMPLETE:
-          final String id = Long.toString(intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1));
-          downloadComplete(id);
-          break;
-        case ACTION_START_DOWNLOAD:
-          final Episode episode = intent.getParcelableExtra(EXTRA_EPISODE);
-          startDownload(episode);
-          break;
-      }
+      handleCommand(intent);
     }
     return START_NOT_STICKY;
   }
 
-  private void startDownload(Episode episode) {
-    final DownloadManager dm = (DownloadManager) getApplicationContext().getSystemService(DOWNLOAD_SERVICE);
-    final DownloadManager.Request request = new DownloadManager.Request(Uri.parse(episode.streamUri));
-    final Uri uri = Utils.createEpisodeDestination(getApplicationContext(), episode.episodeId);
-    File file = new File(uri.getPath());
-    if (!file.exists()) {
-      request.setDestinationUri(uri);
-      if (PrefUtils.isMobileAllowed(getApplicationContext())) {
-        request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_MOBILE | DownloadManager.Request.NETWORK_WIFI);
-      } else {
-        request.setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI);
-      }
-      final long downloadId = dm.enqueue(request);
-      final SharedPreferences.Editor editor = getApplicationContext().getSharedPreferences(Utils.DL_PREF, MODE_PRIVATE).edit();
-      editor.putString(Long.toString(downloadId), episode.episodeId).apply();
-    } else {
-      updateEpisodeAsDownloaded(episode);
+  private void handleCommand(Intent intent) {
+    switch (intent.getAction()) {
+      case ACTION_DOWNLOAD_COMPLETE:
+        final String id = Long.toString(intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, -1));
+        downloadComplete(id);
+        break;
+      case ACTION_START_DOWNLOAD:
+        final Episode episode = intent.getParcelableExtra(EXTRA_EPISODE);
+        startDownload(episode);
+        break;
+      default:
+        throw new UnsupportedOperationException("Unknown action: " + intent.getAction());
     }
+  }
+
+  private void startDownload(Episode episode) {
+    if (isEpisodeAlreadyDownloaded(episode) || isEpisodeDownloading(episode)) {
+      updateEpisodeAsDownloaded(episode);
+      return;
+    }
+
+    DownloadManager dm = (DownloadManager) getApplicationContext().getSystemService(DOWNLOAD_SERVICE);
+    DownloadManager.Request request = determineDownloadConfiguration(episode);
+
+    final long downloadId = dm.enqueue(request);
+    flagEpisodeAsDownloading(episode, downloadId);
+  }
+
+  private boolean isEpisodeDownloading(Episode episode) {
+    // TODO: implement
+    return false;
+  }
+
+  private void flagEpisodeAsDownloading(Episode episode, long downloadId) {
+    final SharedPreferences.Editor editor = getApplicationContext().getSharedPreferences(Utils.DL_PREF, MODE_PRIVATE).edit();
+    editor.putString(Long.toString(downloadId), episode.episodeId).apply();
+  }
+
+  /**
+   * Checks if the episode's uri already has a file.
+   * @param episode
+   * @return
+   */
+  private boolean isEpisodeAlreadyDownloaded(Episode episode) {
+    Uri uri = getEpisodeUri(episode);
+    File file = new File(uri.getPath());
+    return file.exists();
+  }
+
+  // TODO: Determien another way to store episode name other than episode id.
+  private Uri getEpisodeUri(Episode episode) {
+    return Utils.createEpisodeDestination(getApplicationContext(), episode.episodeId);
+  }
+
+  /**
+   * Set the DownloadManager.Request object to conform ot user-defined preferences.
+   * @param episode
+   * @return
+   */
+  private DownloadManager.Request determineDownloadConfiguration(Episode episode) {
+    final DownloadManager.Request request = new DownloadManager.Request(Uri.parse(episode.streamUri));
+
+    request.setDestinationUri(getEpisodeUri(episode));
+
+    request.setAllowedNetworkTypes( PrefUtils.isMobileAllowed(getApplicationContext()) ?
+        DownloadManager.Request.NETWORK_MOBILE | DownloadManager.Request.NETWORK_WIFI :
+        DownloadManager.Request.NETWORK_WIFI);
+
+    return request;
   }
 
   private void updateEpisodeAsDownloaded(Episode episode) {
@@ -81,6 +123,7 @@ public class DownloadManagerService extends Service {
     values.put(PodcastCatcherContract.Episodes.EPISODE_LOCAL_URI, episode.localUri);
     getContentResolver().update(PodcastCatcherContract.Episodes.buildEpisodeUri(episode.episodeId), values, null, null);
   }
+
 
   /**
    * Persisting episode local uri and download status in the database.

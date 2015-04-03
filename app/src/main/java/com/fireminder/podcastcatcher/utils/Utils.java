@@ -79,7 +79,8 @@ public class Utils {
         episodeId);
   }
 
-  /* Over time, episode mp3s can get abandoned. That is their podcast is deleted but they remain.
+  /**
+   *  Over time, episode mp3s can get abandoned. Their podcast is deleted but they remain.
    * This should be run fairly regularly to delete these orphaned episodes
    */
   public static void cleanUpStorage(Context context) {
