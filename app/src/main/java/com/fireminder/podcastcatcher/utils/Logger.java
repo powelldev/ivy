@@ -1,5 +1,7 @@
 package com.fireminder.podcastcatcher.utils;
 
+import com.fireminder.podcastcatcher.BuildConfig;
+
 public class Logger {
   private static final String LOG_TAG = "PodcastCatcher ";
 

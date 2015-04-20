@@ -225,7 +225,8 @@ public abstract class BaseActivity extends ActionBarActivity implements AdapterV
         startActivity(new Intent(this, SearchActivity.class));
         break;
       case R.id.menu_refresh:
-        requestImmediateSync();
+        // Elevator close button
+        // TODO reimplement: requestImmediateSync();
         break;
       case R.id.menu_cleanup:
         Utils.cleanUpStorage(getApplicationContext());

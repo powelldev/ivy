@@ -6,6 +6,7 @@ import android.content.ContentProviderClient;
 import android.content.Context;
 import android.content.SyncResult;
 import android.database.Cursor;
+import android.database.CursorIndexOutOfBoundsException;
 import android.os.Bundle;
 
 import com.fireminder.podcastcatcher.models.Episode;
@@ -57,7 +58,15 @@ public class EpisodeSyncAdapter extends AbstractThreadedSyncAdapter {
               new String[]{podcast.podcastId},
               PodcastCatcherContract.Episodes.EPISODE_PUBLICATION_DATE + " DESC LIMIT 1");
       episodeCursor.moveToFirst();
-      long pubDate = episodeCursor.getLong(episodeCursor.getColumnIndex(PodcastCatcherContract.Episodes.EPISODE_PUBLICATION_DATE));
+      // TODO remove try catch and structure better
+      long pubDate = 0;
+      try {
+        pubDate = episodeCursor.getLong(episodeCursor.getColumnIndex(PodcastCatcherContract.Episodes.EPISODE_PUBLICATION_DATE));
+      } catch (CursorIndexOutOfBoundsException e) {
+        Logger.e(LOG_TAG, e.getMessage());
+        e.printStackTrace();
+        return;
+      }
       PrettyTime p = new PrettyTime();
       Logger.e(LOG_TAG, "Podcast: " + podcast.title + " last pub date: " + p.format(new Date(pubDate)));
       try {

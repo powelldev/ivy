@@ -46,16 +46,21 @@ public class PlaybackUtils {
   }
 
   public static Podcast getPodcastOf(Context context, Episode episode) {
-    Cursor cursor = context.getContentResolver().query(PodcastCatcherContract.Podcasts.buildPodcastUri(episode.podcastId),
-        null,
-        null,
-        null,
-        null
-    );
+    try {
+      Cursor cursor = context.getContentResolver().query(PodcastCatcherContract.Podcasts.buildPodcastUri(episode.podcastId),
+          null,
+          null,
+          null,
+          null
+      );
 
-    cursor.moveToNext();
-    Podcast podcast = Podcast.parsePodcastFromCursor(cursor);
-    return podcast;
+      cursor.moveToNext();
+      Podcast podcast = Podcast.parsePodcastFromCursor(cursor);
+      return podcast;
+    } catch (Exception e) {
+      e.printStackTrace();
+      return null;
+    }
   }
 
   public static void setEpisodeComplete(Context context, Episode episode, boolean isComplete) {

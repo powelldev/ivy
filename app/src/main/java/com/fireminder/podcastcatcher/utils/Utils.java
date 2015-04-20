@@ -50,6 +50,7 @@ public class Utils {
     return file.getAbsolutePath();
   }
 
+  // TODO Check this out before using
   public static void copyFile(String from, String to) throws IOException {
     FileChannel in = null;
     FileChannel out = null;
@@ -105,4 +106,5 @@ public class Utils {
       }
     }
   }
+
 }

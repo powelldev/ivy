@@ -342,13 +342,13 @@ public class MediaPlayerService extends Service implements StatefulMediaPlayer.M
 
 
   private void processSetDataRequest(Episode media, boolean beginPlaybackImmediately) {
-    Podcast podcast = PlaybackUtils.getPodcastOf(getApplicationContext(), media);
-    int prefetch = PrefUtils.getNumEpisodesToPrefetch(getApplicationContext());
-    PrefUtils.setEpisodePlaying(this, media.episodeId);
-    PlaybackUtils.downloadNextXEpisodes(getApplicationContext(), podcast, prefetch);
     try {
+      Podcast podcast = PlaybackUtils.getPodcastOf(getApplicationContext(), media);
+      int prefetch = PrefUtils.getNumEpisodesToPrefetch(getApplicationContext());
+      PrefUtils.setEpisodePlaying(this, media.episodeId);
+      PlaybackUtils.downloadNextXEpisodes(getApplicationContext(), podcast, prefetch);
       mediaPlayer.setDataSource(media, beginPlaybackImmediately);
-    } catch (IOException e) {
+    } catch (Exception e) {
       Toast.makeText(getApplicationContext(), "Downloading episodes, please wait.", Toast.LENGTH_SHORT).show();
       e.printStackTrace();
     }

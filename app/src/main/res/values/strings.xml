@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">PodcastCatcher</string>
+    <string name="app_name">BookCasts</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
     <string name="menu_subscribe">Subscribe</string>
@@ -23,8 +23,8 @@
     <string name="search">Search</string>
     <string name="refresh">Refresh</string>
     <string name="http">http://</string>
-    <string name="search_hint">Search by Name or Subject</string>
-    <string name="download">Download</string>
+    <string name="search_hint">Search by Name</string>
+    <string name="download">Download All</string>
     <string name="title_activity_podcast_playback">PodcastPlaybackActivity</string>
     <string name="reset">Reset</string>
     <string name="reverse_order">Reverse playback order</string>
@@ -38,4 +38,5 @@
     <string name="pref_sort_ascending_summary">Some podcasts types such as novels and archives are intentionally reversed, use this to play in order.</string>
     <string name="pref_delete_old_summary">Delete episodes once completed</string>
     <string name="pref_delete_old">Delete completed episodes</string>
+    <string name="crash_toast_text">BookCasts has crashed, sending report to developer.</string>
 </resources>
