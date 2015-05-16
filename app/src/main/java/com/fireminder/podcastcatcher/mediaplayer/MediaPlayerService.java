@@ -6,7 +6,6 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
-import android.drm.DrmStore;
 import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.Handler;
@@ -90,6 +89,12 @@ public class MediaPlayerService extends Service implements StatefulMediaPlayer.M
   private final StatefulMediaPlayer mediaPlayer = new StatefulMediaPlayer(this);
 
   private boolean tryingToPlayOldEpisode = false;
+
+  public static void viewIsExiting(Context context) {
+    Intent intent = new Intent(context, MediaPlayerService.class);
+    intent.setAction(MediaPlayerService.ACTION_LEAVING);
+    context.startService(intent);
+  }
 
   /**
    * If we are playing this podcast, resume. Otherwise start playing it.

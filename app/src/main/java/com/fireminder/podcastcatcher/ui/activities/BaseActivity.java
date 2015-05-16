@@ -7,7 +7,6 @@ import android.content.res.Configuration;
 import android.media.AudioManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.widget.DrawerLayout;
@@ -22,7 +21,6 @@ import android.widget.ListView;
 
 import com.fireminder.podcastcatcher.R;
 import com.fireminder.podcastcatcher.mediaplayer.MediaPlayerService;
-import com.fireminder.podcastcatcher.services.RetrieveRecentEpisodesService;
 import com.fireminder.podcastcatcher.sync.StubAccount;
 import com.fireminder.podcastcatcher.ui.NavigationDrawerAdapter;
 import com.fireminder.podcastcatcher.ui.fragments.PodcastPlaybackFragment;
@@ -39,7 +37,6 @@ public abstract class BaseActivity extends ActionBarActivity implements AdapterV
 
   private Toolbar mToolbar;
 
-  //Navigation navdrawer_item
   private DrawerLayout mDrawerLayout;
   private DrawerLayout.DrawerListener mDrawerListener;
 
@@ -53,18 +50,30 @@ public abstract class BaseActivity extends ActionBarActivity implements AdapterV
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+    checkWasLaunchedForSubscription();
+  }
 
+  /**
+   * If the activity was launched from the user selecting BookCasts as the tool to open Uri data.
+   * take that data and process appropriately
+   */
+  private void checkWasLaunchedForSubscription() {
     Uri uri = getIntent().getData();
     if (uri != null) {
       presentSubscriptionDialog(uri.toString());
     }
-
   }
 
   @Override
   protected void onResume() {
     super.onResume();
+
     setVolumeControlStream(AudioManager.STREAM_MUSIC);
+    setLowerContainerWithPlaybackFragment();
+
+  }
+
+  private void setLowerContainerWithPlaybackFragment() {
     getSupportFragmentManager().
         beginTransaction().
         replace(R.id.fragment_container_lower, new PodcastPlaybackFragment(), PLAYER_FRAGMENT_TAG)
@@ -74,9 +83,7 @@ public abstract class BaseActivity extends ActionBarActivity implements AdapterV
   @Override
   protected void onPause() {
     super.onPause();
-    Intent intent = new Intent(this, MediaPlayerService.class);
-    intent.setAction(MediaPlayerService.ACTION_LEAVING);
-    startService(intent);
+    MediaPlayerService.viewIsExiting(this);
   }
 
 

@@ -1,11 +1,10 @@
 package com.fireminder.podcastcatcher.ui.activities;
 
 import android.os.Bundle;
-import android.support.v7.app.ActionBar;
-import android.support.v7.widget.Toolbar;
 
 import com.fireminder.podcastcatcher.R;
 import com.fireminder.podcastcatcher.ui.fragments.PodcastsFragment;
+import com.fireminder.podcastcatcher.utils.Constants;
 
 /**
  * Activity responsible for presenting PodcastFragment
@@ -20,7 +19,7 @@ public class PodcastsActivity extends BaseActivity {
     setContentView(R.layout.activity_main);
 
     getSupportFragmentManager().beginTransaction().add(R.id.fragment_container_upper,
-        new PodcastsFragment(), "podcasts").commit();
+        new PodcastsFragment(), Constants.Fragment.PODCASTS).commit();
 
   }
 
