@@ -1,3 +1,3 @@
-Add recent:
-    ListView item
-    Adapter
+Rework downloading system
+Add logging system
+Refactor DB
