@@ -116,21 +116,14 @@ public class MediaPlayerControlView implements View.OnClickListener, SeekBar.OnS
   }
 
   public interface Listener {
-    public void onPlayPauseClicked();
-
-    public void onRewindThirtyClicked();
-
-    public void onForwardThirtyClicked();
-
-    public void onSeekBarStarted();
-
-    public void onSeekBarStopped(int progress);
-
-    public void onSeekBarProgressChanged(int progress);
-
-    public void onPreviousClicked();
-
-    public void onNextClicked();
+    void onPlayPauseClicked();
+    void onRewindThirtyClicked();
+    void onForwardThirtyClicked();
+    void onSeekBarStarted();
+    void onSeekBarStopped(int progress);
+    void onSeekBarProgressChanged(int progress);
+    void onPreviousClicked();
+    void onNextClicked();
   }
 
 }

@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Locale;
 
 public class Episode implements Parcelable {
+  
   public String title;
   public String episodeId;
   public String description;
