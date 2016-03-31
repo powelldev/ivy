@@ -6,9 +6,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 
+import com.fireminder.podcastcatcher.IvyApplication;
 import com.fireminder.podcastcatcher.models.Episode;
 import com.fireminder.podcastcatcher.models.Podcast;
 import com.fireminder.podcastcatcher.provider.PodcastCatcherContract;
+import com.fireminder.podcastcatcher.utils.IvyPreferences;
 import com.fireminder.podcastcatcher.utils.Logger;
 import com.fireminder.podcastcatcher.utils.PlaybackUtils;
 import com.google.common.io.CharStreams;
@@ -18,11 +20,16 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.List;
 
+import javax.inject.Inject;
+
 /**
  * Background service for parsing all the episodes from a podcast. Episodes are
  * automatically updated with podcastId and inserted into the database.
  */
 public class RetrieveEpisodeService extends IntentService {
+
+  @Inject
+  IvyPreferences ivyPreferences;
 
   private static final String LOG_TAG = RetrieveEpisodeService.class.getSimpleName();
 
@@ -47,6 +54,7 @@ public class RetrieveEpisodeService extends IntentService {
 
   @Override
   protected void onHandleIntent(Intent intent) {
+    IvyApplication.getAppContext().getDbComponent().inject(this);
     if (intent != null) {
       final String action = intent.getAction();
       if (ACTION_RETRIEVE_ALL.equals(action)) {
@@ -71,7 +79,7 @@ public class RetrieveEpisodeService extends IntentService {
     Cursor cursor = getContentResolver().query(PodcastCatcherContract.Podcasts.buildPodcastUri(mPodcastId), null, null, null, null);
     cursor.moveToFirst();
     Podcast podcast = Podcast.parsePodcastFromCursor(cursor);
-    PlaybackUtils.downloadNextXEpisodes(getApplicationContext(), podcast, 1);
+    PlaybackUtils.downloadNextXEpisodes(getApplicationContext(), podcast, 1, ivyPreferences);
   }
 
   private List<Episode> getEpisodes(String url) {

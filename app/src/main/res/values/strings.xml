@@ -38,5 +38,5 @@
     <string name="pref_sort_ascending_summary">Some podcasts types such as novels and archives are intentionally reversed, use this to play in order.</string>
     <string name="pref_delete_old_summary">Delete episodes once completed</string>
     <string name="pref_delete_old">Delete completed episodes</string>
-    <string name="crash_toast_text">BookCasts has crashed, sending report to developer.</string>
+    <string name="crash_toast_text">Archivist has crashed, sending report to developer.</string>
 </resources>

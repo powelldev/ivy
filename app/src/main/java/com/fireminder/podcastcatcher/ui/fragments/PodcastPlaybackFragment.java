@@ -1,17 +1,14 @@
 package com.fireminder.podcastcatcher.ui.fragments;
 
 
-import android.animation.AnimatorSet;
-import android.animation.ObjectAnimator;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.AnimationDrawable;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
 import android.os.Bundle;
@@ -27,24 +24,25 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.fireminder.podcastcatcher.IvyApplication;
 import com.fireminder.podcastcatcher.R;
 import com.fireminder.podcastcatcher.mediaplayer.MediaPlayerControlView;
 import com.fireminder.podcastcatcher.mediaplayer.MediaPlayerService;
 import com.fireminder.podcastcatcher.models.Episode;
 import com.fireminder.podcastcatcher.provider.PodcastCatcherContract;
+import com.fireminder.podcastcatcher.utils.IvyPreferences;
 import com.fireminder.podcastcatcher.utils.PlaybackUtils;
-import com.fireminder.podcastcatcher.utils.PrefUtils;
 import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
-public class PodcastPlaybackFragment extends Fragment implements MediaPlayerControlView.Listener {
+import javax.inject.Inject;
 
+public class PodcastPlaybackFragment extends Fragment implements MediaPlayerControlView.Listener {
 
   public PodcastPlaybackFragment() {
   }
@@ -121,14 +119,17 @@ public class PodcastPlaybackFragment extends Fragment implements MediaPlayerCont
   TextView mEpisodeTitleTextView;
 
   @Override
-  public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-    View rootView = inflater.inflate(R.layout.fragment_podcast_playback, container, false);
-    mediaPlayerControlView = new MediaPlayerControlView(getActivity(), rootView);
-    mediaPlayerControlView.setListener(this);
-    mAlbumArtImageView = (ImageView) rootView.findViewById(R.id.episode_image);
-    mEpisodeTitleTextView = (TextView) rootView.findViewById(R.id.episode_title);
+  public void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+  }
 
-    String episodeId = PrefUtils.getEpisodePlaying(getActivity());
+  @Inject
+  IvyPreferences ivyPreferences;
+
+  @Override
+  public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+    super.onViewCreated(view, savedInstanceState);
+    String episodeId = ivyPreferences.getEpisodePlaying();
     Cursor cursor = getActivity().getContentResolver().query(PodcastCatcherContract.Episodes.buildEpisodeUri(episodeId), null, null, null, null);
     cursor.moveToFirst();
     if (cursor.getCount() > 0) {
@@ -140,6 +141,18 @@ public class PodcastPlaybackFragment extends Fragment implements MediaPlayerCont
       mediaPlayerControlView.setDuration((int) episode.duration);
       mediaPlayerControlView.isPlaying(false);
     }
+  }
+
+  @Override
+  public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    IvyApplication.getAppContext().getDbComponent().inject(this);
+
+    View rootView = inflater.inflate(R.layout.fragment_podcast_playback, container, false);
+    mediaPlayerControlView = new MediaPlayerControlView(getActivity(), rootView);
+    mediaPlayerControlView.setListener(this);
+    mAlbumArtImageView = (ImageView) rootView.findViewById(R.id.episode_image);
+    mEpisodeTitleTextView = (TextView) rootView.findViewById(R.id.episode_title);
+
     return rootView;
   }
 

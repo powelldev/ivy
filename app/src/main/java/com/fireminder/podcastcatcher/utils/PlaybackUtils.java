@@ -75,12 +75,12 @@ public class PlaybackUtils {
     );
   }
 
-  public static void downloadNextXEpisodes(final Context context, final Podcast podcast, final int numToDownload) {
+  public static void downloadNextXEpisodes(final Context context, final Podcast podcast, final int numToDownload, final IvyPreferences ivyPreferences) {
     new Thread() {
       @Override
       public void run() {
         int numRemaining = numToDownload;
-        String sort = PrefUtils.isSortingAscending(context);
+        String sort = ivyPreferences.isSortingAscending();
         Cursor cursor = context.getContentResolver().query(PodcastCatcherContract.Episodes.CONTENT_URI,
             null,
             PodcastCatcherContract.Podcasts.PODCAST_ID + "=?",
@@ -100,8 +100,8 @@ public class PlaybackUtils {
 
   }
 
-  public static Episode getNextEpisode(Context mContext, Podcast podcast) {
-    String sort = PrefUtils.isSortingAscending(mContext);
+  public static Episode getNextEpisode(Context mContext, Podcast podcast, final IvyPreferences ivyPreferences) {
+    String sort = ivyPreferences.isSortingAscending();
     Cursor cursor = mContext.getContentResolver().query(PodcastCatcherContract.Episodes.CONTENT_URI,
         null,
         PodcastCatcherContract.Podcasts.PODCAST_ID + "=?",
@@ -119,8 +119,8 @@ public class PlaybackUtils {
     return null;
   }
 
-  public static Episode getPreviousEpisode(Context context, Podcast podcast, Episode episode) {
-    String sort = PrefUtils.isSortingAscending(context);
+  public static Episode getPreviousEpisode(Context context, Podcast podcast, Episode episode, IvyPreferences ivyPreferences) {
+    String sort = ivyPreferences.isSortingAscending();
     Cursor cursor = context.getContentResolver().query(PodcastCatcherContract.Episodes.CONTENT_URI,
         null,
         PodcastCatcherContract.Podcasts.PODCAST_ID + "=?",
@@ -140,8 +140,8 @@ public class PlaybackUtils {
     return null;
   }
 
-  public static void clearOldEpisodes(Context context, Podcast podcast, Episode completed) {
-    String sort = PrefUtils.isSortingAscending(context);
+  public static void clearOldEpisodes(Context context, Podcast podcast, Episode completed, IvyPreferences ivyPreferences) {
+    String sort = ivyPreferences.isSortingAscending();
     Cursor cursor = context.getContentResolver().query(PodcastCatcherContract.Episodes.CONTENT_URI,
         null,
         PodcastCatcherContract.Podcasts.PODCAST_ID + "=?",

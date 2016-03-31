@@ -2,19 +2,15 @@ package com.fireminder.podcastcatcher.ui.fragments;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
-import android.drm.DrmStore;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.provider.MediaStore;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -28,20 +24,21 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.amulyakhare.textdrawable.TextDrawable;
+import com.fireminder.podcastcatcher.IvyApplication;
 import com.fireminder.podcastcatcher.R;
 import com.fireminder.podcastcatcher.mediaplayer.MediaPlayerService;
 import com.fireminder.podcastcatcher.models.Podcast;
 import com.fireminder.podcastcatcher.provider.PodcastCatcherContract;
 import com.fireminder.podcastcatcher.provider.PodcastCatcherContract.Podcasts;
-import com.fireminder.podcastcatcher.ui.activities.BaseActivity;
+import com.fireminder.podcastcatcher.utils.IvyPreferences;
 import com.fireminder.podcastcatcher.utils.PlaybackUtils;
-import com.fireminder.podcastcatcher.utils.PrefUtils;
 import com.squareup.picasso.Picasso;
 
 import java.io.File;
+
+import javax.inject.Inject;
 
 /**
  * Responsible for displaying a list of all podcasts added to library.
@@ -53,6 +50,9 @@ public class PodcastsFragment extends ListFragment implements LoaderManager.Load
   PodcastAdapter mAdapter;
   private View mRoot = null;
 
+  @Inject
+  IvyPreferences ivyPreferences;
+
   /**
    * Standard empty constructor
    */
@@ -62,6 +62,7 @@ public class PodcastsFragment extends ListFragment implements LoaderManager.Load
   @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     mRoot = inflater.inflate(R.layout.fragment_podcasts, container, false);
+    IvyApplication.getAppContext().getDbComponent().inject(this);
     return mRoot;
   }
 
@@ -82,7 +83,7 @@ public class PodcastsFragment extends ListFragment implements LoaderManager.Load
     if (data.getCount() == 0) {
       // TODO: present an empty view prompting user to add Podcasts
     } else {
-      PodcastAdapter adapter = new PodcastAdapter(getActivity(), data);
+      PodcastAdapter adapter = new PodcastAdapter(getActivity(), data, ivyPreferences);
       getListView().setAdapter(adapter);
     }
   }
@@ -95,11 +96,13 @@ public class PodcastsFragment extends ListFragment implements LoaderManager.Load
 
     private final Context mContext;
     private Podcast mPodcast;
+    private IvyPreferences mIvyPreferences;
 
     // Specifically need an activity here for dialog's context.
-    public PodcastAdapter(Activity activity, Cursor cursor) {
+    public PodcastAdapter(Activity activity, Cursor cursor, IvyPreferences ivyPreferences) {
       super(activity, cursor, 0);
       mContext = activity;
+      mIvyPreferences = ivyPreferences;
     }
 
     @Override
@@ -143,8 +146,8 @@ public class PodcastsFragment extends ListFragment implements LoaderManager.Load
       switch (v.getId()) {
         case R.id.container:
         //TODO getNextEpisode will return null
-        PlaybackUtils.downloadNextXEpisodes(mContext, podcast, 1);
-        MediaPlayerService.playOrResumePodcast(mContext, podcast);
+        PlaybackUtils.downloadNextXEpisodes(mContext, podcast, 1, mIvyPreferences);
+        MediaPlayerService.playOrResumePodcast(mContext, podcast, mIvyPreferences);
           break;
         case R.id.actions:
           mPodcast = podcast;
@@ -177,8 +180,8 @@ public class PodcastsFragment extends ListFragment implements LoaderManager.Load
               .show();
           break;
         case R.id.download:
-          int prefetch = PrefUtils.getNumEpisodesToPrefetch(mContext);
-          PlaybackUtils.downloadNextXEpisodes(mContext, mPodcast, prefetch);
+          int prefetch = mIvyPreferences.getNumEpisodesToPrefetch();
+          PlaybackUtils.downloadNextXEpisodes(mContext, mPodcast, prefetch, mIvyPreferences);
           break;
       }
       return false;

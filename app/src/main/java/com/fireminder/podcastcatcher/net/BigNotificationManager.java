@@ -11,12 +11,8 @@ import android.support.v4.app.NotificationCompat;
 import com.fireminder.podcastcatcher.R;
 import com.fireminder.podcastcatcher.models.Episode;
 import com.fireminder.podcastcatcher.services.DownloadManagerService;
-import com.fireminder.podcastcatcher.services.EpisodeDatabaseSync;
-import com.fireminder.podcastcatcher.utils.PrefUtils;
 
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
 
 /**
  * Class responsible for showing/merging all downloads and their update status as a single notification.

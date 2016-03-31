@@ -4,19 +4,13 @@ import android.app.Service;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.database.Cursor;
 import android.net.Uri;
-import android.os.Bundle;
 import android.os.IBinder;
-import android.text.TextUtils;
 
 import com.fireminder.podcastcatcher.models.Episode;
 import com.fireminder.podcastcatcher.net.DownloadManager;
 import com.fireminder.podcastcatcher.provider.PodcastCatcherContract;
-import com.fireminder.podcastcatcher.utils.PrefUtils;
 import com.fireminder.podcastcatcher.utils.Utils;
-import com.koushikdutta.ion.Ion;
 
 import java.io.File;
 

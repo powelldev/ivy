@@ -19,20 +19,26 @@ import android.widget.RemoteViews;
 import android.widget.Toast;
 
 import com.fireminder.podcastcatcher.BuildConfig;
+import com.fireminder.podcastcatcher.IvyApplication;
 import com.fireminder.podcastcatcher.R;
 import com.fireminder.podcastcatcher.models.Episode;
 import com.fireminder.podcastcatcher.models.Podcast;
 import com.fireminder.podcastcatcher.provider.PodcastCatcherContract;
 import com.fireminder.podcastcatcher.services.DownloadManagerService;
 import com.fireminder.podcastcatcher.ui.activities.PodcastsActivity;
+import com.fireminder.podcastcatcher.utils.IvyPreferences;
 import com.fireminder.podcastcatcher.utils.PlaybackUtils;
-import com.fireminder.podcastcatcher.utils.PrefUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
 public class MediaPlayerService extends Service implements StatefulMediaPlayer.MediaStateListener, AudioManager.OnAudioFocusChangeListener {
+
+  @Inject
+  IvyPreferences ivyPreferences;
 
   private static final String LOG_TAG = MediaPlayerService.class.getSimpleName();
 
@@ -99,15 +105,15 @@ public class MediaPlayerService extends Service implements StatefulMediaPlayer.M
   /**
    * If we are playing this podcast, resume. Otherwise start playing it.
    */
-  public static void playOrResumePodcast(Context context, Podcast podcast) {
+  public static void playOrResumePodcast(Context context, Podcast podcast, final IvyPreferences ivyPreferences) {
     Intent intent = new Intent(context, MediaPlayerService.class);
-    if (!PrefUtils.getPodcastPlaying(context).equals(podcast.podcastId)) {
-      PrefUtils.setPodcastPlaying(context, podcast.podcastId);
+    if (!ivyPreferences.getPodcastPlaying().equals(podcast.podcastId)) {
+      ivyPreferences.setPodcastPlaying(podcast.podcastId);
       intent.setAction(MediaPlayerService.ACTION_PLAY);
     } else {
       intent.setAction(MediaPlayerService.ACTION_RESUME);
     }
-    intent.putExtra(MediaPlayerService.EXTRA_MEDIA, PlaybackUtils.getNextEpisode(context, podcast));
+    intent.putExtra(MediaPlayerService.EXTRA_MEDIA, PlaybackUtils.getNextEpisode(context, podcast, ivyPreferences));
     context.startService(intent);
   }
 
@@ -118,6 +124,12 @@ public class MediaPlayerService extends Service implements StatefulMediaPlayer.M
    * binding the service. This allows us to use remote controls and update the playback
    * view without excessive broadcasts.
    */
+
+  @Override
+  public void onCreate() {
+    super.onCreate();
+    IvyApplication.getAppContext().getDbComponent().inject(this);
+  }
 
   private final Handler myHandler = new Handler(new Handler.Callback() {
     @Override
@@ -136,7 +148,7 @@ public class MediaPlayerService extends Service implements StatefulMediaPlayer.M
         case MSG_PLAY_PAUSE:
           // if we are returning from having closed the application, load
           // the last playing episode and begin playback, otherwise toggle play/pause
-          String episodeId = PrefUtils.getEpisodePlaying(getApplicationContext());
+          String episodeId = ivyPreferences.getEpisodePlaying();
           if (!TextUtils.isEmpty(episodeId) && !mediaPlayer.isPlaying()) {
             Cursor cursor = getApplicationContext().getContentResolver().query(PodcastCatcherContract.Episodes.buildEpisodeUri(episodeId), null, null, null, null);
             cursor.moveToFirst();
@@ -324,7 +336,7 @@ public class MediaPlayerService extends Service implements StatefulMediaPlayer.M
 
     // Play next or stop playing
     Podcast podcast = PlaybackUtils.getPodcastOf(getApplicationContext(), current);
-    Episode previous = PlaybackUtils.getPreviousEpisode(getApplicationContext(), podcast, current);
+    Episode previous = PlaybackUtils.getPreviousEpisode(getApplicationContext(), podcast, current, ivyPreferences);
 
     if (previous != null) {
       if (!previous.isDownloaded) {
@@ -349,9 +361,9 @@ public class MediaPlayerService extends Service implements StatefulMediaPlayer.M
   private void processSetDataRequest(Episode media, boolean beginPlaybackImmediately) {
     try {
       Podcast podcast = PlaybackUtils.getPodcastOf(getApplicationContext(), media);
-      int prefetch = PrefUtils.getNumEpisodesToPrefetch(getApplicationContext());
-      PrefUtils.setEpisodePlaying(this, media.episodeId);
-      PlaybackUtils.downloadNextXEpisodes(getApplicationContext(), podcast, prefetch);
+      int prefetch = ivyPreferences.getNumEpisodesToPrefetch();
+      ivyPreferences.setEpisodePlaying(media.episodeId);
+      PlaybackUtils.downloadNextXEpisodes(getApplicationContext(), podcast, prefetch, ivyPreferences);
       mediaPlayer.setDataSource(media, beginPlaybackImmediately);
     } catch (Exception e) {
       Toast.makeText(getApplicationContext(), "Downloading episodes, please wait.", Toast.LENGTH_SHORT).show();
@@ -434,8 +446,8 @@ public class MediaPlayerService extends Service implements StatefulMediaPlayer.M
     switch (state) {
       case STARTED:
           renamethis(true);
-        PrefUtils.setEpisodePlaying(getApplicationContext(), mediaPlayer.getMedia().episodeId);
-        PrefUtils.setPodcastPlaying(getApplicationContext(), mediaPlayer.getMedia().podcastId);
+        ivyPreferences.setEpisodePlaying(mediaPlayer.getMedia().episodeId);
+        ivyPreferences.setPodcastPlaying(mediaPlayer.getMedia().podcastId);
         notification = setupNotification(mediaPlayer.getMedia());
         startForeground(1, notification);
         sendMessage(MSG_IS_PLAYING, mediaPlayer.isPlaying() ? 1 : 0);
@@ -485,17 +497,17 @@ public class MediaPlayerService extends Service implements StatefulMediaPlayer.M
 
     // Play next or stop playing
     Podcast podcast = PlaybackUtils.getPodcastOf(getApplicationContext(), completed);
-    int prefetch = PrefUtils.getNumEpisodesToPrefetch(getApplicationContext());
-    PlaybackUtils.downloadNextXEpisodes(getApplicationContext(), podcast, prefetch);
-    Episode next = PlaybackUtils.getNextEpisode(getApplicationContext(), podcast);
+    int prefetch = ivyPreferences.getNumEpisodesToPrefetch();
+    PlaybackUtils.downloadNextXEpisodes(getApplicationContext(), podcast, prefetch, ivyPreferences);
+    Episode next = PlaybackUtils.getNextEpisode(getApplicationContext(), podcast, ivyPreferences);
 
     if (next == null) {
       stopForeground(true);
     } else {
       processSetDataRequest(next, true);
       // TODO Delete old episode if configured that way.
-      if (PrefUtils.isDeletingOld(getApplicationContext())) {
-        PlaybackUtils.clearOldEpisodes(getApplicationContext(), podcast, completed);
+      if (ivyPreferences.isDeletingOld()) {
+        PlaybackUtils.clearOldEpisodes(getApplicationContext(), podcast, completed, ivyPreferences);
       }
     }
   }
@@ -535,7 +547,7 @@ public class MediaPlayerService extends Service implements StatefulMediaPlayer.M
         // Will not be getting focus back, stop playback.
         sendInfoMessage("audiofocus loss");
         if (mediaPlayer.isPlaying()) {
-          PrefUtils.setEpisodePlaying(getApplicationContext(), mediaPlayer.getMedia().episodeId);
+          ivyPreferences.setEpisodePlaying(mediaPlayer.getMedia().episodeId);
         }
         stop();
         stopForeground(true);
