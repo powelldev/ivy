@@ -8,6 +8,7 @@ import android.database.Cursor;
 
 import com.fireminder.podcastcatcher.IvyApplication;
 import com.fireminder.podcastcatcher.models.Episode;
+import com.fireminder.podcastcatcher.models.EpisodeModel;
 import com.fireminder.podcastcatcher.models.Podcast;
 import com.fireminder.podcastcatcher.provider.PodcastCatcherContract;
 import com.fireminder.podcastcatcher.utils.IvyPreferences;
@@ -30,6 +31,9 @@ public class RetrieveEpisodeService extends IntentService {
 
   @Inject
   IvyPreferences ivyPreferences;
+
+  @Inject
+  EpisodeModel episodeModel;
 
   private static final String LOG_TAG = RetrieveEpisodeService.class.getSimpleName();
 
@@ -66,33 +70,22 @@ public class RetrieveEpisodeService extends IntentService {
   }
 
   private void handleRetrieveAll(String feedUrl) {
-    final List<Episode> episodes = getEpisodes(feedUrl);
-    if (episodes != null) {
-      ContentValues[] contentValues = new ContentValues[episodes.size()];
-      for (int i = 0; i < episodes.size(); i++) {
-        ContentValues cv = Episode.episodeToContentValues(episodes.get(i));
-        cv.put(PodcastCatcherContract.Podcasts.PODCAST_ID, mPodcastId);
-        contentValues[i] = cv;
-      }
-      getContentResolver().bulkInsert(PodcastCatcherContract.Episodes.CONTENT_URI, contentValues);
+    final List<Episode> episodes = episodeModel.getEpisodes(feedUrl);
+    if (episodes == null) {
+      Logger.e(LOG_TAG, "handleRetrieveAll() feedUrl: " + feedUrl + " is null");
+      return;
     }
-    Cursor cursor = getContentResolver().query(PodcastCatcherContract.Podcasts.buildPodcastUri(mPodcastId), null, null, null, null);
-    cursor.moveToFirst();
-    Podcast podcast = Podcast.parsePodcastFromCursor(cursor);
-    PlaybackUtils.downloadNextXEpisodes(getApplicationContext(), podcast, 1, ivyPreferences);
-  }
 
-  private List<Episode> getEpisodes(String url) {
-    List<Episode> episodes = null;
-    try {
-      final InputStream is = new URL(url).openConnection().getInputStream();
-      final String feed = CharStreams.toString(new InputStreamReader(is, "UTF-8"));
-      episodes = Episode.parseEpisodesFromResponse(feed);
-    } catch (Exception e) {
-      Logger.e(LOG_TAG, "url: " + url + " Exception: " + e.getMessage());
-      e.printStackTrace();
-    }
-    return episodes;
+    episodeModel.bulkInsert(episodes, mPodcastId);
+
+    Cursor cursor = IvyApplication.getAppContext().getContentResolver()
+        .query(PodcastCatcherContract.Podcasts.buildPodcastUri(mPodcastId), null, null, null, null);
+
+    cursor.moveToFirst();
+
+    Podcast podcast = Podcast.parsePodcastFromCursor(cursor);
+
+    PlaybackUtils.downloadNextXEpisodes(getApplicationContext(), podcast, 1, ivyPreferences);
   }
 
 }

@@ -5,12 +5,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.content.res.Resources;
 import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.media.MediaMetadataRetriever;
-import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
@@ -34,15 +29,15 @@ import com.fireminder.podcastcatcher.mediaplayer.MediaPlayerService;
 import com.fireminder.podcastcatcher.models.Episode;
 import com.fireminder.podcastcatcher.provider.PodcastCatcherContract;
 import com.fireminder.podcastcatcher.utils.IvyPreferences;
+import com.fireminder.podcastcatcher.utils.Logger;
 import com.fireminder.podcastcatcher.utils.PlaybackUtils;
 import com.squareup.picasso.Picasso;
-
-import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 
 import javax.inject.Inject;
 
 public class PodcastPlaybackFragment extends Fragment implements MediaPlayerControlView.Listener {
+
+  private static final String TAG = "PodcastPlaybackFragment";
 
   public PodcastPlaybackFragment() {
   }
@@ -70,8 +65,10 @@ public class PodcastPlaybackFragment extends Fragment implements MediaPlayerCont
           mediaPlayerControlView.isPlaying(msg.arg1 == 1);
           break;
         case MediaPlayerService.MSG_HANDSHAKE_WITH_VIEW:
+          Logger.i(TAG, "handshakingWithView");
           Episode episode = msg.getData().getParcelable(MediaPlayerService.EXTRA_MEDIA);
           String imageUri = msg.getData().getString(MediaPlayerService.EXTRA_MEDIA_CONTENT);
+          Logger.i(TAG, "handshakingWithView: episode: " + episode.title);
           setAlbumArt(episode, imageUri);
           startAnim();
           mEpisodeTitleTextView.setText(episode.title);
@@ -161,10 +158,27 @@ public class PodcastPlaybackFragment extends Fragment implements MediaPlayerCont
   }
 
   public void setAlbumArt(Episode episode, String backupImage) {
+    Logger.i(TAG, "setAlbumArt: " + episode.title + " backup: " + backupImage);
     try {
+      // TODO load mp3 album cover art to separate file, using a byte array is causing OOM issues
+      Picasso.with(getActivity()).load(backupImage).into(mAlbumArtImageView);
+      /*
+      if (mAlbumArtImageView.getTag() == episode.localUri) {
+        // Already loaded
+        return;
+      }
       MediaMetadataRetriever retriever = new MediaMetadataRetriever();
       retriever.setDataSource(getActivity(), Uri.parse(episode.localUri));
       byte[] bArray = retriever.getEmbeddedPicture();
+      if (bArray == null || bArray.length == 0) {
+        Logger.d(TAG, "setAlbumArt, retriever failed to load bytes.");
+        return;
+      }
+      Bitmap bm = BitmapUtil.decodeSampledBitmapFromByteArray(bArray,
+          mAlbumArtImageView.getWidth(),
+          mAlbumArtImageView.getHeight());
+      mAlbumArtImageView.setImageBitmap(bm);
+      mAlbumArtImageView.setTag(episode.localUri);
       if (bArray != null) {
         InputStream is = new ByteArrayInputStream(bArray);
         Bitmap bm = BitmapFactory.decodeStream(is);
@@ -172,6 +186,7 @@ public class PodcastPlaybackFragment extends Fragment implements MediaPlayerCont
       } else {
         Picasso.with(getActivity()).load(backupImage).into(mAlbumArtImageView);
       }
+      */
     } catch (Exception e) {
       // Episode art DNE, consume
       e.printStackTrace();

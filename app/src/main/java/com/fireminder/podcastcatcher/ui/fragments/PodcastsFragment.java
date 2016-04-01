@@ -47,8 +47,6 @@ public class PodcastsFragment extends ListFragment implements LoaderManager.Load
 
 
   private static final String LOG_TAG = PodcastsFragment.class.getSimpleName();
-  PodcastAdapter mAdapter;
-  private View mRoot = null;
 
   @Inject
   IvyPreferences ivyPreferences;
@@ -61,9 +59,9 @@ public class PodcastsFragment extends ListFragment implements LoaderManager.Load
 
   @Override
   public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-    mRoot = inflater.inflate(R.layout.fragment_podcasts, container, false);
+    View rootView = inflater.inflate(R.layout.fragment_podcasts, container, false);
     IvyApplication.getAppContext().getDbComponent().inject(this);
-    return mRoot;
+    return rootView;
   }
 
   @Override
