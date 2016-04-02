@@ -339,7 +339,7 @@ public class MediaPlayerService extends Service implements StatefulMediaPlayer.M
     Episode previous = PlaybackUtils.getPreviousEpisode(getApplicationContext(), podcast, current, ivyPreferences);
 
     if (previous != null) {
-      if (!previous.isDownloaded) {
+      if (previous.downloadStatus != Episode.DownloadStatus.DOWNLOADED) {
         DownloadManagerService.download(getApplicationContext(), previous);
         Toast.makeText(getApplicationContext(), "Loading previous episode.", Toast.LENGTH_SHORT).show();
       } else {

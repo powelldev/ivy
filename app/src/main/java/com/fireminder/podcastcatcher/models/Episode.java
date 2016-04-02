@@ -15,7 +15,6 @@ import org.dom4j.DocumentException;
 import org.dom4j.DocumentHelper;
 import org.dom4j.Element;
 
-import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,8 +31,29 @@ public class Episode implements Parcelable {
   public long duration;
   public long elapsed;
   public String podcastId;
-  public boolean isDownloaded;
+  public DownloadStatus downloadStatus;
   public boolean isComplete;
+
+  public enum DownloadStatus {
+    DOWNLOADED(0),
+    NOT_DOWNLOADED(1),
+    DOWNLOAD_IN_PROGRESS(2),
+    DOWNLOAD_INTERRUPTED(3);
+
+    public final int id;
+    DownloadStatus(int id) {
+      this.id = id;
+    }
+
+    public static DownloadStatus from(int id) {
+      for (DownloadStatus ds : DownloadStatus.values()) {
+        if (ds.id == id) {
+          return ds;
+        }
+      }
+      throw new IllegalArgumentException("No download status for id: " + id);
+    }
+  }
 
   public Episode(Parcel source) {
     title = source.readString();
@@ -45,7 +65,7 @@ public class Episode implements Parcelable {
     duration = source.readLong();
     elapsed = source.readLong();
     podcastId = source.readString();
-    isDownloaded = source.readInt() == 1;
+    downloadStatus = DownloadStatus.from(source.readInt());
     isComplete = source.readInt() == 1;
   }
 
@@ -78,7 +98,7 @@ public class Episode implements Parcelable {
     episode.duration = cursor.getLong(cursor.getColumnIndex(PodcastCatcherContract.Episodes.EPISODE_CONTENT_DURATION));
     episode.elapsed = cursor.getLong(cursor.getColumnIndex(PodcastCatcherContract.Episodes.EPISODE_PERCENT_ELAPSED));
     episode.podcastId = cursor.getString(cursor.getColumnIndex(PodcastCatcherContract.Podcasts.PODCAST_ID));
-    episode.isDownloaded = cursor.getInt(cursor.getColumnIndex(PodcastCatcherContract.Episodes.EPISODE_IS_DOWNLOADED)) == 1;
+    episode.downloadStatus = DownloadStatus.from(cursor.getInt(cursor.getColumnIndex(PodcastCatcherContract.Episodes.EPISODE_DOWNLOAD_STATUS)));
     episode.isComplete = cursor.getInt(cursor.getColumnIndex(PodcastCatcherContract.Episodes.EPISODE_IS_COMPLETE)) == 1;
     return episode;
   }
@@ -113,7 +133,7 @@ public class Episode implements Parcelable {
       episode.duration = 0;
       episode.elapsed = 0;
       episode.localUri = "";
-      episode.isDownloaded = false;
+      episode.downloadStatus = DownloadStatus.NOT_DOWNLOADED;
       episode.isComplete = false;
 
       episodes.add(episode);
@@ -150,7 +170,7 @@ public class Episode implements Parcelable {
     dest.writeLong(duration);
     dest.writeLong(elapsed);
     dest.writeString(podcastId);
-    dest.writeInt(isDownloaded ? 1 : 0);
+    dest.writeInt(downloadStatus.id);
     dest.writeInt(isComplete ? 1 : 0);
   }
 
@@ -165,9 +185,26 @@ public class Episode implements Parcelable {
     cv.put(PodcastCatcherContract.Episodes.EPISODE_PUBLICATION_DATE, episode.pubDate);
     cv.put(PodcastCatcherContract.Episodes.EPISODE_CONTENT_DURATION, episode.duration);
     cv.put(PodcastCatcherContract.Episodes.EPISODE_PERCENT_ELAPSED, episode.elapsed);
-    cv.put(PodcastCatcherContract.Episodes.EPISODE_IS_DOWNLOADED, episode.isDownloaded ? 1 : 0);
+    cv.put(PodcastCatcherContract.Episodes.EPISODE_DOWNLOAD_STATUS, episode.downloadStatus.id);
     cv.put(PodcastCatcherContract.Episodes.EPISODE_IS_COMPLETE, episode.isComplete ? 1 : 0);
     return cv;
+  }
+
+  @Override
+  public String toString() {
+    return "Episode{" +
+        "title='" + title + '\'' +
+        ", episodeId='" + episodeId + '\'' +
+        ", description='" + description + '\'' +
+        ", streamUri='" + streamUri + '\'' +
+        ", localUri='" + localUri + '\'' +
+        ", pubDate=" + pubDate +
+        ", duration=" + duration +
+        ", elapsed=" + elapsed +
+        ", podcastId='" + podcastId + '\'' +
+        ", isDownloaded=" + downloadStatus.name() +
+        ", isComplete=" + isComplete +
+        '}';
   }
 
   public String getUri() {

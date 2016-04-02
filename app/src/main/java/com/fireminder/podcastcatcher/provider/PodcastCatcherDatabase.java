@@ -49,7 +49,7 @@ public class PodcastCatcherDatabase extends SQLiteOpenHelper {
             + EpisodeColumns.EPISODE_CONTENT_DURATION + " INTEGER , "
             + EpisodeColumns.EPISODE_PERCENT_ELAPSED + " REAL, "
             + EpisodeColumns.EPISODE_IS_COMPLETE + " INTEGER, "
-            + EpisodeColumns.EPISODE_IS_DOWNLOADED + " INTEGER "
+            + EpisodeColumns.EPISODE_DOWNLOAD_STATUS + " INTEGER "
             + ") "
     );
 

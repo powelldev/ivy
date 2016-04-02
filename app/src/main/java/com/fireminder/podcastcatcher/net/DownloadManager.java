@@ -1,82 +1,100 @@
 package com.fireminder.podcastcatcher.net;
 
-import android.content.Context;
 import android.net.Uri;
-import android.support.v4.app.NotificationCompat;
 
-import com.fireminder.podcastcatcher.R;
+import com.fireminder.podcastcatcher.IvyApplication;
 import com.fireminder.podcastcatcher.models.Episode;
-import com.fireminder.podcastcatcher.utils.Utils;
+import com.fireminder.podcastcatcher.models.EpisodeModel;
+import com.fireminder.podcastcatcher.utils.Logger;
 import com.koushikdutta.async.future.FutureCallback;
 import com.koushikdutta.ion.Ion;
 import com.koushikdutta.ion.ProgressCallback;
 
 import java.io.File;
+import java.io.IOException;
 
 public class DownloadManager {
 
-  private final Context mContext;
-  private NotificationCompat.Builder builder;
-  private BigNotificationManager notifyManager;
 
-  public static final String GROUP_DOWNLOADS = "group_downloads";
+  private static final String TAG = "DownloadManager";
 
-  public DownloadManager(Context context) {
-    mContext = context.getApplicationContext();
-    notifyManager = BigNotificationManager.getInstance(context);
+  private final FileManager fileManager;
+  private final EpisodeModel episodeModel;
+  private final HttpManager httpManager;
+
+  public DownloadManager(FileManager fileManager, EpisodeModel episodeModel,
+                         HttpManager httpManager) {
+    this.fileManager = fileManager;
+    this.episodeModel = episodeModel;
+    this.httpManager = httpManager;
   }
 
+  public interface DownloadCallback {
+    void onProgress(long downloaded, long total);
+    void onCompleted(Exception e, File file);
+    void onError(Exception e);
+    void onNoInternet();
+  }
 
-  public void download(final Episode episode) {
-    if (isEpisodeAlreadyDownloaded(episode)) {
+  public void download(final Episode episode,
+                       final DownloadCallback callback) {
+
+    if (!httpManager.hasInternet()) {
+      callback.onNoInternet();
       return;
     }
-    builder = episodeToBuilder(episode);
 
-    Uri uri = Utils.createEpisodeDestination(mContext, episode.episodeId);
-    File destination = new File(uri.getPath());
+    if (episode.downloadStatus == Episode.DownloadStatus.DOWNLOAD_IN_PROGRESS) {
+      Logger.i(TAG, "Episode : " + episode.title + " download in progress.");
+      return;
+    }
 
-    notifyManager.addEpisode(episode);
+    final Uri filename;
+    try {
 
-    Ion.with(mContext)
+      filename = fileManager.createFilename(episode.streamUri,
+          episodeModel.getPodcast(episode).title);
+
+    } catch (IOException e) {
+      Logger.assertOrError(TAG, "Failed to create directory: ", e);
+      return;
+    }
+
+    if (fileManager.exists(filename)
+        && httpManager.getTargetFileSize(episode.streamUri) == fileManager.getFileSize(filename)) {
+      Logger.i(TAG, "download(): " + episode.title + " exists locally. Skipping download");
+      episodeModel.updateDownloadedStatus(episode, Episode.DownloadStatus.DOWNLOADED, filename);
+      File file = new File(filename.toString());
+      callback.onCompleted(null, file);
+      return;
+    }
+
+    File destination;
+    try {
+      destination = fileManager.createFile(filename);
+    } catch (IOException e) {
+      episodeModel.updateDownloadedStatus(episode, Episode.DownloadStatus.DOWNLOAD_INTERRUPTED, null);
+      callback.onError(e);
+      Logger.assertOrError(TAG, "failed to create file destination", e);
+      return;
+    }
+
+    Ion.with(IvyApplication.getAppContext())
         .load(episode.streamUri)
         .progress(new ProgressCallback() {
-
           @Override
           public void onProgress(long downloaded, long total) {
-            notifyManager.onProgress(episode, downloaded, total);
+            callback.onProgress(downloaded, total);
           }
         })
         .write(destination)
         .setCallback(new FutureCallback<File>() {
           @Override
-          public void onCompleted(Exception e, File result) {
-            notifyManager.onCompleted(episode);
+          public void onCompleted(Exception e, File file) {
+            callback.onCompleted(e, file);
           }
         });
+
   }
 
-  private NotificationCompat.Builder episodeToBuilder(Episode episode) {
-    NotificationCompat.Builder builder = new NotificationCompat.Builder(mContext);
-    builder.setContentTitle(episode.title)
-        .setContentText(episode.description)
-        .setSmallIcon(R.drawable.ic_white_icon);
-    return builder;
-  }
-
-  /**
-   * Checks if the episode's uri already has a file.
-   * @param episode
-   * @return
-   */
-  private boolean isEpisodeAlreadyDownloaded(Episode episode) {
-    Uri uri = getEpisodeUri(episode);
-    File file = new File(uri.getPath());
-    return file.exists();
-  }
-
-  // TODO: Determine another way to store episode name other than episode id.
-  private Uri getEpisodeUri(Episode episode) {
-    return Utils.createEpisodeDestination(mContext, episode.episodeId);
-  }
 }

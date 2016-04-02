@@ -10,7 +10,6 @@ import android.support.v4.app.NotificationCompat;
 
 import com.fireminder.podcastcatcher.R;
 import com.fireminder.podcastcatcher.models.Episode;
-import com.fireminder.podcastcatcher.services.DownloadManagerService;
 
 import java.util.HashMap;
 
@@ -85,7 +84,6 @@ public class BigNotificationManager implements DownloadUpdateListener {
   public void onCompleted(Episode episode) {
     progressMap.remove(episode);
     mNotificationManager.cancel(NOTIFICATION_ID);
-    DownloadManagerService.downloadHasCompleted(context, episode);
   }
 
   private class SpamFilter {

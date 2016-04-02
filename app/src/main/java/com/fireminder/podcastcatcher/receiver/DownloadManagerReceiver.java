@@ -17,9 +17,6 @@ public class DownloadManagerReceiver extends BroadcastReceiver {
   public void onReceive(Context context, Intent intent) {
     String action;
     switch (intent.getAction()) {
-      case DownloadManager.ACTION_DOWNLOAD_COMPLETE:
-        action = DownloadManagerService.ACTION_DOWNLOAD_COMPLETE;
-        break;
       case DownloadManager.ACTION_NOTIFICATION_CLICKED:
         action = DownloadManagerService.ACTION_NOTIFICATION_CLICKED;
         break;

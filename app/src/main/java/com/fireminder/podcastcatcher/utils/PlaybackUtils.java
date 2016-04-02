@@ -45,6 +45,7 @@ public class PlaybackUtils {
     );
   }
 
+  // TODO dupl
   public static Podcast getPodcastOf(Context context, Episode episode) {
     try {
       Cursor cursor = context.getContentResolver().query(PodcastCatcherContract.Podcasts.buildPodcastUri(episode.podcastId),
@@ -154,7 +155,7 @@ public class PlaybackUtils {
       if (episode.isComplete && new File(Uri.parse(episode.localUri).getPath()).exists()) {
         new File(Uri.parse(episode.localUri).getPath()).delete();
         episode.localUri = "";
-        episode.isDownloaded = false;
+        episode.downloadStatus = Episode.DownloadStatus.NOT_DOWNLOADED;
         ContentValues cv = Episode.episodeToContentValues(episode);
         context.getContentResolver().update(PodcastCatcherContract.Episodes.buildEpisodeUri(episode.episodeId),
             cv,

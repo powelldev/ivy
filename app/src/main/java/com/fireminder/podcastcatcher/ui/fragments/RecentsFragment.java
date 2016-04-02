@@ -130,7 +130,7 @@ public class RecentsFragment extends ListFragment implements LoaderManager.Loade
       Episode episode = Episode.parseEpisodeFromCursor(cursor);
       switch (v.getId()) {
         case R.id.container:
-          if (!episode.isDownloaded) {
+          if (episode.downloadStatus != Episode.DownloadStatus.DOWNLOADED) {
             DownloadManagerService.download(mContext.getApplicationContext(), episode);
           }
           break;
