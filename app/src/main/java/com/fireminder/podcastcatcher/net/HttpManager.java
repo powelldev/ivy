@@ -17,7 +17,7 @@ public class HttpManager {
 
   public long getTargetFileSize(String streamUri) {
     try {
-      URL url = new URL("http://server.com/file.mp3");
+      URL url = new URL(streamUri);
       URLConnection urlConnection = url.openConnection();
       urlConnection.connect();
       return urlConnection.getContentLength();

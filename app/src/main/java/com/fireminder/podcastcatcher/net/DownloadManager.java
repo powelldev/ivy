@@ -15,7 +15,6 @@ import java.io.IOException;
 
 public class DownloadManager {
 
-
   private static final String TAG = "DownloadManager";
 
   private final FileManager fileManager;
